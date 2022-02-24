@@ -3,7 +3,7 @@
 The new Zion relay server.
 
 ## Features
-- Save messages and media via IPFS
+- Save messages and media via [Identity Hubs](https://identity.foundation/identity-hub/spec/) and IPFS
 - Lightning user account system
 
 ## Tech Stack
