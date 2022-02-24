@@ -18,12 +18,6 @@ We will gradually implement the following specifications:
 - [Decentralized Identifiers](https://www.w3.org/TR/did-core/) (W3C)
 - [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) (W3C)
 
-## Who runs relays?
-
-Zion runs a series of relays. The Zion v2 app connects to them by default.
-
-Anyone can run their own relay. Users can connect their app to these other relays.
-
 ## Media hosting
 
 Relays can set their own rules for:
@@ -31,4 +25,10 @@ Relays can set their own rules for:
 - What sorts of media are accepted
 - How much media uploads cost (in sats)
 - Who may upload media
-  - Zion-hosted relays run may restrict media uploads to paying customers
+  - Zion-hosted relays may restrict media uploads to paying customers
+
+## Who runs relays?
+
+Zion runs a series of relays. The Zion v2 app connects to them by default.
+
+Anyone can run their own relay. Users can connect their app to these other relays.
