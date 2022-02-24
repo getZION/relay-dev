@@ -1,6 +1,6 @@
 # Zion Relay v2
 
-The new Zion relay server.
+The new Zion relay server for decentralized social media and messaging.
 
 ## Features
 - Save messages and media via [Identity Hubs](https://identity.foundation/identity-hub/spec/) and IPFS
