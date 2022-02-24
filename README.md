@@ -2,6 +2,10 @@
 
 The new Zion relay server.
 
+## Features
+- Save messages and media via IPFS
+- Lightning user account system
+
 ## Tech Stack
 - [Go](https://go.dev/) 1.17
 - [IPFS](https://docs.ipfs.io/concepts/what-is-ipfs/)
