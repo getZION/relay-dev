@@ -3,7 +3,7 @@
 The new Zion relay server for decentralized social media and messaging.
 
 ## Features
-- Decentralized message and media storage via [Identity Hubs](https://identity.foundation/identity-hub/spec/) and IPFS
+- Decentralized message & media storage via [Identity Hubs](https://identity.foundation/identity-hub/spec/) and IPFS
 - Account system for Bitcoin micropayments via Lightning
   - Connects to a funding source - initially [LND](https://github.com/lightningnetwork/lnd)
 
