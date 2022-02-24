@@ -2,6 +2,11 @@
 
 The new Zion relay server.
 
+## Tech Stack
+- Go 1.17
+- [IPFS](https://docs.ipfs.io/concepts/what-is-ipfs/)
+- [ION](https://identity.foundation/ion/)
+
 ## Specifications
 We aim to implement the following specifications:
 - [Identity Hub](https://identity.foundation/identity-hub/spec) (DIF)
