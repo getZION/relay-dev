@@ -33,3 +33,11 @@ Relays can set their own rules for:
 Zion runs a series of relays. The Zion v2 app connects to them by default.
 
 Anyone can run their own relay. Users can connect their app to these other relays.
+
+## Identity Hub architecture
+
+Courtesy of [DIF](https://identity.foundation/)
+
+![What are Identity Hubs?](docs/hubs1.png)
+
+![DID + Hub Topology](docs/hubs2.png)
