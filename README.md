@@ -5,6 +5,7 @@ The new Zion relay server for decentralized social media and messaging.
 ## Features
 - Save messages and media via [Identity Hubs](https://identity.foundation/identity-hub/spec/) and IPFS
 - Lightning user account system
+  - Connects to a funding source - initially [LND](https://github.com/lightningnetwork/lnd)
 
 ## Tech Stack
 - [Go](https://go.dev/) 1.17
