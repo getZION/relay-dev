@@ -7,6 +7,10 @@ import (
 )
 
 func TestParseDID(t *testing.T) {
-	did := Parse()
-	assert.NotEmpty(t, did)
+	// Returns nil if non compliant
+	did := Parse("did:")
+	assert.Nil(t, did)
+
+	did = Parse("did:zion")
+	assert.Nil(t, did)
 }
