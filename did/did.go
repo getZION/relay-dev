@@ -7,19 +7,31 @@ import (
 )
 
 const (
-	DIDMethodName = "did:zion"
+	DIDMethodName  = "did:zion"
+	PCT_ENCODED    = `(?:%[0-9a-fA-F]{2})`
+	ID_CHAR        = `(?:[a-zA-Z0-9._-]|` + PCT_ENCODED
+	METHOD         = `([a-z0-9]+)`
+	METHOD_ID      = `((?:` + ID_CHAR + `*:)*(` + ID_CHAR + `+))`
+	METHOD_ID_TEMP = ID_CHAR + `*:)*(` + ID_CHAR + `+))`
+	PARAM_CHAR     = `[a-zA-Z0-9_.:%-]`
+	PARAM          = `;` + PARAM_CHAR + `+=` + PARAM_CHAR + `*`
+	PARAMS         = `((` + PARAM + `)*)`
+	PATH           = `(/[^#?]*)?`
+	QUERY          = `([?][^#]*)?`
+	FRAGMENT       = `(#.*)?`
+	DID_MATCHER    = `^did:` + METHOD + `:` + METHOD_ID_TEMP + `$`
 )
 
-type DID struct {
-	ID string `json:"id" form:"id" query:"id" validate:"required"`
-}
-
 type ParsedDID struct {
-	did string
+	did    string
+	didUrl string
+	method string
+	id     string
 }
 
 func Parse(didUrl string) *ParsedDID {
-	match, err := regexp.MatchString("^did:([a-z0-9]+):blah", didUrl)
+	Log.Info().Str("DID_MATCHER", DID_MATCHER).Msg("Parse")
+	match, err := regexp.MatchString(DID_MATCHER, didUrl)
 
 	Log.Info().Bool("match", match).Str("didUrl", didUrl).Msg("Parse")
 
