@@ -30,6 +30,7 @@ type ParsedDID struct {
 	method  string
 	id      string
 	service string
+	queries string
 }
 
 func Parse(didUrl string) *ParsedDID {
@@ -54,8 +55,11 @@ func Parse(didUrl string) *ParsedDID {
 		chop1 := strings.Split(matches[0][3], "?service=")
 		chop2 := strings.Split(chop1[1], "&")
 		service := chop2[0]
-		Log.Info().Str("service", service).Msg("Parsing query...")
 		d.service = service
+
+		chop3 := strings.Split(matches[0][3], "&queries=")
+		queries := chop3[1]
+		d.queries = queries
 	}
 
 	return d
