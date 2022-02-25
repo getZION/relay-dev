@@ -25,7 +25,7 @@ func TestParseDID(t *testing.T) {
 		id:      "2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX",
 		method:  "zion",
 		service: "IdentityHub",
-		queries: "W3sgIm1ldGhvZCI6ICJDb2xsZWN0aW9uc1F1ZXJ5IiwgInNjaGVtYSI6ICJodHRwczovL3NjaGVtYS5vcmcvU29jaWFsTWVkaWFQb3N0aW5nIiB9XQ==",
+		queries: "[{ \"method\": \"CollectionsQuery\", \"schema\": \"https://schema.org/SocialMediaPosting\" }]",
 	}, did)
 
 	// Returns nil if non compliant

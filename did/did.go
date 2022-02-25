@@ -1,6 +1,7 @@
 package did
 
 import (
+	"encoding/base64"
 	"regexp"
 	"strings"
 
@@ -59,7 +60,9 @@ func Parse(didUrl string) *ParsedDID {
 
 		chop3 := strings.Split(matches[0][3], "&queries=")
 		queries := chop3[1]
-		d.queries = queries
+
+		wat, _ := base64.StdEncoding.DecodeString(queries)
+		d.queries = string(wat)
 	}
 
 	return d
