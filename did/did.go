@@ -2,6 +2,7 @@ package did
 
 import (
 	"regexp"
+	"strings"
 
 	. "github.com/getzion/relay/utils"
 )
@@ -20,14 +21,15 @@ const (
 	PATH            = `(/[^#?]*)?`
 	QUERY           = `([?][^#]*)?`
 	FRAGMENT        = `(#.*)?`
-	DID_MATCHER     = `^did:` + METHOD + `:` + METHOD_ID_TEMP2 + `$`
+	DID_MATCHER     = `^did:` + METHOD + `:` + METHOD_ID_TEMP2 + QUERY + FRAGMENT + `$`
 )
 
 type ParsedDID struct {
-	did    string
-	didUrl string
-	method string
-	id     string
+	did     string
+	didUrl  string
+	method  string
+	id      string
+	service string
 }
 
 func Parse(didUrl string) *ParsedDID {
@@ -43,9 +45,18 @@ func Parse(didUrl string) *ParsedDID {
 	matches := r.FindAllStringSubmatch(didUrl, -1)
 
 	d := &ParsedDID{}
-	d.did = matches[0][0]
-	d.didUrl = matches[0][0]
+	d.did = "did:" + matches[0][1] + ":" + matches[0][2]
+	d.didUrl = didUrl
 	d.method = matches[0][1]
 	d.id = matches[0][2]
+
+	if strings.Contains(didUrl, "?") {
+		chop1 := strings.Split(matches[0][3], "?service=")
+		chop2 := strings.Split(chop1[1], "&")
+		service := chop2[0]
+		Log.Info().Str("service", service).Msg("Parsing query...")
+		d.service = service
+	}
+
 	return d
 }
