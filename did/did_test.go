@@ -8,9 +8,33 @@ import (
 
 func TestParseDID(t *testing.T) {
 	// Returns nil if non compliant
-	did := Parse("did:")
+	did := Parse("")
+	assert.Nil(t, did)
+
+	did = Parse("did:")
 	assert.Nil(t, did)
 
 	did = Parse("did:zion")
+	assert.Nil(t, did)
+
+	did = Parse("did:zion:")
+	assert.Nil(t, did)
+
+	did = Parse("did:zion:1234_12313***")
+	assert.Nil(t, did)
+
+	did = Parse("2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX")
+	assert.Nil(t, did)
+
+	did = Parse("did:method:%12%1")
+	assert.Nil(t, did)
+
+	did = Parse("did:method:%1233%Ay")
+	assert.Nil(t, did)
+
+	did = Parse("did:CAP:id")
+	assert.Nil(t, did)
+
+	did = Parse("did:method:id::anotherid%r9")
 	assert.Nil(t, did)
 }
