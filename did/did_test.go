@@ -7,15 +7,14 @@ import (
 )
 
 func TestParseDID(t *testing.T) {
-
 	did := Parse("did:zion:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX")
 	assert.NotNil(t, did)
-	// assert.Equal(t, ParsedDID{
-	// 	did:    "did:zion:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX",
-	// 	didUrl: "did:zion:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX",
-	// 	id:     "2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX",
-	// 	method: "zion",
-	// }, did)
+	assert.Equal(t, &ParsedDID{
+		did:    "did:zion:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX",
+		didUrl: "did:zion:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX",
+		id:     "2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX",
+		method: "zion",
+	}, did)
 
 	// Returns parts
 	// did := Parse("did:zion:2nQtiQG6Cgm1GYTBaaKAgr76uY7iSexUkqX")
