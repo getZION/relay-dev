@@ -1,2 +1,2 @@
 test:
-	cd did && go test
+	cd did && go test -v
