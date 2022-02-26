@@ -29,3 +29,21 @@ func (s *CollectionsService) CollectionsWrite(ctx context.Context, q *Collection
 
 	return &CollectionsWriteResponse{}, nil
 }
+
+func (s *CollectionsService) CollectionsCommit(ctx context.Context, q *CollectionsCommitRequest) (*CollectionsCommitResponse, error) {
+	grpc.SendHeader(ctx, metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-unary"))
+	grpc.SetTrailer(ctx, metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-unary"))
+
+	Log.Info().Msg("CollectionsCommit API placeholder")
+
+	return &CollectionsCommitResponse{}, nil
+}
+
+func (s *CollectionsService) CollectionsDelete(ctx context.Context, q *CollectionsDeleteRequest) (*CollectionsDeleteResponse, error) {
+	grpc.SendHeader(ctx, metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-unary"))
+	grpc.SetTrailer(ctx, metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-unary"))
+
+	Log.Info().Msg("CollectionsDelete API placeholder")
+
+	return &CollectionsDeleteResponse{}, nil
+}

@@ -52,6 +52,24 @@ var _ = Describe("Collections", func() {
 		}
 		Expect(response).To(Not(BeNil()))
 	})
+
+	It("receives a response from CollectionsCommit service", func() {
+		request := &CollectionsCommitRequest{}
+		response, err := client.CollectionsCommit(ctx, request)
+		if err != nil {
+			utils.Log.Error().Msg(err.Error())
+		}
+		Expect(response).To(Not(BeNil()))
+	})
+
+	It("receives a response from CollectionsDelete service", func() {
+		request := &CollectionsDeleteRequest{}
+		response, err := client.CollectionsDelete(ctx, request)
+		if err != nil {
+			utils.Log.Error().Msg(err.Error())
+		}
+		Expect(response).To(Not(BeNil()))
+	})
 })
 
 type mockCollectionsServer struct {
