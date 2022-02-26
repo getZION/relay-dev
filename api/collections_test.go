@@ -21,6 +21,11 @@ var _ = Describe("Collections", func() {
 	var ctx context.Context
 	var conn *grpc.ClientConn
 	var err error
+	var messages = []*Message{
+		{
+			Data: "Data!",
+		},
+	}
 
 	BeforeEach(func() {
 		ctx = context.Background()
@@ -41,7 +46,7 @@ var _ = Describe("Collections", func() {
 				Request: &Request{
 					RequestId: "Hello",
 					Target:    "TheTarget",
-					// Messages:  [],
+					Messages:  messages,
 				},
 			}
 			response, err := client.CollectionsWrite(ctx, request)
@@ -51,31 +56,46 @@ var _ = Describe("Collections", func() {
 			Expect(response).To(Not(BeNil()))
 		})
 
-		It("receives an error if request is nil", func() {
+		It("receives an error if Request is missing", func() {
 			request := &CollectionsWriteRequest{}
 			_, err := client.CollectionsWrite(ctx, request)
 			Expect(err).To(Not(BeNil()))
 		})
 
-		It("receives an error if requestID is missing", func() {
+		It("receives an error if RequestID is missing", func() {
 			request := &CollectionsWriteRequest{
 				Request: &Request{
-					Target: "TheTarget",
+					Target:   "TheTarget",
+					Messages: messages,
 				},
 			}
 			_, err := client.CollectionsWrite(ctx, request)
 			Expect(err).To(Not(BeNil()))
 		})
 
-		It("receives an error if target is missing", func() {
+		It("receives an error if Target is missing", func() {
 			request := &CollectionsWriteRequest{
 				Request: &Request{
 					RequestId: "09j23f09j23f0j",
+					Messages:  messages,
 				},
 			}
 			_, err := client.CollectionsWrite(ctx, request)
 			Expect(err).To(Not(BeNil()))
 		})
+
+		It("receives an error if Messages are missing", func() {
+			request := &CollectionsWriteRequest{
+				Request: &Request{
+					RequestId: "09j23f09j23f0j",
+					Target:    "atarget",
+				},
+			}
+			_, err := client.CollectionsWrite(ctx, request)
+			Expect(err).To(Not(BeNil()))
+		})
+
+		// requestID must be a uuid
 	})
 
 	Describe("CollectionsQuery", func() {

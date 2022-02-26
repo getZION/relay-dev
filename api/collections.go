@@ -39,6 +39,10 @@ func (s *CollectionsService) CollectionsWrite(ctx context.Context, q *Collection
 		return nil, errors.New("Missing Target")
 	}
 
+	if len(q.Request.Messages) == 0 {
+		return nil, errors.New("Missing Messages")
+	}
+
 	return &CollectionsWriteResponse{}, nil
 }
 
