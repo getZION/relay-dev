@@ -21,9 +21,12 @@ var _ = Describe("Collections", func() {
 	var ctx context.Context
 	var conn *grpc.ClientConn
 	var err error
-	var messages = []*Message{
+	var validDemoMessages = []*Message{
 		{
 			Data: "Data!",
+			Descriptor_: &MessageDescriptor{
+				Method: "CollectionsWrite",
+			},
 		},
 	}
 
@@ -46,7 +49,7 @@ var _ = Describe("Collections", func() {
 				Request: &Request{
 					RequestId: "Hello",
 					Target:    "TheTarget",
-					Messages:  messages,
+					Messages:  validDemoMessages,
 				},
 			}
 			response, err := client.CollectionsWrite(ctx, request)
@@ -66,7 +69,7 @@ var _ = Describe("Collections", func() {
 			request := &CollectionsWriteRequest{
 				Request: &Request{
 					Target:   "TheTarget",
-					Messages: messages,
+					Messages: validDemoMessages,
 				},
 			}
 			_, err := client.CollectionsWrite(ctx, request)
@@ -77,7 +80,7 @@ var _ = Describe("Collections", func() {
 			request := &CollectionsWriteRequest{
 				Request: &Request{
 					RequestId: "09j23f09j23f0j",
-					Messages:  messages,
+					Messages:  validDemoMessages,
 				},
 			}
 			_, err := client.CollectionsWrite(ctx, request)
@@ -95,7 +98,38 @@ var _ = Describe("Collections", func() {
 			Expect(err).To(Not(BeNil()))
 		})
 
-		// requestID must be a uuid
+		It("receives an error if a Message is missing Descriptor", func() {
+			request := &CollectionsWriteRequest{
+				Request: &Request{
+					RequestId: "09j23f09j23f0j",
+					Target:    "atarget",
+					Messages: []*Message{
+						{
+							Data: "Data!",
+						},
+					},
+				},
+			}
+			_, err := client.CollectionsWrite(ctx, request)
+			Expect(err).To(Not(BeNil()))
+		})
+
+		It("receives an error if a Message Descriptor is missing method", func() {
+			request := &CollectionsWriteRequest{
+				Request: &Request{
+					RequestId: "09j23f09j23f0j",
+					Target:    "atarget",
+					Messages: []*Message{
+						{
+							Data:        "Data!",
+							Descriptor_: &MessageDescriptor{},
+						},
+					},
+				},
+			}
+			_, err := client.CollectionsWrite(ctx, request)
+			Expect(err).To(Not(BeNil()))
+		})
 	})
 
 	Describe("CollectionsQuery", func() {
@@ -107,6 +141,13 @@ var _ = Describe("Collections", func() {
 			}
 			Expect(response).To(Not(BeNil()))
 		})
+
+		// Request RequestID must be a uuid
+		// Every Message object must contain a descriptor property which includes:
+		// -- a method property which must have the string value "CollectionsWrite"
+		// -- must contain an objectID which must be UUID v4
+		// -- may contain schema, if present it must be a URI string
+		// -- must contain dateCreated and must be a unix epoch timestamp
 	})
 
 	Describe("CollectionsCommit", func() {

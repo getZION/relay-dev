@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
-	// . "github.com/getzion/relay/utils"
+	. "github.com/getzion/relay/utils"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -41,6 +41,18 @@ func (s *CollectionsService) CollectionsWrite(ctx context.Context, q *Collection
 
 	if len(q.Request.Messages) == 0 {
 		return nil, errors.New("Missing Messages")
+	}
+
+	for _, message := range q.Request.Messages {
+		Log.Info().Msg(message.Data)
+		if message.Descriptor_ == nil {
+			return nil, errors.New("Missing descriptor")
+		}
+		// Log.Info().Msg(string(len(message.Descriptor_.Method)))
+		// Log.Info().Msg(string(len(message.Descriptor_.Method)))
+		if message.Descriptor_.Method != "CollectionsWrite" {
+			return nil, errors.New("Descriptor method must be CollectionsWrite, found: " + message.Descriptor_.Method)
+		}
 	}
 
 	return &CollectionsWriteResponse{}, nil
