@@ -27,9 +27,16 @@ func (s *CollectionsService) CollectionsWrite(ctx context.Context, q *Collection
 	grpc.SendHeader(ctx, metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-unary"))
 	grpc.SetTrailer(ctx, metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-unary"))
 
-	// Log.Info().Msg("CollectionsWrite API placeholder")
 	if q.Request == nil {
 		return nil, errors.New("Request was empty")
+	}
+
+	if q.Request.RequestId == "" {
+		return nil, errors.New("Missing Request ID")
+	}
+
+	if q.Request.Target == "" {
+		return nil, errors.New("Missing Target")
 	}
 
 	return &CollectionsWriteResponse{}, nil

@@ -37,13 +37,12 @@ var _ = Describe("Collections", func() {
 
 	Describe("CollectionsWrite", func() {
 		It("receives a response", func() {
-			hubRequest := Request{
-				RequestId: "Hello",
-				Target:    "TheTarget",
-				// Messages:  [],
-			}
 			request := &CollectionsWriteRequest{
-				Request: &hubRequest,
+				Request: &Request{
+					RequestId: "Hello",
+					Target:    "TheTarget",
+					// Messages:  [],
+				},
 			}
 			response, err := client.CollectionsWrite(ctx, request)
 			if err != nil {
@@ -54,6 +53,26 @@ var _ = Describe("Collections", func() {
 
 		It("receives an error if request is nil", func() {
 			request := &CollectionsWriteRequest{}
+			_, err := client.CollectionsWrite(ctx, request)
+			Expect(err).To(Not(BeNil()))
+		})
+
+		It("receives an error if requestID is missing", func() {
+			request := &CollectionsWriteRequest{
+				Request: &Request{
+					Target: "TheTarget",
+				},
+			}
+			_, err := client.CollectionsWrite(ctx, request)
+			Expect(err).To(Not(BeNil()))
+		})
+
+		It("receives an error if target is missing", func() {
+			request := &CollectionsWriteRequest{
+				Request: &Request{
+					RequestId: "09j23f09j23f0j",
+				},
+			}
 			_, err := client.CollectionsWrite(ctx, request)
 			Expect(err).To(Not(BeNil()))
 		})
