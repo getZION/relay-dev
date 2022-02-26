@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package proto.identityhub.v1;
+
+option go_package = "github.com/getzion/relay/gen/identityhub/v1";
+
+import "proto/identityhub/v1/messages.proto";
+
+// Request Object
+message Request {
+  string requestId = 1;
+  string target = 2;
+  repeated Message messages = 3;
+}

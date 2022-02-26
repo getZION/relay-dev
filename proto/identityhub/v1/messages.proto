@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package proto.identityhub.v1;
+
+option go_package = "github.com/getzion/relay/gen/identityhub/v1";
+
+message Message {
+  string data = 1;
+  MessageDescriptor descriptor = 2;
+}
+
+message MessageDescriptor {
+  string method = 1;
+  string cid = 2;
+  string dataFormat = 3;
+}
+
+message Attestation {
+  AttestationProtected protected = 1;
+  string payload = 2;
+  string signature = 3;
+}
+
+message AttestationProtected {
+  string alg = 1;
+  string kid = 2;
+}
