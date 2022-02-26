@@ -1,0 +1,64 @@
+{
+  "name": "react-three-next",
+  "version": "2.0.0",
+  "authors": [
+    "Renaud ROHLINGER <https://twitter.com/onirenaud>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=14"
+  },
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@improbable-eng/grpc-web": "^0.15.0",
+    "@protobuf-ts/grpcweb-transport": "^2.2.2",
+    "@protobuf-ts/plugin": "^2.2.2",
+    "@react-three/drei": "^8.8.1",
+    "@react-three/fiber": "^7.0.26",
+    "babel-plugin-glsl": "^1.0.0",
+    "babel-plugin-styled-components": "^2.0.2",
+    "glsl-random": "^0.0.5",
+    "google-protobuf": "^3.19.4",
+    "next": "^12.0.10",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "short-uuid": "^4.2.0",
+    "three": "^0.137.5",
+    "three-stdlib": "^2.8.5",
+    "ts-protoc-gen": "^0.15.0"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^12.0.10",
+    "@types/google-protobuf": "^3.15.5",
+    "@types/node": "^17.0.16",
+    "@types/react": "^17.0.39",
+    "autoprefixer": "^10.4.2",
+    "eslint": "^8.8.0",
+    "eslint-config-next": "^12.0.10",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-tailwind": "^0.2.1",
+    "file-loader": "^6.2.0",
+    "glslify": "^7.1.1",
+    "glslify-loader": "^2.0.0",
+    "next-compose-plugins": "^2.2.1",
+    "next-offline": "^5.0.5",
+    "postcss": "^8.4.6",
+    "prettier": "^2.5.1",
+    "raw-loader": "^4.0.2",
+    "tailwindcss": "^3.0.18",
+    "ts-proto": "^1.104.0",
+    "typescript": "^4.5.5",
+    "url-loader": "^4.1.1"
+  },
+  "scripts": {
+    "lint": "yarn prettier && yarn eslint",
+    "eslint": "next lint --fix --dir src",
+    "prettier": "prettier --list-different \"./src/**/*.{ts,tsx,md}\"",
+    "dev": "next dev",
+    "build": "next build",
+    "export": "EXPORT=true next build && EXPORT=true next export -o dist",
+    "analyze": "ANALYZE=true next build",
+    "start": "next start"
+  }
+}

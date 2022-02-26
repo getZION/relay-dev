@@ -1,0 +1,101 @@
+// package: proto.zion.v1
+// file: proto/zion/v1/users.proto
+
+import * as proto_zion_v1_users_pb from "../../../proto/zion/v1/users_pb";
+import {grpc} from "@improbable-eng/grpc-web";
+
+type UsersServiceCreateUser = {
+  readonly methodName: string;
+  readonly service: typeof UsersService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof proto_zion_v1_users_pb.CreateUserRequest;
+  readonly responseType: typeof proto_zion_v1_users_pb.CreateUserResponse;
+};
+
+type UsersServiceEditUser = {
+  readonly methodName: string;
+  readonly service: typeof UsersService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof proto_zion_v1_users_pb.EditUserRequest;
+  readonly responseType: typeof proto_zion_v1_users_pb.EditUserResponse;
+};
+
+type UsersServiceFindById = {
+  readonly methodName: string;
+  readonly service: typeof UsersService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof proto_zion_v1_users_pb.FindByIdRequest;
+  readonly responseType: typeof proto_zion_v1_users_pb.FindByIdResponse;
+};
+
+export class UsersService {
+  static readonly serviceName: string;
+  static readonly CreateUser: UsersServiceCreateUser;
+  static readonly EditUser: UsersServiceEditUser;
+  static readonly FindById: UsersServiceFindById;
+}
+
+export type ServiceError = { message: string, code: number; metadata: grpc.Metadata }
+export type Status = { details: string, code: number; metadata: grpc.Metadata }
+
+interface UnaryResponse {
+  cancel(): void;
+}
+interface ResponseStream<T> {
+  cancel(): void;
+  on(type: 'data', handler: (message: T) => void): ResponseStream<T>;
+  on(type: 'end', handler: (status?: Status) => void): ResponseStream<T>;
+  on(type: 'status', handler: (status: Status) => void): ResponseStream<T>;
+}
+interface RequestStream<T> {
+  write(message: T): RequestStream<T>;
+  end(): void;
+  cancel(): void;
+  on(type: 'end', handler: (status?: Status) => void): RequestStream<T>;
+  on(type: 'status', handler: (status: Status) => void): RequestStream<T>;
+}
+interface BidirectionalStream<ReqT, ResT> {
+  write(message: ReqT): BidirectionalStream<ReqT, ResT>;
+  end(): void;
+  cancel(): void;
+  on(type: 'data', handler: (message: ResT) => void): BidirectionalStream<ReqT, ResT>;
+  on(type: 'end', handler: (status?: Status) => void): BidirectionalStream<ReqT, ResT>;
+  on(type: 'status', handler: (status: Status) => void): BidirectionalStream<ReqT, ResT>;
+}
+
+export class UsersServiceClient {
+  readonly serviceHost: string;
+
+  constructor(serviceHost: string, options?: grpc.RpcOptions);
+  createUser(
+    requestMessage: proto_zion_v1_users_pb.CreateUserRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: proto_zion_v1_users_pb.CreateUserResponse|null) => void
+  ): UnaryResponse;
+  createUser(
+    requestMessage: proto_zion_v1_users_pb.CreateUserRequest,
+    callback: (error: ServiceError|null, responseMessage: proto_zion_v1_users_pb.CreateUserResponse|null) => void
+  ): UnaryResponse;
+  editUser(
+    requestMessage: proto_zion_v1_users_pb.EditUserRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: proto_zion_v1_users_pb.EditUserResponse|null) => void
+  ): UnaryResponse;
+  editUser(
+    requestMessage: proto_zion_v1_users_pb.EditUserRequest,
+    callback: (error: ServiceError|null, responseMessage: proto_zion_v1_users_pb.EditUserResponse|null) => void
+  ): UnaryResponse;
+  findById(
+    requestMessage: proto_zion_v1_users_pb.FindByIdRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: proto_zion_v1_users_pb.FindByIdResponse|null) => void
+  ): UnaryResponse;
+  findById(
+    requestMessage: proto_zion_v1_users_pb.FindByIdRequest,
+    callback: (error: ServiceError|null, responseMessage: proto_zion_v1_users_pb.FindByIdResponse|null) => void
+  ): UnaryResponse;
+}
+
