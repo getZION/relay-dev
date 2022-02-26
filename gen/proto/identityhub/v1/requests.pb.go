@@ -20,15 +20,27 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request Object
+//
+// Request Objects are JSON object envelopes used to pass messages to Identity Hub
+// instances.
+// https://identity.foundation/identity-hub/spec/#request-objects
 type Request struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	RequestId string     `protobuf:"bytes,1,opt,name=requestId,proto3" json:"requestId,omitempty"`
-	Target    string     `protobuf:"bytes,2,opt,name=target,proto3" json:"target,omitempty"`
-	Messages  []*Message `protobuf:"bytes,3,rep,name=messages,proto3" json:"messages,omitempty"`
+	//
+	// The Request Object MUST include a requestId property, and its value MUST be
+	// an [RFC4122] UUID Version 4 string to identify the request.
+	RequestId string `protobuf:"bytes,1,opt,name=requestId,proto3" json:"requestId,omitempty"`
+	//
+	// The Request Object MUST include a target property, and its value MUST be the
+	// Decentralized Identifier base URI of the DID-relative URL.
+	Target string `protobuf:"bytes,2,opt,name=target,proto3" json:"target,omitempty"`
+	//
+	// The Request Object MUST include a messages property, and its value MUST be an
+	// array composed of Message objects.
+	Messages []*Message `protobuf:"bytes,3,rep,name=messages,proto3" json:"messages,omitempty"`
 }
 
 func (x *Request) Reset() {
