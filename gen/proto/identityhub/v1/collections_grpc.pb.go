@@ -23,6 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CollectionsServiceClient interface {
 	CollectionsQuery(ctx context.Context, in *CollectionsQueryRequest, opts ...grpc.CallOption) (*CollectionsQueryResponse, error)
+	CollectionsWrite(ctx context.Context, in *CollectionsWriteRequest, opts ...grpc.CallOption) (*CollectionsWriteResponse, error)
+	CollectionsCommit(ctx context.Context, in *CollectionsCommitRequest, opts ...grpc.CallOption) (*CollectionsCommitResponse, error)
+	CollectionsDelete(ctx context.Context, in *CollectionsDeleteRequest, opts ...grpc.CallOption) (*CollectionsDeleteResponse, error)
 }
 
 type collectionsServiceClient struct {
@@ -42,11 +45,41 @@ func (c *collectionsServiceClient) CollectionsQuery(ctx context.Context, in *Col
 	return out, nil
 }
 
+func (c *collectionsServiceClient) CollectionsWrite(ctx context.Context, in *CollectionsWriteRequest, opts ...grpc.CallOption) (*CollectionsWriteResponse, error) {
+	out := new(CollectionsWriteResponse)
+	err := c.cc.Invoke(ctx, "/proto.identityhub.v1.CollectionsService/CollectionsWrite", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *collectionsServiceClient) CollectionsCommit(ctx context.Context, in *CollectionsCommitRequest, opts ...grpc.CallOption) (*CollectionsCommitResponse, error) {
+	out := new(CollectionsCommitResponse)
+	err := c.cc.Invoke(ctx, "/proto.identityhub.v1.CollectionsService/CollectionsCommit", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *collectionsServiceClient) CollectionsDelete(ctx context.Context, in *CollectionsDeleteRequest, opts ...grpc.CallOption) (*CollectionsDeleteResponse, error) {
+	out := new(CollectionsDeleteResponse)
+	err := c.cc.Invoke(ctx, "/proto.identityhub.v1.CollectionsService/CollectionsDelete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CollectionsServiceServer is the server API for CollectionsService service.
 // All implementations should embed UnimplementedCollectionsServiceServer
 // for forward compatibility
 type CollectionsServiceServer interface {
 	CollectionsQuery(context.Context, *CollectionsQueryRequest) (*CollectionsQueryResponse, error)
+	CollectionsWrite(context.Context, *CollectionsWriteRequest) (*CollectionsWriteResponse, error)
+	CollectionsCommit(context.Context, *CollectionsCommitRequest) (*CollectionsCommitResponse, error)
+	CollectionsDelete(context.Context, *CollectionsDeleteRequest) (*CollectionsDeleteResponse, error)
 }
 
 // UnimplementedCollectionsServiceServer should be embedded to have forward compatible implementations.
@@ -55,6 +88,15 @@ type UnimplementedCollectionsServiceServer struct {
 
 func (UnimplementedCollectionsServiceServer) CollectionsQuery(context.Context, *CollectionsQueryRequest) (*CollectionsQueryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CollectionsQuery not implemented")
+}
+func (UnimplementedCollectionsServiceServer) CollectionsWrite(context.Context, *CollectionsWriteRequest) (*CollectionsWriteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CollectionsWrite not implemented")
+}
+func (UnimplementedCollectionsServiceServer) CollectionsCommit(context.Context, *CollectionsCommitRequest) (*CollectionsCommitResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CollectionsCommit not implemented")
+}
+func (UnimplementedCollectionsServiceServer) CollectionsDelete(context.Context, *CollectionsDeleteRequest) (*CollectionsDeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CollectionsDelete not implemented")
 }
 
 // UnsafeCollectionsServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -86,6 +128,60 @@ func _CollectionsService_CollectionsQuery_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CollectionsService_CollectionsWrite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CollectionsWriteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CollectionsServiceServer).CollectionsWrite(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.identityhub.v1.CollectionsService/CollectionsWrite",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CollectionsServiceServer).CollectionsWrite(ctx, req.(*CollectionsWriteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CollectionsService_CollectionsCommit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CollectionsCommitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CollectionsServiceServer).CollectionsCommit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.identityhub.v1.CollectionsService/CollectionsCommit",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CollectionsServiceServer).CollectionsCommit(ctx, req.(*CollectionsCommitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CollectionsService_CollectionsDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CollectionsDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CollectionsServiceServer).CollectionsDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.identityhub.v1.CollectionsService/CollectionsDelete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CollectionsServiceServer).CollectionsDelete(ctx, req.(*CollectionsDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CollectionsService_ServiceDesc is the grpc.ServiceDesc for CollectionsService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -96,6 +192,18 @@ var CollectionsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CollectionsQuery",
 			Handler:    _CollectionsService_CollectionsQuery_Handler,
+		},
+		{
+			MethodName: "CollectionsWrite",
+			Handler:    _CollectionsService_CollectionsWrite_Handler,
+		},
+		{
+			MethodName: "CollectionsCommit",
+			Handler:    _CollectionsService_CollectionsCommit_Handler,
+		},
+		{
+			MethodName: "CollectionsDelete",
+			Handler:    _CollectionsService_CollectionsDelete_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
