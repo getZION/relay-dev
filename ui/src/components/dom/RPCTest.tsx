@@ -5,8 +5,17 @@ import { CommunitiesService } from 'proto/zion/v1/communities_pb_service'
 import { GetNodeInfoRequest } from 'proto/zion/v1/nodeinfo_pb'
 import { Community, CreateCommunityRequest } from 'proto/zion/v1/communities_pb'
 import { NodeInfoService } from 'proto/zion/v1/nodeinfo_pb_service'
+import { CollectionsWriteRequest } from 'proto/identityhub/v1/collections_pb'
+import { CollectionsService } from 'proto/identityhub/v1/collections_pb_service'
+import { Request } from 'proto/identityhub/v1/requests_pb'
 
 const nodeInfoRequest = new GetNodeInfoRequest()
+const collectionsWriteRequest = new CollectionsWriteRequest()
+const hubRequest = new Request()
+collectionsWriteRequest.setRequest(hubRequest)
+// hubRequest.setRequestid
+// collectionsWriteRequest.
+
 // const createCommunityRequest = new CreateCommunityRequest()
 // const community = new Community()
 // community.setName('Hello World Community! !! ! !!')
@@ -37,6 +46,14 @@ export const RPCTest = () => {
         } else {
           console.log('error', res.statusMessage)
         }
+      },
+    })
+
+    grpc.unary(CollectionsService.CollectionsWrite, {
+      request: collectionsWriteRequest,
+      host: 'http://localhost:9090',
+      onEnd: (res) => {
+        console.log('CollectionsWrite response:', res)
       },
     })
 
