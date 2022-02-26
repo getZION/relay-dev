@@ -25,8 +25,9 @@ var _ = Describe("Collections", func() {
 		{
 			Data: "Data!",
 			Descriptor_: &MessageDescriptor{
-				Method:   "CollectionsWrite",
-				ObjectId: "d82c0026-ed42-4b26-81f3-94805958a75c",
+				Method:      "CollectionsWrite",
+				ObjectId:    "d82c0026-ed42-4b26-81f3-94805958a75c",
+				DateCreated: "1645917431",
 			},
 		},
 	}
@@ -153,8 +154,29 @@ var _ = Describe("Collections", func() {
 						{
 							Data: "Data!",
 							Descriptor_: &MessageDescriptor{
+								Method:      "CollectionsWrite",
+								ObjectId:    "12342135",
+								DateCreated: "1645917369",
+							},
+						},
+					},
+				},
+			}
+			_, err := client.CollectionsWrite(ctx, request)
+			Expect(err).To(Not(BeNil()))
+		})
+
+		It("receives an error if a Message Descriptor is missing dateCreated", func() {
+			request := &CollectionsWriteRequest{
+				Request: &Request{
+					RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+					Target:    "atarget",
+					Messages: []*Message{
+						{
+							Data: "Data!",
+							Descriptor_: &MessageDescriptor{
 								Method:   "CollectionsWrite",
-								ObjectId: "12342135",
+								ObjectId: "b9b672ba-68a7-46b1-b24d-104a860aafdf",
 							},
 						},
 					},

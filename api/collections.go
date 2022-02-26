@@ -2,9 +2,12 @@ package api
 
 import (
 	"errors"
+	"strconv"
+	"time"
 
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
-	// . "github.com/getzion/relay/utils"
+
+	. "github.com/getzion/relay/utils"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -61,6 +64,15 @@ func (s *CollectionsService) CollectionsWrite(ctx context.Context, q *Collection
 		if len(message.Descriptor_.ObjectId) != 36 {
 			return nil, errors.New("Descriptor ObjectID must be length 36 (uuid v4)")
 		}
+
+		dateCreated := message.Descriptor_.DateCreated
+		if len(dateCreated) < 10 {
+			return nil, errors.New("Invalid date")
+		}
+
+		dateSeconds, _ := strconv.Atoi(dateCreated)
+		t := time.Unix(int64(dateSeconds), 0)
+		Log.Info().Msg(t.String())
 	}
 
 	return &CollectionsWriteResponse{}, nil
