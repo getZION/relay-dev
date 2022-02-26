@@ -35,40 +35,54 @@ var _ = Describe("Collections", func() {
 		defer conn.Close()
 	})
 
-	It("receives a response from CollectionsWrite service", func() {
-		request := &CollectionsWriteRequest{}
-		response, err := client.CollectionsWrite(ctx, request)
-		if err != nil {
-			utils.Log.Error().Msg(err.Error())
-		}
-		Expect(response).To(Not(BeNil()))
+	Describe("CollectionsWrite", func() {
+		It("receives a response", func() {
+			request := &CollectionsWriteRequest{}
+			response, err := client.CollectionsWrite(ctx, request)
+			if err != nil {
+				utils.Log.Error().Msg(err.Error())
+			}
+			Expect(response).To(Not(BeNil()))
+		})
+
+		// It("receives an error on no request info", func() {
+		// 	request := &CollectionsWriteRequest{}
+		// 	_, err := client.CollectionsWrite(ctx, request)
+		// 	Expect(err).To(Not(BeNil()))
+		// })
 	})
 
-	It("receives a response from CollectionsQuery service", func() {
-		request := &CollectionsQueryRequest{}
-		response, err := client.CollectionsQuery(ctx, request)
-		if err != nil {
-			utils.Log.Error().Msg(err.Error())
-		}
-		Expect(response).To(Not(BeNil()))
+	Describe("CollectionsQuery", func() {
+		It("receives a response", func() {
+			request := &CollectionsQueryRequest{}
+			response, err := client.CollectionsQuery(ctx, request)
+			if err != nil {
+				utils.Log.Error().Msg(err.Error())
+			}
+			Expect(response).To(Not(BeNil()))
+		})
 	})
 
-	It("receives a response from CollectionsCommit service", func() {
-		request := &CollectionsCommitRequest{}
-		response, err := client.CollectionsCommit(ctx, request)
-		if err != nil {
-			utils.Log.Error().Msg(err.Error())
-		}
-		Expect(response).To(Not(BeNil()))
+	Describe("CollectionsCommit", func() {
+		It("receives a response", func() {
+			request := &CollectionsCommitRequest{}
+			response, err := client.CollectionsCommit(ctx, request)
+			if err != nil {
+				utils.Log.Error().Msg(err.Error())
+			}
+			Expect(response).To(Not(BeNil()))
+		})
 	})
 
-	It("receives a response from CollectionsDelete service", func() {
-		request := &CollectionsDeleteRequest{}
-		response, err := client.CollectionsDelete(ctx, request)
-		if err != nil {
-			utils.Log.Error().Msg(err.Error())
-		}
-		Expect(response).To(Not(BeNil()))
+	Describe("CollectionsDelete", func() {
+		It("receives a response", func() {
+			request := &CollectionsDeleteRequest{}
+			response, err := client.CollectionsDelete(ctx, request)
+			if err != nil {
+				utils.Log.Error().Msg(err.Error())
+			}
+			Expect(response).To(Not(BeNil()))
+		})
 	})
 })
 
