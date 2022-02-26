@@ -12,13 +12,26 @@ option go_package = "github.com/getzion/relay/gen/identityhub/v1";
  * https://identity.foundation/identity-hub/spec/#messages
  */
 message Message {
-  // "Message objects MAY contain a data property, and if present its value MUST be a JSON value of the Message’s data."
+  /**
+   * Message objects MAY contain a data property, and if present its value MUST
+   * be a JSON value of the Message’s data.
+   */
   string data = 1;
-  // "Message objects MUST contain a descriptor property, and its value MUST be an object, as defined by the Message Descriptors section of this specification."
+  /**
+   * Message objects MUST contain a descriptor property, and its value MUST be an
+   * object, as defined by the Message Descriptors section of this specification.
+   */
   MessageDescriptor descriptor = 2;
-  // "Message objects MAY contain an attestation property, and if present its value MUST be an object, as defined by the Signed Data section of this specification."
+  /**
+   * Message objects MAY contain an attestation property, and if present its value
+   * MUST be an object, as defined by the Signed Data section of this specification.
+   */
   Attestation attestation = 3;
-  // "If a Message object requires signatory and/or permission-evaluated authorization, it MUST include an authorization property, and its value MUST be a [RFC7515] JSON Web Signature composed as follows..."
+  /**
+   * If a Message object requires signatory and/or permission-evaluated authorization,
+   * it MUST include an authorization property, and its value MUST be a [RFC7515]
+   * JSON Web Signature composed as follows...
+   */
   Authorization authorization = 4;
 }
 
