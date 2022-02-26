@@ -4,8 +4,11 @@ package proto.identityhub.v1;
 
 option go_package = "github.com/getzion/relay/gen/identityhub/v1";
 
-// Responses from Interface method invocations are JSON objects that MUST be constructed as follows:
-// https://identity.foundation/identity-hub/spec/#response-objects
+/**
+ * Responses from Interface method invocations are JSON objects that MUST be
+ * constructed as follows:
+ * https://identity.foundation/identity-hub/spec/#response-objects
+ */
 message Response {
   /**
    * The object MUST include an requestId property, and its value MUST be the
