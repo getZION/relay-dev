@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package proto.zion.v1;
+
+option go_package = "github.com/getzion/relay/gen/zion/v1";
+
+import "proto/protoc-gen-gorm/options/gorm.proto";
+
+service MessagesService {
+  // Boost a message
+  rpc BoostMessage(BoostMessageRequest) returns (BoostMessageResponse) {}
+  // Delete a message I sent, or hide it if it was sent to me
+  rpc DeleteMessage(DeleteMessageRequest) returns (DeleteMessageResponse) {
+    option (gorm.method).object_type = "Message";
+  }
+  // Get messages that meet various filters
+  rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse) {}
+  // Send message
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
+}
+
+message Message {
+  option (gorm.opts).ormable = true;
+  // The community's unique ID (primary key)
+  int64 id = 1 [(gorm.field).tag = {
+    unique: true
+    primary_key: true
+  }];
+  // Text
+  string text = 2 [(gorm.field).tag = { not_null: true }];
+}
+
+message BoostMessageRequest {}
+message BoostMessageResponse {}
+message DeleteMessageRequest {
+  int64 id = 1;
+}
+message DeleteMessageResponse {}
+message GetMessagesRequest {}
+message GetMessagesResponse {}
+message SendMessageRequest {}
+message SendMessageResponse {}

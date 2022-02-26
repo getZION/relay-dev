@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package proto.zion.v1;
+
+option go_package = "github.com/getzion/relay/gen/zion/v1";
+
+import "proto/protoc-gen-gorm/options/gorm.proto";
+
+service UsersService {
+  // Sign up as new user
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
+  // Update my profile
+  rpc EditUser(EditUserRequest) returns (EditUserResponse) {}
+  // Find user by id
+  rpc FindById(FindByIdRequest) returns (FindByIdResponse) {}
+}
+
+message User {
+  option (gorm.opts).ormable = true;
+  // The community's unique ID (primary key)
+  int64 id = 1 [(gorm.field).tag = {
+    unique: true
+    primary_key: true
+  }];
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  bool visible = 5;
+}
+
+message CreateUserRequest {
+  User payload = 1;
+}
+message CreateUserResponse {
+  User result = 1;
+}
+
+message EditUserRequest {
+  int64 id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string new_password = 4;
+}
+message EditUserResponse {
+  User user = 1;
+}
+
+message FindByIdRequest {
+  int64 id = 1;
+}
+message FindByIdResponse {
+  User user = 1;
+}
