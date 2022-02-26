@@ -25,7 +25,8 @@ var _ = Describe("Collections", func() {
 		{
 			Data: "Data!",
 			Descriptor_: &MessageDescriptor{
-				Method: "CollectionsWrite",
+				Method:   "CollectionsWrite",
+				ObjectId: "d82c0026-ed42-4b26-81f3-94805958a75c",
 			},
 		},
 	}
@@ -123,6 +124,26 @@ var _ = Describe("Collections", func() {
 						{
 							Data:        "Data!",
 							Descriptor_: &MessageDescriptor{},
+						},
+					},
+				},
+			}
+			_, err := client.CollectionsWrite(ctx, request)
+			Expect(err).To(Not(BeNil()))
+		})
+
+		It("receives an error if a Message Descriptor is missing objectID", func() {
+			request := &CollectionsWriteRequest{
+				Request: &Request{
+					RequestId: "09j23f09j23f0j",
+					Target:    "atarget",
+					Messages: []*Message{
+						{
+							Data: "Data!",
+							Descriptor_: &MessageDescriptor{
+								Method:   "CollectionsWrite",
+								ObjectId: "12342135",
+							},
 						},
 					},
 				},

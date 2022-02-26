@@ -37,7 +37,8 @@ message Message {
 
 message MessageDescriptor {
   string method = 1;
-  string cid = 2;
+  string objectId = 2;
+  // string cid = 2;
   string dataFormat = 3;
 }
 
