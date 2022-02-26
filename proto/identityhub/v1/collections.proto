@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package proto.identityhub.v1;
+
+option go_package = "github.com/getzion/relay/gen/identityhub/v1";
+
+import "proto/identityhub/v1/responses.proto";
+
+/**
+ * To maximize decentralized app and service interoperability, the Collections
+ * interface of Identity Hubs provides a mechanism to store data relative to
+ * shared schemas. By storing data in accordance with a given schema, which may
+ * be well-known in a given vertical or industry, apps and services can leverage
+ * the same datasets across one another, enabling a cohesive, cross-platform,
+ * cross-device, cross-app experience for users.
+ * https://identity.foundation/identity-hub/spec/#collections
+ */
+
+service CollectionsService {
+  rpc CollectionsQuery(CollectionsQueryRequest) returns (CollectionsQueryResponse) {}
+}
+
+message CollectionsQueryRequest {}
+message CollectionsQueryResponse {
+  Response response = 1;
+}
