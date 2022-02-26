@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestApi(t *testing.T) {
+func TestCollections(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Api Suite")
+	RunSpecs(t, "Collections Suite")
 }

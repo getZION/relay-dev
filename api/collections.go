@@ -16,7 +16,7 @@ func (s *CollectionsService) CollectionsWrite(ctx context.Context, q *Collection
 	grpc.SendHeader(ctx, metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-unary"))
 	grpc.SetTrailer(ctx, metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-unary"))
 
-	Log.Info().Msg("CollectionsWrite placeholder")
+	Log.Info().Msg("CollectionsWrite API placeholder")
 
 	return &CollectionsWriteResponse{}, nil
 }
