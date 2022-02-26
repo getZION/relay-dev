@@ -43,6 +43,15 @@ var _ = Describe("Collections", func() {
 		}
 		Expect(response).To(Not(BeNil()))
 	})
+
+	It("receives a response from CollectionsQuery service", func() {
+		request := &CollectionsQueryRequest{}
+		response, err := client.CollectionsQuery(ctx, request)
+		if err != nil {
+			utils.Log.Error().Msg(err.Error())
+		}
+		Expect(response).To(Not(BeNil()))
+	})
 })
 
 type mockCollectionsServer struct {
