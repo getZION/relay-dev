@@ -7,6 +7,7 @@ import (
 	. "github.com/getzion/relay/api"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	. "github.com/getzion/relay/gen/proto/zion/v1"
+	"github.com/getzion/relay/lightning"
 	. "github.com/getzion/relay/utils"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	gorm "github.com/jinzhu/gorm"
@@ -20,6 +21,9 @@ var err error
 func main() {
 	Log.Info().Msg("Initializing relay")
 
+	// Connect to LND
+	lightning.Connect()
+
 	// Initialize gRPC server
 	init_gRPC()
 }
@@ -27,6 +31,7 @@ func main() {
 func init_gRPC() {
 	grpcServer := grpc.NewServer()
 
+	RegisterNodeInfoServiceServer(grpcServer, &NodeinfoService{})
 	RegisterCommunitiesServiceServer(grpcServer, &CommunitiesServiceDefaultServer{DB: db})
 	hub.RegisterCollectionsServiceServer(grpcServer, &CollectionsService{})
 
