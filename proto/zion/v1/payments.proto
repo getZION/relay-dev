@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package proto.zion.v1;
+
+option go_package = "github.com/getzion/relay/gen/zion/v1";
+
+import "proto/protoc-gen-gorm/options/gorm.proto";
+
+service PaymentsService {
+  // Create invoice to fund account
+  rpc CreateInvoice(CreateInvoiceRequest) returns (CreateInvoiceResponse) {}
+  // Get my payments history
+  rpc GetPaymentsHistory(GetPaymentsHistoryRequest) returns (GetPaymentsHistoryResponse) {}
+  // Pay Lightning invoice
+  rpc PayInvoice(PayInvoiceRequest) returns (PayInvoiceResponse) {}
+  // Send sats to another user
+  rpc PayUser(PayUserRequest) returns (PayUserResponse) {}
+}
+
+message Invoice {
+  option (gorm.opts).ormable = true;
+  // The community's unique ID (primary key)
+  int64 id = 1 [(gorm.field).tag = {
+    unique: true
+    primary_key: true
+  }];
+  // Text
+  string text = 2 [(gorm.field).tag = { not_null: true }];
+}
+
+message CreateInvoiceRequest {
+  Invoice payload = 1;
+}
+message CreateInvoiceResponse {
+  Invoice result = 1;
+}
+message GetPaymentsHistoryRequest {}
+message GetPaymentsHistoryResponse {}
+message PayInvoiceRequest {}
+message PayInvoiceResponse {}
+message PayUserRequest {}
+message PayUserResponse {}

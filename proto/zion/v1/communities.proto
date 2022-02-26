@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+package proto.zion.v1;
+
+option go_package = "github.com/getzion/relay/gen/zion/v1";
+
+import "proto/protoc-gen-gorm/options/gorm.proto";
+
+service CommunitiesService {
+  option (gorm.server).autogen = true;
+  // Create a community
+  rpc CreateCommunity(CreateCommunityRequest) returns (CreateCommunityResponse) {}
+  // Delete a community you own
+  rpc DeleteCommunity(DeleteCommunityRequest) returns (DeleteCommunityResponse) {
+      // This option is required because the type/table can't be inferred
+      // by the return type
+      option (gorm.method).object_type = "Community";
+  }
+  // Edit a community you own
+  rpc EditCommunity(EditCommunityRequest) returns (EditCommunityResponse) {}
+  // Join a specific community
+  rpc JoinCommunity(JoinCommunityRequest) returns (JoinCommunityResponse) {}
+  // List communities
+  rpc ListCommunity(ListCommunityRequest) returns (ListCommunityResponse) {}
+}
+
+message Community {
+  option (gorm.opts).ormable = true;
+  // The community's unique ID (primary key)
+  int64 id = 1 [(gorm.field).tag = {
+    unique: true
+    primary_key: true
+  }];
+  // The name of the community
+  string name = 2 [(gorm.field).tag = { not_null: true }];
+  // The community's description or mission statement
+  string description = 3 [(gorm.field).tag = { not_null: true }];
+  // Image URL
+  string img = 4;
+  // User-defined tags
+  repeated string tags = 5;
+  // Owner pubkey
+  string owner_pubkey = 6 [(gorm.field).tag = { not_null: true }];
+  // Owner alias
+  string owner_alias = 7 [(gorm.field).tag = { not_null: true }];
+  // How much it costs to join
+  int64 price_to_join = 8 [(gorm.field).tag = { not_null: true }];
+  // How much each message costs
+  int64 price_per_message = 9 [(gorm.field).tag = { not_null: true }];
+  // Escrow amount
+  int64 escrow_amount = 10 [(gorm.field).tag = { not_null: true }];
+  // When last active
+  int64 last_active = 11;
+  // Is this a public community?
+  bool public = 12;
+  // Deleted
+  bool deleted = 13;
+  // Created when?
+  int64 created = 14;
+  // Updated when?
+  int64 updated = 15;
+}
+
+// Create
+message CreateCommunityRequest {
+  Community payload = 1;
+}
+
+message CreateCommunityResponse {
+  Community result = 1;
+}
+
+// Delete
+message DeleteCommunityRequest {
+  int64 id = 1;
+}
+
+message DeleteCommunityResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Edit
+message EditCommunityRequest {
+  int64 id = 1;
+}
+
+message EditCommunityResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Hide
+message HideCommunityRequest {
+  int64 id = 1;
+}
+
+message HideCommunityResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Join
+message JoinCommunityRequest {
+  int64 id = 1;
+}
+
+message JoinCommunityResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// List
+message ListCommunityRequest {
+  int64 id = 1;
+}
+
+message ListCommunityResponse {
+  bool success = 1;
+  string message = 2;
+  repeated Community results = 3;
+}

@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package proto.zion.v1;
+
+option go_package = "github.com/getzion/relay/gen/zion/v1";
+
+service NodeInfoService {
+  // Return node pubkey and balance
+  rpc GetNodeInfo(GetNodeInfoRequest) returns (GetNodeInfoResponse) {}
+}
+
+message GetNodeInfoRequest {}
+
+message GetNodeInfoResponse  {
+  string pubkey = 1;
+  uint64 balance = 2;
+}
