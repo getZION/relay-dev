@@ -35,6 +35,10 @@ func (s *CollectionsService) CollectionsWrite(ctx context.Context, q *Collection
 		return nil, errors.New("Missing Request ID")
 	}
 
+	if len(q.Request.RequestId) != 36 {
+		return nil, errors.New("Request ID must be len 36 (uuid v4)")
+	}
+
 	if q.Request.Target == "" {
 		return nil, errors.New("Missing Target")
 	}

@@ -48,7 +48,7 @@ var _ = Describe("Collections", func() {
 		It("receives a response", func() {
 			request := &CollectionsWriteRequest{
 				Request: &Request{
-					RequestId: "Hello",
+					RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
 					Target:    "TheTarget",
 					Messages:  validDemoMessages,
 				},
@@ -77,10 +77,22 @@ var _ = Describe("Collections", func() {
 			Expect(err).To(Not(BeNil()))
 		})
 
+		It("receives an error if RequestID is not len 36 (uuid v4)", func() {
+			request := &CollectionsWriteRequest{
+				Request: &Request{
+					Target:    "TheTarget",
+					Messages:  validDemoMessages,
+					RequestId: "shortrequestid",
+				},
+			}
+			_, err := client.CollectionsWrite(ctx, request)
+			Expect(err).To(Not(BeNil()))
+		})
+
 		It("receives an error if Target is missing", func() {
 			request := &CollectionsWriteRequest{
 				Request: &Request{
-					RequestId: "09j23f09j23f0j",
+					RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
 					Messages:  validDemoMessages,
 				},
 			}
@@ -91,7 +103,7 @@ var _ = Describe("Collections", func() {
 		It("receives an error if Messages are missing", func() {
 			request := &CollectionsWriteRequest{
 				Request: &Request{
-					RequestId: "09j23f09j23f0j",
+					RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
 					Target:    "atarget",
 				},
 			}
@@ -102,7 +114,7 @@ var _ = Describe("Collections", func() {
 		It("receives an error if a Message is missing Descriptor", func() {
 			request := &CollectionsWriteRequest{
 				Request: &Request{
-					RequestId: "09j23f09j23f0j",
+					RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
 					Target:    "atarget",
 					Messages: []*Message{
 						{
@@ -135,7 +147,7 @@ var _ = Describe("Collections", func() {
 		It("receives an error if a Message Descriptor is missing objectID", func() {
 			request := &CollectionsWriteRequest{
 				Request: &Request{
-					RequestId: "09j23f09j23f0j",
+					RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
 					Target:    "atarget",
 					Messages: []*Message{
 						{
