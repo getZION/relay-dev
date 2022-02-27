@@ -6,6 +6,8 @@ import (
 	"time"
 
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/ipfs/go-cid"
+	"github.com/multiformats/go-multihash"
 
 	. "github.com/getzion/relay/utils"
 	"golang.org/x/net/context"
@@ -69,6 +71,20 @@ func (s *CollectionsService) CollectionsWrite(ctx context.Context, q *Collection
 		dateSeconds, _ := strconv.Atoi(dateCreated)
 		t := time.Unix(int64(dateSeconds), 0)
 		Log.Info().Msg(t.String())
+
+		// Create a cid manually by specifying the 'prefix' parameters
+		pref := cid.Prefix{
+			Version:  1,
+			Codec:    cid.Raw,
+			MhType:   multihash.SHA2_256,
+			MhLength: -1, // default length
+		}
+		c, err := pref.Sum([]byte(message.Data))
+		if err != nil {
+			Log.Error().Msg(err.Error())
+		} else {
+			Log.Info().Str("cid", c.String()).Msg("Generated CID")
+		}
 	}
 
 	return &CollectionsWriteResponse{}, nil
