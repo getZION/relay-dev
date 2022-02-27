@@ -4,6 +4,7 @@ generate:
 
 test:
 	cd did && go test -v
+	cd api && ginkgo -v
 
 compile-ts:
 	rm -rf ui/proto
