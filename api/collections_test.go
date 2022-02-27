@@ -238,7 +238,6 @@ func dialer() func(context.Context, string) (net.Conn, error) {
 	server := grpc.NewServer()
 
 	RegisterCollectionsServiceServer(server, &mockCollectionsServer{})
-	// pb.RegisterDepositServiceServer(server, &mockDepositServer{})
 
 	go func() {
 		if err := server.Serve(listener); err != nil {
