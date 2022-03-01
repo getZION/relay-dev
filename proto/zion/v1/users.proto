@@ -7,6 +7,7 @@ option go_package = "github.com/getzion/relay/gen/zion/v1";
 import "proto/protoc-gen-gorm/options/gorm.proto";
 
 service UsersService {
+  option (gorm.server).autogen = true;
   // Sign up as new user
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
   // Update my profile
@@ -17,15 +18,16 @@ service UsersService {
 
 message User {
   option (gorm.opts).ormable = true;
-  // The community's unique ID (primary key)
   int64 id = 1 [(gorm.field).tag = {
     unique: true
     primary_key: true
   }];
-  string first_name = 2;
-  string last_name = 3;
+  string name = 2;
+  string username = 3;
   string email = 4;
-  bool visible = 5;
+  string pubkey = 5;
+  string bio = 6;
+  string picture = 7;
 }
 
 message CreateUserRequest {
