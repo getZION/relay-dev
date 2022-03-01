@@ -22,6 +22,8 @@ service CommunitiesService {
   rpc JoinCommunity(JoinCommunityRequest) returns (JoinCommunityResponse) {}
   // List communities
   rpc ListCommunity(ListCommunityRequest) returns (ListCommunityResponse) {}
+  // Read one community
+  rpc ReadCommunity(ReadCommunityRequest) returns (ReadCommunityResponse) {}
 }
 
 message Community {
@@ -112,11 +114,17 @@ message JoinCommunityResponse {
 
 // List
 message ListCommunityRequest {
-  int64 id = 1;
 }
 
 message ListCommunityResponse {
-  bool success = 1;
-  string message = 2;
-  repeated Community results = 3;
+  repeated Community results = 1;
+}
+
+// Read
+message ReadCommunityRequest {
+  int64 id = 1;
+}
+
+message ReadCommunityResponse {
+  Community result = 1;
 }
