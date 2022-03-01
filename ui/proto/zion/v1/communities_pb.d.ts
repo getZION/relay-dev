@@ -303,9 +303,6 @@ export namespace JoinCommunityResponse {
 }
 
 export class ListCommunityRequest extends jspb.Message {
-  getId(): number;
-  setId(value: number): void;
-
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ListCommunityRequest.AsObject;
   static toObject(includeInstance: boolean, msg: ListCommunityRequest): ListCommunityRequest.AsObject;
@@ -318,17 +315,10 @@ export class ListCommunityRequest extends jspb.Message {
 
 export namespace ListCommunityRequest {
   export type AsObject = {
-    id: number,
   }
 }
 
 export class ListCommunityResponse extends jspb.Message {
-  getSuccess(): boolean;
-  setSuccess(value: boolean): void;
-
-  getMessage(): string;
-  setMessage(value: string): void;
-
   clearResultsList(): void;
   getResultsList(): Array<Community>;
   setResultsList(value: Array<Community>): void;
@@ -346,9 +336,49 @@ export class ListCommunityResponse extends jspb.Message {
 
 export namespace ListCommunityResponse {
   export type AsObject = {
-    success: boolean,
-    message: string,
     resultsList: Array<Community.AsObject>,
+  }
+}
+
+export class ReadCommunityRequest extends jspb.Message {
+  getId(): number;
+  setId(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ReadCommunityRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ReadCommunityRequest): ReadCommunityRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ReadCommunityRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ReadCommunityRequest;
+  static deserializeBinaryFromReader(message: ReadCommunityRequest, reader: jspb.BinaryReader): ReadCommunityRequest;
+}
+
+export namespace ReadCommunityRequest {
+  export type AsObject = {
+    id: number,
+  }
+}
+
+export class ReadCommunityResponse extends jspb.Message {
+  hasResult(): boolean;
+  clearResult(): void;
+  getResult(): Community | undefined;
+  setResult(value?: Community): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ReadCommunityResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: ReadCommunityResponse): ReadCommunityResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ReadCommunityResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ReadCommunityResponse;
+  static deserializeBinaryFromReader(message: ReadCommunityResponse, reader: jspb.BinaryReader): ReadCommunityResponse;
+}
+
+export namespace ReadCommunityResponse {
+  export type AsObject = {
+    result?: Community.AsObject,
   }
 }
 

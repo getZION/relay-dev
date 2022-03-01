@@ -32,6 +32,8 @@ type CommunitiesServiceClient interface {
 	JoinCommunity(ctx context.Context, in *JoinCommunityRequest, opts ...grpc.CallOption) (*JoinCommunityResponse, error)
 	// List communities
 	ListCommunity(ctx context.Context, in *ListCommunityRequest, opts ...grpc.CallOption) (*ListCommunityResponse, error)
+	// Read one community
+	ReadCommunity(ctx context.Context, in *ReadCommunityRequest, opts ...grpc.CallOption) (*ReadCommunityResponse, error)
 }
 
 type communitiesServiceClient struct {
@@ -87,6 +89,15 @@ func (c *communitiesServiceClient) ListCommunity(ctx context.Context, in *ListCo
 	return out, nil
 }
 
+func (c *communitiesServiceClient) ReadCommunity(ctx context.Context, in *ReadCommunityRequest, opts ...grpc.CallOption) (*ReadCommunityResponse, error) {
+	out := new(ReadCommunityResponse)
+	err := c.cc.Invoke(ctx, "/proto.zion.v1.CommunitiesService/ReadCommunity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CommunitiesServiceServer is the server API for CommunitiesService service.
 // All implementations should embed UnimplementedCommunitiesServiceServer
 // for forward compatibility
@@ -101,6 +112,8 @@ type CommunitiesServiceServer interface {
 	JoinCommunity(context.Context, *JoinCommunityRequest) (*JoinCommunityResponse, error)
 	// List communities
 	ListCommunity(context.Context, *ListCommunityRequest) (*ListCommunityResponse, error)
+	// Read one community
+	ReadCommunity(context.Context, *ReadCommunityRequest) (*ReadCommunityResponse, error)
 }
 
 // UnimplementedCommunitiesServiceServer should be embedded to have forward compatible implementations.
@@ -121,6 +134,9 @@ func (UnimplementedCommunitiesServiceServer) JoinCommunity(context.Context, *Joi
 }
 func (UnimplementedCommunitiesServiceServer) ListCommunity(context.Context, *ListCommunityRequest) (*ListCommunityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListCommunity not implemented")
+}
+func (UnimplementedCommunitiesServiceServer) ReadCommunity(context.Context, *ReadCommunityRequest) (*ReadCommunityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReadCommunity not implemented")
 }
 
 // UnsafeCommunitiesServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -224,6 +240,24 @@ func _CommunitiesService_ListCommunity_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CommunitiesService_ReadCommunity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReadCommunityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommunitiesServiceServer).ReadCommunity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/proto.zion.v1.CommunitiesService/ReadCommunity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommunitiesServiceServer).ReadCommunity(ctx, req.(*ReadCommunityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CommunitiesService_ServiceDesc is the grpc.ServiceDesc for CommunitiesService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +284,10 @@ var CommunitiesService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListCommunity",
 			Handler:    _CommunitiesService_ListCommunity_Handler,
+		},
+		{
+			MethodName: "ReadCommunity",
+			Handler:    _CommunitiesService_ReadCommunity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

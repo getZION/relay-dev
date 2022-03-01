@@ -629,3 +629,36 @@ type CommunitiesServiceCommunityWithBeforeListCommunity interface {
 type CommunitiesServiceCommunityWithAfterListCommunity interface {
 	AfterListCommunity(context.Context, *ListCommunityResponse, *gorm.DB) error
 }
+
+// ReadCommunity ...
+func (m *CommunitiesServiceDefaultServer) ReadCommunity(ctx context.Context, in *ReadCommunityRequest) (*ReadCommunityResponse, error) {
+	db := m.DB
+	if custom, ok := interface{}(in).(CommunitiesServiceCommunityWithBeforeReadCommunity); ok {
+		var err error
+		if db, err = custom.BeforeReadCommunity(ctx, db); err != nil {
+			return nil, err
+		}
+	}
+	res, err := DefaultReadCommunity(ctx, &Community{Id: in.GetId()}, db)
+	if err != nil {
+		return nil, err
+	}
+	out := &ReadCommunityResponse{Result: res}
+	if custom, ok := interface{}(in).(CommunitiesServiceCommunityWithAfterReadCommunity); ok {
+		var err error
+		if err = custom.AfterReadCommunity(ctx, out, db); err != nil {
+			return nil, err
+		}
+	}
+	return out, nil
+}
+
+// CommunitiesServiceCommunityWithBeforeReadCommunity called before DefaultReadCommunityCommunity in the default ReadCommunity handler
+type CommunitiesServiceCommunityWithBeforeReadCommunity interface {
+	BeforeReadCommunity(context.Context, *gorm.DB) (*gorm.DB, error)
+}
+
+// CommunitiesServiceCommunityWithAfterReadCommunity called before DefaultReadCommunityCommunity in the default ReadCommunity handler
+type CommunitiesServiceCommunityWithAfterReadCommunity interface {
+	AfterReadCommunity(context.Context, *ReadCommunityResponse, *gorm.DB) error
+}
