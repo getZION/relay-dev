@@ -33,6 +33,7 @@ func init_gRPC() {
 
 	RegisterNodeInfoServiceServer(grpcServer, &NodeinfoService{})
 	RegisterCommunitiesServiceServer(grpcServer, &CommunitiesServiceDefaultServer{DB: db})
+	RegisterUsersServiceServer(grpcServer, &UsersServiceDefaultServer{DB: db})
 	hub.RegisterCollectionsServiceServer(grpcServer, &CollectionsService{})
 
 	wrappedServer := grpcweb.WrapServer(grpcServer)
