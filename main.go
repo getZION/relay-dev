@@ -8,6 +8,7 @@ import (
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	. "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/getzion/relay/lightning"
+	"github.com/getzion/relay/storage"
 	. "github.com/getzion/relay/utils"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	gorm "github.com/jinzhu/gorm"
@@ -24,6 +25,12 @@ func main() {
 	// Connect to LND
 	lightning.Connect()
 
+	// Connect to MySQL database
+	db, err = storage.Connect("root@tcp(localhost:3306)/relay3")
+	if err != nil {
+		panic(err)
+	}
+
 	// Initialize gRPC server
 	init_gRPC()
 }
@@ -33,6 +40,7 @@ func init_gRPC() {
 
 	RegisterNodeInfoServiceServer(grpcServer, &NodeinfoService{})
 	RegisterCommunitiesServiceServer(grpcServer, &CommunitiesServiceDefaultServer{DB: db})
+	RegisterUsersServiceServer(grpcServer, &UsersServiceDefaultServer{DB: db})
 	hub.RegisterCollectionsServiceServer(grpcServer, &CollectionsService{})
 
 	wrappedServer := grpcweb.WrapServer(grpcServer)

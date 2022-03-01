@@ -210,10 +210,12 @@ proto.proto.zion.v1.User.prototype.toObject = function(opt_includeInstance) {
 proto.proto.zion.v1.User.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    firstName: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    lastName: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    username: jspb.Message.getFieldWithDefault(msg, 3, ""),
     email: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    visible: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
+    pubkey: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    bio: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    picture: jspb.Message.getFieldWithDefault(msg, 7, "")
   };
 
   if (includeInstance) {
@@ -256,19 +258,27 @@ proto.proto.zion.v1.User.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setFirstName(value);
+      msg.setName(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setLastName(value);
+      msg.setUsername(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setEmail(value);
       break;
     case 5:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setVisible(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPubkey(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setBio(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setPicture(value);
       break;
     default:
       reader.skipField();
@@ -306,14 +316,14 @@ proto.proto.zion.v1.User.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getFirstName();
+  f = message.getName();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = message.getLastName();
+  f = message.getUsername();
   if (f.length > 0) {
     writer.writeString(
       3,
@@ -327,10 +337,24 @@ proto.proto.zion.v1.User.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getVisible();
-  if (f) {
-    writer.writeBool(
+  f = message.getPubkey();
+  if (f.length > 0) {
+    writer.writeString(
       5,
+      f
+    );
+  }
+  f = message.getBio();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getPicture();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
       f
     );
   }
@@ -356,10 +380,10 @@ proto.proto.zion.v1.User.prototype.setId = function(value) {
 
 
 /**
- * optional string first_name = 2;
+ * optional string name = 2;
  * @return {string}
  */
-proto.proto.zion.v1.User.prototype.getFirstName = function() {
+proto.proto.zion.v1.User.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -368,16 +392,16 @@ proto.proto.zion.v1.User.prototype.getFirstName = function() {
  * @param {string} value
  * @return {!proto.proto.zion.v1.User} returns this
  */
-proto.proto.zion.v1.User.prototype.setFirstName = function(value) {
+proto.proto.zion.v1.User.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * optional string last_name = 3;
+ * optional string username = 3;
  * @return {string}
  */
-proto.proto.zion.v1.User.prototype.getLastName = function() {
+proto.proto.zion.v1.User.prototype.getUsername = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -386,7 +410,7 @@ proto.proto.zion.v1.User.prototype.getLastName = function() {
  * @param {string} value
  * @return {!proto.proto.zion.v1.User} returns this
  */
-proto.proto.zion.v1.User.prototype.setLastName = function(value) {
+proto.proto.zion.v1.User.prototype.setUsername = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -410,20 +434,56 @@ proto.proto.zion.v1.User.prototype.setEmail = function(value) {
 
 
 /**
- * optional bool visible = 5;
- * @return {boolean}
+ * optional string pubkey = 5;
+ * @return {string}
  */
-proto.proto.zion.v1.User.prototype.getVisible = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+proto.proto.zion.v1.User.prototype.getPubkey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
 
 /**
- * @param {boolean} value
+ * @param {string} value
  * @return {!proto.proto.zion.v1.User} returns this
  */
-proto.proto.zion.v1.User.prototype.setVisible = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 5, value);
+proto.proto.zion.v1.User.prototype.setPubkey = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional string bio = 6;
+ * @return {string}
+ */
+proto.proto.zion.v1.User.prototype.getBio = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.zion.v1.User} returns this
+ */
+proto.proto.zion.v1.User.prototype.setBio = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional string picture = 7;
+ * @return {string}
+ */
+proto.proto.zion.v1.User.prototype.getPicture = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.zion.v1.User} returns this
+ */
+proto.proto.zion.v1.User.prototype.setPicture = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
 };
 
 
