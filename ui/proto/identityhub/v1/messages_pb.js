@@ -447,8 +447,9 @@ proto.proto.identityhub.v1.MessageDescriptor.prototype.toObject = function(opt_i
 proto.proto.identityhub.v1.MessageDescriptor.toObject = function(includeInstance, msg) {
   var f, obj = {
     method: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    cid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    dataformat: jspb.Message.getFieldWithDefault(msg, 3, "")
+    objectid: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    dataformat: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    datecreated: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -491,11 +492,15 @@ proto.proto.identityhub.v1.MessageDescriptor.deserializeBinaryFromReader = funct
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setCid(value);
+      msg.setObjectid(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setDataformat(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDatecreated(value);
       break;
     default:
       reader.skipField();
@@ -533,7 +538,7 @@ proto.proto.identityhub.v1.MessageDescriptor.serializeBinaryToWriter = function(
       f
     );
   }
-  f = message.getCid();
+  f = message.getObjectid();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -544,6 +549,13 @@ proto.proto.identityhub.v1.MessageDescriptor.serializeBinaryToWriter = function(
   if (f.length > 0) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = message.getDatecreated();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -569,10 +581,10 @@ proto.proto.identityhub.v1.MessageDescriptor.prototype.setMethod = function(valu
 
 
 /**
- * optional string cid = 2;
+ * optional string objectId = 2;
  * @return {string}
  */
-proto.proto.identityhub.v1.MessageDescriptor.prototype.getCid = function() {
+proto.proto.identityhub.v1.MessageDescriptor.prototype.getObjectid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -581,7 +593,7 @@ proto.proto.identityhub.v1.MessageDescriptor.prototype.getCid = function() {
  * @param {string} value
  * @return {!proto.proto.identityhub.v1.MessageDescriptor} returns this
  */
-proto.proto.identityhub.v1.MessageDescriptor.prototype.setCid = function(value) {
+proto.proto.identityhub.v1.MessageDescriptor.prototype.setObjectid = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -601,6 +613,24 @@ proto.proto.identityhub.v1.MessageDescriptor.prototype.getDataformat = function(
  */
 proto.proto.identityhub.v1.MessageDescriptor.prototype.setDataformat = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string dateCreated = 4;
+ * @return {string}
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.getDatecreated = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.identityhub.v1.MessageDescriptor} returns this
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.setDatecreated = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
