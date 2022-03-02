@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package proto.identityhub.v1;
+
+option go_package = "github.com/getzion/relay/gen/identityhub/v1";
+
+import "proto/identityhub/v1/requests.proto";
+import "proto/identityhub/v1/responses.proto";
+
+// service FeatureDetectionService {
+//     rpc CollectionsQuery(Request) returns (Response) {}
+// }
+
+service HubRequestService {
+    rpc Process(Request) returns (Response) {}
+}
