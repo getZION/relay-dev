@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestCollections(t *testing.T) {
+func TestIdentityHub(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Collections Suite")
+	RunSpecs(t, "IdentityHub Suite")
 }
