@@ -51,7 +51,7 @@ func init_gRPC() {
 	}
 
 	httpServer := http.Server{
-		Addr:    fmt.Sprintf(":%d", 9090),
+		Addr:    fmt.Sprintf(":%d", 9000),
 		Handler: http.HandlerFunc(handler),
 	}
 

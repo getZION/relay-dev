@@ -33,7 +33,7 @@ export const RPCTest = () => {
 
     grpc.unary(NodeInfoService.GetNodeInfo, {
       request: nodeInfoRequest,
-      host: 'http://localhost:9090',
+      host: 'http://localhost:9000',
       onEnd: (res) => {
         if (res.message) {
           const info = res.message.toObject() as NodeInfoObject
@@ -51,7 +51,7 @@ export const RPCTest = () => {
 
     grpc.unary(CollectionsService.CollectionsWrite, {
       request: collectionsWriteRequest,
-      host: 'http://localhost:9090',
+      host: 'http://localhost:9000',
       onEnd: (res) => {
         console.log('CollectionsWrite response:', res)
       },
