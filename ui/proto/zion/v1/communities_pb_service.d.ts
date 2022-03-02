@@ -49,6 +49,15 @@ type CommunitiesServiceListCommunity = {
   readonly responseType: typeof proto_zion_v1_communities_pb.ListCommunityResponse;
 };
 
+type CommunitiesServiceReadCommunity = {
+  readonly methodName: string;
+  readonly service: typeof CommunitiesService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof proto_zion_v1_communities_pb.ReadCommunityRequest;
+  readonly responseType: typeof proto_zion_v1_communities_pb.ReadCommunityResponse;
+};
+
 export class CommunitiesService {
   static readonly serviceName: string;
   static readonly CreateCommunity: CommunitiesServiceCreateCommunity;
@@ -56,6 +65,7 @@ export class CommunitiesService {
   static readonly EditCommunity: CommunitiesServiceEditCommunity;
   static readonly JoinCommunity: CommunitiesServiceJoinCommunity;
   static readonly ListCommunity: CommunitiesServiceListCommunity;
+  static readonly ReadCommunity: CommunitiesServiceReadCommunity;
 }
 
 export type ServiceError = { message: string, code: number; metadata: grpc.Metadata }
@@ -134,6 +144,15 @@ export class CommunitiesServiceClient {
   listCommunity(
     requestMessage: proto_zion_v1_communities_pb.ListCommunityRequest,
     callback: (error: ServiceError|null, responseMessage: proto_zion_v1_communities_pb.ListCommunityResponse|null) => void
+  ): UnaryResponse;
+  readCommunity(
+    requestMessage: proto_zion_v1_communities_pb.ReadCommunityRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: proto_zion_v1_communities_pb.ReadCommunityResponse|null) => void
+  ): UnaryResponse;
+  readCommunity(
+    requestMessage: proto_zion_v1_communities_pb.ReadCommunityRequest,
+    callback: (error: ServiceError|null, responseMessage: proto_zion_v1_communities_pb.ReadCommunityResponse|null) => void
   ): UnaryResponse;
 }
 
