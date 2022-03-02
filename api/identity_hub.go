@@ -34,8 +34,6 @@ func (hub *IdentityHubService) Process(ctx context.Context, r *Request) (*Respon
 	grpc.SendHeader(ctx, metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-unary"))
 	grpc.SetTrailer(ctx, metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-unary"))
 
-	//TODO(Umut): To make easier validation, can we use Validator? But first, we need to figure out, how we can add field tags in proto file or how we can make validation without field tags?
-
 	if r == nil {
 		return nil, errors.New("Request was empty")
 	}
