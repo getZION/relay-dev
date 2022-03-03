@@ -20,6 +20,10 @@ import (
 var db *gorm.DB
 var err error
 
+func helloWorld(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "hello world")
+}
+
 func main() {
 	Log.Info().Msg("Initializing relay")
 
@@ -57,6 +61,13 @@ func init_gRPC() {
 		Handler: http.HandlerFunc(handler),
 	}
 
+	go func() {
+		Log.Info().Msg("HTTP - Listening on port 5000")
+		http.HandleFunc("/", helloWorld)
+		http.ListenAndServe(":5000", nil)
+	}()
+
+	Log.Info().Msg("gRPC - Listening on port 9090")
 	if err = httpServer.ListenAndServe(); err != nil {
 		grpclog.Fatalf("failed starting http server: %v", err)
 	}
