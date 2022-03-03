@@ -6,7 +6,8 @@ import (
 
 	// api "github.com/getzion/relay/api"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
-	"github.com/getzion/relay/utils"
+	"github.com/ipfs/go-cid"
+	"github.com/multiformats/go-multihash"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"golang.org/x/net/context"
@@ -21,11 +22,12 @@ var _ = Describe("IdentityHub", func() {
 	var err error
 	var validDemoMessages = []*Message{
 		{
-			Data: "Data!",
+			Data: `{ "Data": "Test" }`,
 			Descriptor_: &MessageDescriptor{
 				Method:      "CollectionsWrite",
 				ObjectId:    "d82c0026-ed42-4b26-81f3-94805958a75c",
 				DateCreated: "1645917431",
+				DataFormat:  "application/json",
 			},
 		},
 	}
@@ -51,14 +53,15 @@ var _ = Describe("IdentityHub", func() {
 				Messages:  validDemoMessages,
 			}
 			response, err := client.Process(ctx, request)
-			if err != nil {
-				utils.Log.Error().Msg(err.Error())
-			}
 			Expect(err).To(BeNil())
 			Expect(response).To(Not(BeNil()))
 			Expect(response.RequestId).To(Equal(request.RequestId))
 			Expect(response.Status).To(Not(BeNil()))
 			Expect(response.Status.Code).To(Equal(int64(200)))
+			Expect(response.Replies).To(Not(BeNil()))
+			Expect(response.Replies.Status).To(Not(BeNil()))
+			Expect(response.Replies.Status.Code).To(Equal(int64(200)))
+			Expect(response.Replies.MessageId).To(Equal("bafkreicc6dwleugaxzaahjarssvf5knedoueitry2drdclfqug6u2ljsha"))
 		})
 
 		It("receives an error if Request is missing", func() {
@@ -135,6 +138,7 @@ var _ = Describe("IdentityHub", func() {
 			Expect(response.Replies).To(Not(BeNil()))
 			Expect(response.Replies.Status).To(Not(BeNil()))
 			Expect(response.Replies.Status.Code).To(Equal(int64(400)))
+			Expect(response.Replies.MessageId).To(Equal("bafkreieayynvrfi6k2ce7btnopjn5jwcbeg5rl7oaqwowgnqg324dtcbc4"))
 		})
 
 		It("receives an error if a Message Descriptor is missing method", func() {
@@ -154,6 +158,7 @@ var _ = Describe("IdentityHub", func() {
 			Expect(response.Replies).To(Not(BeNil()))
 			Expect(response.Replies.Status).To(Not(BeNil()))
 			Expect(response.Replies.Status.Code).To(Equal(int64(400)))
+			Expect(response.Replies.MessageId).To(Equal("bafkreiee6blwbzk2pb4hda56vinzkdk6a5deotigfmxt6hw6lds4uybjdq"))
 		})
 
 		It("receives an error if a Message Descriptor is missing objectID", func() {
@@ -177,6 +182,7 @@ var _ = Describe("IdentityHub", func() {
 			Expect(response.Replies).To(Not(BeNil()))
 			Expect(response.Replies.Status).To(Not(BeNil()))
 			Expect(response.Replies.Status.Code).To(Equal(int64(400)))
+			Expect(response.Replies.MessageId).To(Equal("bafkreiggemz5lqnv2cslvniugfckftynqqdn55tvmp5ew4ltp55iydrpja"))
 		})
 
 		It("receives an error if a Message Descriptor is missing dateCreated", func() {
@@ -199,6 +205,7 @@ var _ = Describe("IdentityHub", func() {
 			Expect(response.Replies).To(Not(BeNil()))
 			Expect(response.Replies.Status).To(Not(BeNil()))
 			Expect(response.Replies.Status.Code).To(Equal(int64(400)))
+			Expect(response.Replies.MessageId).To(Equal("bafkreidni2vjzmrptvcwppcy4cz26bge2vpdnghyjsq2ondgtpns7kpik4"))
 		})
 
 		It("receives an error if a Message has data but dataFormat is missing", func() {
@@ -222,6 +229,7 @@ var _ = Describe("IdentityHub", func() {
 			Expect(response.Replies).To(Not(BeNil()))
 			Expect(response.Replies.Status).To(Not(BeNil()))
 			Expect(response.Replies.Status.Code).To(Equal(int64(400)))
+			Expect(response.Replies.MessageId).To(Equal("bafkreicgci67ouovbgo2vmyhn7rlnv2zb2nvue6l6uihrm3fkunhwqj5cm"))
 		})
 
 		It("receives an error if a Message Descriptor method is not implemented", func() {
@@ -246,6 +254,7 @@ var _ = Describe("IdentityHub", func() {
 			Expect(response.Replies).To(Not(BeNil()))
 			Expect(response.Replies.Status).To(Not(BeNil()))
 			Expect(response.Replies.Status.Code).To(Equal(int64(501)))
+			Expect(response.Replies.MessageId).To(Equal("bafkreidwfcisuu4gjnputnsekyoeeprpwzcgowqelxvlqezzgmddxur5cy"))
 		})
 	})
 })
@@ -261,6 +270,12 @@ func dialer() func(context.Context, string) (net.Conn, error) {
 
 	RegisterHubRequestServiceServer(server, &mockIdentityHubServer{
 		IdentityHubService: IdentityHubService{
+			prefix: cid.Prefix{
+				Version:  1,
+				Codec:    cid.Raw,
+				MhType:   multihash.SHA2_256,
+				MhLength: -1,
+			},
 			validHubInterfaceMethods: map[string]string{
 				"CollectionsQuery":   "",
 				"CollectionsWrite":   "",
