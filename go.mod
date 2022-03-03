@@ -4,13 +4,17 @@ go 1.17
 
 require (
 	github.com/getzion/relampago v0.2.1
+	github.com/go-playground/validator/v10 v10.2.0
 	github.com/improbable-eng/grpc-web v0.15.0
 	github.com/infobloxopen/atlas-app-toolkit v1.1.2
 	github.com/infobloxopen/protoc-gen-gorm v1.1.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lightningnetwork/lnd v0.14.1-beta
+	github.com/onsi/ginkgo v1.16.5
+	github.com/onsi/gomega v1.18.1
 	github.com/rs/zerolog v1.26.1
+	github.com/stretchr/testify v1.7.0
 	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d
 	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
 	google.golang.org/grpc v1.44.0
@@ -48,16 +52,20 @@ require (
 	github.com/form3tech-oss/jwt-go v3.2.3+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-errors/errors v1.0.1 // indirect
+	github.com/go-playground/locales v0.13.0 // indirect
+	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.0.1 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.5.0 // indirect
+	github.com/ipfs/go-cid v0.1.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.10.0 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
@@ -73,7 +81,9 @@ require (
 	github.com/juju/loggo v0.0.0-20190526231331-6e530bcce5d8 // indirect
 	github.com/kkdai/bstream v1.0.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/klauspost/cpuid/v2 v2.0.4 // indirect
 	github.com/klauspost/pgzip v1.2.5 // indirect
+	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/lib/pq v1.10.3 // indirect
 	github.com/lightninglabs/gozmq v0.0.0-20191113021534-d20a764486bf // indirect
 	github.com/lightninglabs/neutrino v0.13.0 // indirect
@@ -88,12 +98,18 @@ require (
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mholt/archiver/v3 v3.5.0 // indirect
 	github.com/miekg/dns v1.1.43 // indirect
+	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1 // indirect
+	github.com/minio/sha256-simd v1.0.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/mr-tron/base58 v1.2.0 // indirect
+	github.com/multiformats/go-base32 v0.0.3 // indirect
+	github.com/multiformats/go-base36 v0.1.0 // indirect
+	github.com/multiformats/go-multibase v0.0.3 // indirect
+	github.com/multiformats/go-multihash v0.0.15 // indirect
+	github.com/multiformats/go-varint v0.0.6 // indirect
 	github.com/nwaples/rardecode v1.1.2 // indirect
 	github.com/nxadm/tail v1.4.8 // indirect
-	github.com/onsi/ginkgo v1.16.5 // indirect
-	github.com/onsi/gomega v1.18.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.8 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect
@@ -105,7 +121,6 @@ require (
 	github.com/sirupsen/logrus v1.8.0 // indirect
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20201229170055-e5319fda7802 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
