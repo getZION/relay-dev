@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/getzion/relay/api"
 	. "github.com/getzion/relay/api"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	. "github.com/getzion/relay/gen/proto/zion/v1"
@@ -39,7 +38,7 @@ func main() {
 func init_gRPC() {
 	grpcServer := grpc.NewServer()
 
-	identityHub := api.InitIdentityHubService()
+	identityHub := InitIdentityHubService()
 
 	RegisterNodeInfoServiceServer(grpcServer, &NodeinfoService{})
 	RegisterCommunitiesServiceServer(grpcServer, &CommunitiesServiceDefaultServer{DB: db})

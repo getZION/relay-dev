@@ -41,3 +41,12 @@ Courtesy of [DIF](https://identity.foundation/)
 ![What are Identity Hubs?](docs/hubs1.png)
 
 ![DID + Hub Topology](docs/hubs2.png)
+
+### DID Resolver
+
+Make some researches about DID Resolver
+
+  - https://github.com/TBD54566975/did-sdk
+  - https://github.com/nuts-foundation/go-did
+  - https://github.com/ockam-network/did
+  - https://github.com/hyperledger/aries-framework-go

@@ -4,7 +4,6 @@ import (
 	"log"
 	"net"
 
-	// api "github.com/getzion/relay/api"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
@@ -15,7 +14,7 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 )
 
-var _ = Describe("IdentityHub", func() {
+var _ = Describe("IdentityHub Request/Message Level Tests", func() {
 	var client HubRequestServiceClient
 	var ctx context.Context
 	var conn *grpc.ClientConn
@@ -59,9 +58,10 @@ var _ = Describe("IdentityHub", func() {
 			Expect(response.Status).To(Not(BeNil()))
 			Expect(response.Status.Code).To(Equal(int64(200)))
 			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies.Status).To(Not(BeNil()))
-			Expect(response.Replies.Status.Code).To(Equal(int64(200)))
-			Expect(response.Replies.MessageId).To(Equal("bafkreicc6dwleugaxzaahjarssvf5knedoueitry2drdclfqug6u2ljsha"))
+			Expect(response.Replies).To(HaveLen(1))
+			Expect(response.Replies[0].Status).To(Not(BeNil()))
+			Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+			Expect(response.Replies[0].MessageId).To(Equal("bafkreib53jzxohpjwiu6zetqokcx6ds4wuqjmsiuuvrfvs3jdzbuegckfq"))
 		})
 
 		It("receives an error if Request is missing", func() {
@@ -136,9 +136,10 @@ var _ = Describe("IdentityHub", func() {
 			Expect(err).To(BeNil())
 			Expect(response).To(Not(BeNil()))
 			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies.Status).To(Not(BeNil()))
-			Expect(response.Replies.Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies.MessageId).To(Equal("bafkreieayynvrfi6k2ce7btnopjn5jwcbeg5rl7oaqwowgnqg324dtcbc4"))
+			Expect(response.Replies).To(HaveLen(1))
+			Expect(response.Replies[0].Status).To(Not(BeNil()))
+			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+			Expect(response.Replies[0].MessageId).To(Equal("bafkreigapt7ktrjqxijenwe4oan3ggu237567xwknqr7gohs47tnhcbomm"))
 		})
 
 		It("receives an error if a Message Descriptor is missing method", func() {
@@ -156,9 +157,10 @@ var _ = Describe("IdentityHub", func() {
 			Expect(err).To(BeNil())
 			Expect(response).To(Not(BeNil()))
 			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies.Status).To(Not(BeNil()))
-			Expect(response.Replies.Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies.MessageId).To(Equal("bafkreiee6blwbzk2pb4hda56vinzkdk6a5deotigfmxt6hw6lds4uybjdq"))
+			Expect(response.Replies).To(HaveLen(1))
+			Expect(response.Replies[0].Status).To(Not(BeNil()))
+			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+			Expect(response.Replies[0].MessageId).To(Equal("bafkreifhqaw33p7f7ew6lxv4gn4yb2pbrzel6jbyuzbq4ufwa33j4majha"))
 		})
 
 		It("receives an error if a Message Descriptor is missing objectID", func() {
@@ -180,9 +182,10 @@ var _ = Describe("IdentityHub", func() {
 			Expect(err).To(BeNil())
 			Expect(response).To(Not(BeNil()))
 			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies.Status).To(Not(BeNil()))
-			Expect(response.Replies.Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies.MessageId).To(Equal("bafkreiggemz5lqnv2cslvniugfckftynqqdn55tvmp5ew4ltp55iydrpja"))
+			Expect(response.Replies).To(HaveLen(1))
+			Expect(response.Replies[0].Status).To(Not(BeNil()))
+			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+			Expect(response.Replies[0].MessageId).To(Equal("bafkreih5dg7lfywqhztwwim4ttlxnnmu4c6u633l6epgnxbsrozzscgjye"))
 		})
 
 		It("receives an error if a Message Descriptor is missing dateCreated", func() {
@@ -203,9 +206,10 @@ var _ = Describe("IdentityHub", func() {
 			Expect(err).To(BeNil())
 			Expect(response).To(Not(BeNil()))
 			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies.Status).To(Not(BeNil()))
-			Expect(response.Replies.Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies.MessageId).To(Equal("bafkreidni2vjzmrptvcwppcy4cz26bge2vpdnghyjsq2ondgtpns7kpik4"))
+			Expect(response.Replies).To(HaveLen(1))
+			Expect(response.Replies[0].Status).To(Not(BeNil()))
+			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+			Expect(response.Replies[0].MessageId).To(Equal("bafkreift7ckv3vsw4nr5avjpognmj3jhrfgf7gwzchsv5tc3ctqal3cwna"))
 		})
 
 		It("receives an error if a Message has data but dataFormat is missing", func() {
@@ -227,9 +231,10 @@ var _ = Describe("IdentityHub", func() {
 			Expect(err).To(BeNil())
 			Expect(response).To(Not(BeNil()))
 			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies.Status).To(Not(BeNil()))
-			Expect(response.Replies.Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies.MessageId).To(Equal("bafkreicgci67ouovbgo2vmyhn7rlnv2zb2nvue6l6uihrm3fkunhwqj5cm"))
+			Expect(response.Replies).To(HaveLen(1))
+			Expect(response.Replies[0].Status).To(Not(BeNil()))
+			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+			Expect(response.Replies[0].MessageId).To(Equal("bafkreigvriutejhgmq2pfg2457ggoixt7bippn5imrd5eal3zcbl46fmqa"))
 		})
 
 		It("receives an error if a Message Descriptor method is not implemented", func() {
@@ -252,9 +257,10 @@ var _ = Describe("IdentityHub", func() {
 			Expect(err).To(BeNil())
 			Expect(response).To(Not(BeNil()))
 			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies.Status).To(Not(BeNil()))
-			Expect(response.Replies.Status.Code).To(Equal(int64(501)))
-			Expect(response.Replies.MessageId).To(Equal("bafkreidwfcisuu4gjnputnsekyoeeprpwzcgowqelxvlqezzgmddxur5cy"))
+			Expect(response.Replies).To(HaveLen(1))
+			Expect(response.Replies[0].Status).To(Not(BeNil()))
+			Expect(response.Replies[0].Status.Code).To(Equal(int64(501)))
+			Expect(response.Replies[0].MessageId).To(Equal("bafkreigixgythzb46m6xnck3zhvbjyye2n7hbkwlgy6kkll4dslsuy3ghy"))
 		})
 	})
 })
@@ -276,20 +282,20 @@ func dialer() func(context.Context, string) (net.Conn, error) {
 				MhType:   multihash.SHA2_256,
 				MhLength: -1,
 			},
-			validHubInterfaceMethods: map[string]string{
-				"CollectionsQuery":   "",
-				"CollectionsWrite":   "",
-				"CollectionsCommit":  "",
-				"CollectionsDelete":  "",
-				"ThreadsQuery":       "",
-				"ThreadsCreate":      "",
-				"ThreadsReply":       "",
-				"ThreadsClose":       "",
-				"ThreadsDelete":      "",
-				"PermissionsRequest": "",
-				"PermissionsQuery":   "",
-				"PermissionsGrant":   "",
-				"PermissionsRevoke":  "",
+			validHubInterfaceMethods: map[string]interfaceMethodHandler{
+				"CollectionsQuery":   func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"CollectionsWrite":   func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"CollectionsCommit":  func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"CollectionsDelete":  func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"ThreadsQuery":       func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"ThreadsCreate":      func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"ThreadsReply":       func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"ThreadsClose":       func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"ThreadsDelete":      func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"PermissionsRequest": func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"PermissionsQuery":   func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"PermissionsGrant":   func(ctx context.Context, r *Request) (string, error) { return "", nil },
+				"PermissionsRevoke":  func(ctx context.Context, r *Request) (string, error) { return "", nil },
 			},
 		},
 	})
