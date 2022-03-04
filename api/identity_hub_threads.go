@@ -6,11 +6,11 @@ import (
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
 )
 
-func ThreadsQuery(ctx context.Context, r *Request) (string, error) {
+func ThreadsQuery(ctx context.Context, m *Message) (string, *MessageLevelError) {
 	return "", nil
 }
 
-func ThreadsCreate(ctx context.Context, r *Request) (string, error) {
+func ThreadsCreate(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
 	/*
 
@@ -27,7 +27,7 @@ func ThreadsCreate(ctx context.Context, r *Request) (string, error) {
 	return "", nil
 }
 
-func ThreadsReply(ctx context.Context, r *Request) (string, error) {
+func ThreadsReply(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
 	/*
 
@@ -46,7 +46,7 @@ func ThreadsReply(ctx context.Context, r *Request) (string, error) {
 	return "", nil
 }
 
-func ThreadsClose(ctx context.Context, r *Request) (string, error) {
+func ThreadsClose(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
 	/*
 
@@ -62,7 +62,7 @@ func ThreadsClose(ctx context.Context, r *Request) (string, error) {
 	return "", nil
 }
 
-func ThreadsDelete(ctx context.Context, r *Request) (string, error) {
+func ThreadsDelete(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
 	/*
 

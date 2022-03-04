@@ -5,8 +5,6 @@ import (
 	"net"
 
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
-	"github.com/ipfs/go-cid"
-	"github.com/multiformats/go-multihash"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"golang.org/x/net/context"
@@ -14,22 +12,11 @@ import (
 	"google.golang.org/grpc/test/bufconn"
 )
 
-var _ = Describe("IdentityHub Request/Message Level Tests", func() {
+var _ = Describe("IdentityHub Tests", func() {
 	var client HubRequestServiceClient
 	var ctx context.Context
 	var conn *grpc.ClientConn
 	var err error
-	var validDemoMessages = []*Message{
-		{
-			Data: `{ "Data": "Test" }`,
-			Descriptor_: &MessageDescriptor{
-				Method:      "CollectionsWrite",
-				ObjectId:    "d82c0026-ed42-4b26-81f3-94805958a75c",
-				DateCreated: "1645917431",
-				DataFormat:  "application/json",
-			},
-		},
-	}
 
 	BeforeEach(func() {
 		ctx = context.Background()
@@ -44,12 +31,23 @@ var _ = Describe("IdentityHub Request/Message Level Tests", func() {
 		defer conn.Close()
 	})
 
-	Describe("request", func() {
+	Context("Request Level Tests", func() {
+
 		It("receives a response", func() {
 			request := &Request{
 				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
 				Target:    "TheTarget",
-				Messages:  validDemoMessages,
+				Messages: []*Message{
+					{
+						Data: `{ "Data": "Test" }`,
+						Descriptor_: &MessageDescriptor{
+							Method:      "CollectionsWrite",
+							ObjectId:    "d82c0026-ed42-4b26-81f3-94805958a75c",
+							DateCreated: "1645917431",
+							DataFormat:  "application/json",
+						},
+					},
+				},
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())
@@ -75,8 +73,7 @@ var _ = Describe("IdentityHub Request/Message Level Tests", func() {
 
 		It("receives an error if RequestID is missing", func() {
 			request := &Request{
-				Target:   "TheTarget",
-				Messages: validDemoMessages,
+				Target: "TheTarget",
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())
@@ -88,8 +85,7 @@ var _ = Describe("IdentityHub Request/Message Level Tests", func() {
 		It("receives an error if RequestID is not len 36 (uuid v4)", func() {
 			request := &Request{
 				Target:    "TheTarget",
-				Messages:  validDemoMessages,
-				RequestId: "shortrequestid",
+				RequestId: "<invalid>",
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())
@@ -101,7 +97,6 @@ var _ = Describe("IdentityHub Request/Message Level Tests", func() {
 		It("receives an error if Target is missing", func() {
 			request := &Request{
 				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-				Messages:  validDemoMessages,
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())
@@ -122,14 +117,16 @@ var _ = Describe("IdentityHub Request/Message Level Tests", func() {
 			Expect(response.Status.Code).To(Equal(int64(500)))
 		})
 
+	})
+
+	Context("Message Level Tests", func() {
+
 		It("receives an error if a Message is missing Descriptor", func() {
 			request := &Request{
 				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
 				Target:    "atarget",
 				Messages: []*Message{
-					{
-						Data: "Data!",
-					},
+					{},
 				},
 			}
 			response, err := client.Process(ctx, request)
@@ -139,16 +136,15 @@ var _ = Describe("IdentityHub Request/Message Level Tests", func() {
 			Expect(response.Replies).To(HaveLen(1))
 			Expect(response.Replies[0].Status).To(Not(BeNil()))
 			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies[0].MessageId).To(Equal("bafkreigapt7ktrjqxijenwe4oan3ggu237567xwknqr7gohs47tnhcbomm"))
+			Expect(response.Replies[0].MessageId).To(Equal("bafkreicecnx2gvntm6fbcrvnc336qze6st5u7qq7457igegamd3bzkx7ri"))
 		})
 
-		It("receives an error if a Message Descriptor is missing method", func() {
+		It("receives an error if a Message Descriptor is missing Method", func() {
 			request := &Request{
 				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
 				Target:    "atarget",
 				Messages: []*Message{
 					{
-						Data:        "Data!",
 						Descriptor_: &MessageDescriptor{},
 					},
 				},
@@ -160,81 +156,7 @@ var _ = Describe("IdentityHub Request/Message Level Tests", func() {
 			Expect(response.Replies).To(HaveLen(1))
 			Expect(response.Replies[0].Status).To(Not(BeNil()))
 			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies[0].MessageId).To(Equal("bafkreifhqaw33p7f7ew6lxv4gn4yb2pbrzel6jbyuzbq4ufwa33j4majha"))
-		})
-
-		It("receives an error if a Message Descriptor is missing objectID", func() {
-			request := &Request{
-				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-				Target:    "atarget",
-				Messages: []*Message{
-					{
-						Data: "Data!",
-						Descriptor_: &MessageDescriptor{
-							Method:      "CollectionsWrite",
-							ObjectId:    "12342135",
-							DateCreated: "1645917369",
-						},
-					},
-				},
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies).To(HaveLen(1))
-			Expect(response.Replies[0].Status).To(Not(BeNil()))
-			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies[0].MessageId).To(Equal("bafkreih5dg7lfywqhztwwim4ttlxnnmu4c6u633l6epgnxbsrozzscgjye"))
-		})
-
-		It("receives an error if a Message Descriptor is missing dateCreated", func() {
-			request := &Request{
-				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-				Target:    "atarget",
-				Messages: []*Message{
-					{
-						Data: "Data!",
-						Descriptor_: &MessageDescriptor{
-							Method:   "CollectionsWrite",
-							ObjectId: "b9b672ba-68a7-46b1-b24d-104a860aafdf",
-						},
-					},
-				},
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies).To(HaveLen(1))
-			Expect(response.Replies[0].Status).To(Not(BeNil()))
-			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies[0].MessageId).To(Equal("bafkreift7ckv3vsw4nr5avjpognmj3jhrfgf7gwzchsv5tc3ctqal3cwna"))
-		})
-
-		It("receives an error if a Message has data but dataFormat is missing", func() {
-			request := &Request{
-				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-				Target:    "atarget",
-				Messages: []*Message{
-					{
-						Data: "Data!",
-						Descriptor_: &MessageDescriptor{
-							Method:      "CollectionsWrite",
-							ObjectId:    "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-							DateCreated: "1645917369",
-						},
-					},
-				},
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies).To(HaveLen(1))
-			Expect(response.Replies[0].Status).To(Not(BeNil()))
-			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies[0].MessageId).To(Equal("bafkreigvriutejhgmq2pfg2457ggoixt7bippn5imrd5eal3zcbl46fmqa"))
+			Expect(response.Replies[0].MessageId).To(Equal("bafkreibrw36mqjy3ndlmfuolbyr45dgsnoig7kqhtrhtd6nrjmraodeqga"))
 		})
 
 		It("receives an error if a Message Descriptor method is not implemented", func() {
@@ -243,12 +165,8 @@ var _ = Describe("IdentityHub Request/Message Level Tests", func() {
 				Target:    "atarget",
 				Messages: []*Message{
 					{
-						Data: `{ "Data": "Test" }`,
 						Descriptor_: &MessageDescriptor{
-							Method:      "CollectionsWriteTest",
-							ObjectId:    "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-							DateCreated: "1645917369",
-							DataFormat:  "application/json",
+							Method: "CollectionsWriteTest",
 						},
 					},
 				},
@@ -260,7 +178,222 @@ var _ = Describe("IdentityHub Request/Message Level Tests", func() {
 			Expect(response.Replies).To(HaveLen(1))
 			Expect(response.Replies[0].Status).To(Not(BeNil()))
 			Expect(response.Replies[0].Status.Code).To(Equal(int64(501)))
-			Expect(response.Replies[0].MessageId).To(Equal("bafkreigixgythzb46m6xnck3zhvbjyye2n7hbkwlgy6kkll4dslsuy3ghy"))
+			Expect(response.Replies[0].MessageId).To(Equal("bafkreiau3c63kbr35o3wzbmxueh3tpqmp34qqn74t5zfl7naiss5mof4sm"))
+		})
+
+		Context("Collection Tests", func() {
+
+			Context("CollectionsQuery Tests", func() {
+
+				It("receives an response if a Message Descriptor has missing objectID", func() {
+					request := &Request{
+						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+						Target:    "atarget",
+						Messages: []*Message{
+							{
+								Data: "Data!",
+								Descriptor_: &MessageDescriptor{
+									Method: "CollectionsQuery",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies[0].MessageId).To(Equal("bafkreidjwd7nigpmsvz5gfxvfhi2d6o4es37m56gqmwj7qu3ebs4w6krz4"))
+				})
+
+				It("receives an error if a Message Descriptor has invalid objectID", func() {
+					request := &Request{
+						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+						Target:    "atarget",
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:   "CollectionsQuery",
+									ObjectId: "<invalid>",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+					Expect(response.Replies[0].MessageId).To(Equal("bafkreic326ktl6w3hwidjznjpmqepakqbncqj46skfp6ur5vbqm6akzbwa"))
+				})
+
+				It("receives a response if a Message Descriptor has valid objectID", func() {
+					request := &Request{
+						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+						Target:    "atarget",
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:   "CollectionsQuery",
+									ObjectId: "d82c0026-ed42-4b26-81f3-94805958a75c",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies[0].MessageId).To(Equal("bafkreifo63i6zbffdn7gw63zu5n5mwmzjqd2nuk5s3jebyuxfp7ynbffgy"))
+				})
+
+				It("receives an error if a Message Descriptor has invalid schema", func() {
+					request := &Request{
+						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+						Target:    "atarget",
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method: "CollectionsQuery",
+									Schema: "<invalid>",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+					Expect(response.Replies[0].MessageId).To(Equal("bafkreig7mrtisjqg5vaw55uxhylopnhkxbpz3xfgzf4l24z35wqbo5on24"))
+				})
+
+				It("receives a response if a Message Descriptor has valid schema", func() {
+					request := &Request{
+						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+						Target:    "atarget",
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method: "CollectionsQuery",
+									Schema: "https://test.com",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies[0].MessageId).To(Equal("bafkreif2hijtph6lxoe4ziujaicssrqxzgnrpauuio44vcncnonygpbdpe"))
+				})
+
+				It("receives an error if a Message Descriptor has invalid dataFormat", func() {
+					request := &Request{
+						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+						Target:    "atarget",
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:     "CollectionsQuery",
+									DataFormat: "<invalid>",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+					Expect(response.Replies[0].MessageId).To(Equal("bafkreihk6asib3lt2vec4zwl2gbljqawfbvpjiiisr3kgeult2drbjdedm"))
+				})
+
+				It("receives a response if a Message Descriptor has valid dataFormat", func() {
+					request := &Request{
+						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+						Target:    "atarget",
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:     "CollectionsQuery",
+									DataFormat: "application/json",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies[0].MessageId).To(Equal("bafkreifrvxr7mn7lskgsu3yvda4alw2ci5onqieo44gnhgpzj627ugnpti"))
+				})
+
+				It("receives an error if a Message Descriptor has invalid dateSort", func() {
+					request := &Request{
+						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+						Target:    "atarget",
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:   "CollectionsQuery",
+									DateSort: "<invalid>",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+					Expect(response.Replies[0].MessageId).To(Equal("bafkreicb5ymqyxksvqtgsj4xgr77ux2ldgjrw4govmxlpink4k4vmf2hki"))
+				})
+
+				It("receives an error if a Message Descriptor has valid dateSort", func() {
+
+					request := &Request{
+						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+						Target:    "atarget",
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:   "CollectionsQuery",
+									DateSort: "createdAscending",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies[0].MessageId).To(Equal("bafkreihbret5lecce2ft5jnal3kfv3kze3mgoje3ejpno4v4debge3ucn4"))
+				})
+
+			})
 		})
 	})
 })
@@ -276,27 +409,8 @@ func dialer() func(context.Context, string) (net.Conn, error) {
 
 	RegisterHubRequestServiceServer(server, &mockIdentityHubServer{
 		IdentityHubService: IdentityHubService{
-			prefix: cid.Prefix{
-				Version:  1,
-				Codec:    cid.Raw,
-				MhType:   multihash.SHA2_256,
-				MhLength: -1,
-			},
-			validHubInterfaceMethods: map[string]interfaceMethodHandler{
-				"CollectionsQuery":   func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"CollectionsWrite":   func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"CollectionsCommit":  func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"CollectionsDelete":  func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"ThreadsQuery":       func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"ThreadsCreate":      func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"ThreadsReply":       func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"ThreadsClose":       func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"ThreadsDelete":      func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"PermissionsRequest": func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"PermissionsQuery":   func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"PermissionsGrant":   func(ctx context.Context, r *Request) (string, error) { return "", nil },
-				"PermissionsRevoke":  func(ctx context.Context, r *Request) (string, error) { return "", nil },
-			},
+			prefix:                   prefix,
+			validHubInterfaceMethods: validHubInterfaceMethods,
 		},
 	})
 

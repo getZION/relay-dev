@@ -15,15 +15,23 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-type interfaceMethodHandler func(ctx context.Context, r *Request) (string, error)
+type (
+	interfaceMethodHandler func(ctx context.Context, m *Message) (string, *MessageLevelError)
 
-type IdentityHubService struct {
-	UnimplementedHubRequestServiceServer
+	IdentityHubService struct {
+		UnimplementedHubRequestServiceServer
 
-	validator                *validator.Validate
-	prefix                   cid.Prefix
-	validHubInterfaceMethods map[string]interfaceMethodHandler
-}
+		validator                *validator.Validate
+		prefix                   cid.Prefix
+		validHubInterfaceMethods map[string]interfaceMethodHandler
+	}
+
+	MessageLevelError struct {
+		Message string
+		Code    int64
+		Error   error
+	}
+)
 
 const (
 	requestLevelProcessingErrorMessage string = "The request could not be processed correctly"
@@ -36,33 +44,39 @@ const (
 	messageSuccessfullyMessage string = "The message was successfully processed"
 )
 
+var (
+	prefix = cid.Prefix{
+		Version:  1,
+		Codec:    cid.Raw,
+		MhType:   multihash.SHA2_256,
+		MhLength: -1,
+	}
+
+	validHubInterfaceMethods = map[string]interfaceMethodHandler{
+		"CollectionsQuery":   CollectionsQuery,
+		"CollectionsWrite":   CollectionsWrite,
+		"CollectionsCommit":  CollectionsCommit,
+		"CollectionsDelete":  CollectionsDelete,
+		"ThreadsQuery":       ThreadsQuery,
+		"ThreadsCreate":      ThreadsCreate,
+		"ThreadsReply":       ThreadsReply,
+		"ThreadsClose":       ThreadsClose,
+		"ThreadsDelete":      ThreadsDelete,
+		"PermissionsRequest": PermissionsRequest,
+		"PermissionsQuery":   PermissionsQuery,
+		"PermissionsGrant":   PermissionsGrant,
+		"PermissionsRevoke":  PermissionsRevoke,
+	}
+)
+
 func InitIdentityHubService() *IdentityHubService {
 
 	validator := validator.New()
 
 	identityHubService := &IdentityHubService{
-		validator: validator,
-		prefix: cid.Prefix{
-			Version:  1,
-			Codec:    cid.Raw,
-			MhType:   multihash.SHA2_256,
-			MhLength: -1,
-		},
-		validHubInterfaceMethods: map[string]interfaceMethodHandler{
-			"CollectionsQuery":   CollectionsQuery,
-			"CollectionsWrite":   CollectionsWrite,
-			"CollectionsCommit":  CollectionsCommit,
-			"CollectionsDelete":  CollectionsDelete,
-			"ThreadsQuery":       ThreadsQuery,
-			"ThreadsCreate":      ThreadsCreate,
-			"ThreadsReply":       ThreadsReply,
-			"ThreadsClose":       ThreadsClose,
-			"ThreadsDelete":      ThreadsDelete,
-			"PermissionsRequest": PermissionsRequest,
-			"PermissionsQuery":   PermissionsQuery,
-			"PermissionsGrant":   PermissionsGrant,
-			"PermissionsRevoke":  PermissionsRevoke,
-		},
+		validator:                validator,
+		prefix:                   prefix,
+		validHubInterfaceMethods: validHubInterfaceMethods,
 	}
 
 	return identityHubService
@@ -105,6 +119,7 @@ func (hub *IdentityHubService) Process(ctx context.Context, r *Request) (*Respon
 			reply.Status.Code = 500
 			reply.Status.Message = improperlyConstructedErrorMessage
 			response.Replies = append(response.Replies, reply)
+			//todo: how we handle internal server error?
 			continue
 		}
 
@@ -113,19 +128,13 @@ func (hub *IdentityHubService) Process(ctx context.Context, r *Request) (*Respon
 			reply.Status.Code = 500
 			reply.Status.Message = improperlyConstructedErrorMessage
 			response.Replies = append(response.Replies, reply)
+			//todo: how we handle internal server error?
 			continue
 		}
 
 		reply.MessageId = messageId.String()
 
-		if message.Descriptor_ == nil || message.Descriptor_.Method == "" ||
-			len(message.Descriptor_.DateCreated) < 10 ||
-			(message.Data != "" && message.Descriptor_.DataFormat == "") {
-			reply.Status.Code = 400
-			reply.Status.Message = improperlyConstructedErrorMessage
-			response.Replies = append(response.Replies, reply)
-			continue
-		} else if _, err := uuid.Parse(message.Descriptor_.ObjectId); err != nil {
+		if message.Descriptor_ == nil || message.Descriptor_.Method == "" {
 			reply.Status.Code = 400
 			reply.Status.Message = improperlyConstructedErrorMessage
 			response.Replies = append(response.Replies, reply)
@@ -137,10 +146,10 @@ func (hub *IdentityHubService) Process(ctx context.Context, r *Request) (*Respon
 			continue
 		}
 
-		entry, err := method(ctx, r)
-		if err != nil {
-			reply.Status.Code = 500
-			reply.Status.Message = improperlyConstructedErrorMessage
+		entry, mErr := method(ctx, message)
+		if mErr != nil {
+			reply.Status.Code = mErr.Code
+			reply.Status.Message = mErr.Message
 			response.Replies = append(response.Replies, reply)
 			continue
 		}
@@ -154,4 +163,12 @@ func (hub *IdentityHubService) Process(ctx context.Context, r *Request) (*Respon
 	}
 
 	return response, nil
+}
+
+func NewMessageLevelError(code int64, message string, err error) *MessageLevelError {
+	return &MessageLevelError{
+		Code:    code,
+		Message: message,
+		Error:   err,
+	}
 }
