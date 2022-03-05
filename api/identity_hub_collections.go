@@ -41,15 +41,21 @@ func CollectionsQuery(ctx context.Context, m *Message) (string, *MessageLevelErr
 		if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
 			return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
 		}
-	} else if m.Descriptor_.Schema != "" {
+	}
+
+	if m.Descriptor_.Schema != "" {
 		if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
 			return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
 		}
-	} else if m.Descriptor_.DataFormat != "" {
+	}
+
+	if m.Descriptor_.DataFormat != "" {
 		if dataFormat = mimetype.Lookup(m.Descriptor_.DataFormat); dataFormat == nil {
 			return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, fmt.Errorf("invalid mime type: %s", m.Descriptor_.DataFormat))
 		}
-	} else if m.Descriptor_.DateSort != "" && (m.Descriptor_.DateSort != "createdAscending" && m.Descriptor_.DateSort != "createdDescending" &&
+	}
+
+	if m.Descriptor_.DateSort != "" && (m.Descriptor_.DateSort != "createdAscending" && m.Descriptor_.DateSort != "createdDescending" &&
 		m.Descriptor_.DateSort != "publishedAscending" && m.Descriptor_.DateSort != "publishedDescending") {
 		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, fmt.Errorf("invalid mime type: %s", m.Descriptor_.DataFormat))
 	}
@@ -96,15 +102,17 @@ func CollectionsWrite(ctx context.Context, m *Message) (string, *MessageLevelErr
 
 	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
 		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
+	} else if m.Descriptor_.DateCreated == "" {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, fmt.Errorf("dateCreated cannot be null or empty"))
+	} else if dateCreated, err = strconv.ParseInt(m.Descriptor_.DateCreated, 10, 64); err != nil {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
 	} else if m.Descriptor_.Schema != "" {
 		if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
 			return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
 		}
-	} else if m.Descriptor_.DateCreated == "" {
-		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, fmt.Errorf("dateCreated cannot be null"))
-	} else if dateCreated, err = strconv.ParseInt(m.Descriptor_.DateCreated, 10, 64); err != nil {
-		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
-	} else if m.Descriptor_.DatePublished != "" {
+	}
+
+	if m.Descriptor_.DatePublished != "" {
 		datePublished, err = strconv.ParseInt(m.Descriptor_.DatePublished, 10, 64)
 		if err != nil {
 			return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)

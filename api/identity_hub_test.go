@@ -5,12 +5,24 @@ import (
 	"net"
 
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
 )
+
+const (
+	REQUEST_ID     = "3eb8ea70-7ea5-4069-a153-cfb0ea682df9"
+	TARGET         = "TheTarget"
+	OBJECT_ID      = "d82c0026-ed42-4b26-81f3-94805958a75c"
+	DATE_CREATED   = "1645917431"
+	DATE_PUBLISHED = "1645917431"
+	SCHEMA         = "https://test.com"
+	DATA_FORMAT    = "application/json"
+)
+
+//todo: need to split files
 
 var _ = Describe("IdentityHub Tests", func() {
 	var client HubRequestServiceClient
@@ -33,35 +45,6 @@ var _ = Describe("IdentityHub Tests", func() {
 
 	Context("Request Level Tests", func() {
 
-		It("receives a response", func() {
-			request := &Request{
-				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-				Target:    "TheTarget",
-				Messages: []*Message{
-					{
-						Data: `{ "Data": "Test" }`,
-						Descriptor_: &MessageDescriptor{
-							Method:      "CollectionsWrite",
-							ObjectId:    "d82c0026-ed42-4b26-81f3-94805958a75c",
-							DateCreated: "1645917431",
-							DataFormat:  "application/json",
-						},
-					},
-				},
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.RequestId).To(Equal(request.RequestId))
-			Expect(response.Status).To(Not(BeNil()))
-			Expect(response.Status.Code).To(Equal(int64(200)))
-			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies).To(HaveLen(1))
-			Expect(response.Replies[0].Status).To(Not(BeNil()))
-			Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-			Expect(response.Replies[0].MessageId).To(Equal("bafkreib53jzxohpjwiu6zetqokcx6ds4wuqjmsiuuvrfvs3jdzbuegckfq"))
-		})
-
 		It("receives an error if Request is missing", func() {
 			request := &Request{}
 			response, err := client.Process(ctx, request)
@@ -73,7 +56,7 @@ var _ = Describe("IdentityHub Tests", func() {
 
 		It("receives an error if RequestID is missing", func() {
 			request := &Request{
-				Target: "TheTarget",
+				Target: TARGET,
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())
@@ -84,7 +67,7 @@ var _ = Describe("IdentityHub Tests", func() {
 
 		It("receives an error if RequestID is not len 36 (uuid v4)", func() {
 			request := &Request{
-				Target:    "TheTarget",
+				Target:    TARGET,
 				RequestId: "<invalid>",
 			}
 			response, err := client.Process(ctx, request)
@@ -96,7 +79,7 @@ var _ = Describe("IdentityHub Tests", func() {
 
 		It("receives an error if Target is missing", func() {
 			request := &Request{
-				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
+				RequestId: REQUEST_ID,
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())
@@ -107,8 +90,8 @@ var _ = Describe("IdentityHub Tests", func() {
 
 		It("receives an error if Messages are missing", func() {
 			request := &Request{
-				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-				Target:    "atarget",
+				RequestId: REQUEST_ID,
+				Target:    TARGET,
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())
@@ -123,8 +106,8 @@ var _ = Describe("IdentityHub Tests", func() {
 
 		It("receives an error if a Message is missing Descriptor", func() {
 			request := &Request{
-				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-				Target:    "atarget",
+				RequestId: REQUEST_ID,
+				Target:    TARGET,
 				Messages: []*Message{
 					{},
 				},
@@ -136,13 +119,12 @@ var _ = Describe("IdentityHub Tests", func() {
 			Expect(response.Replies).To(HaveLen(1))
 			Expect(response.Replies[0].Status).To(Not(BeNil()))
 			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies[0].MessageId).To(Equal("bafkreicecnx2gvntm6fbcrvnc336qze6st5u7qq7457igegamd3bzkx7ri"))
 		})
 
 		It("receives an error if a Message Descriptor is missing Method", func() {
 			request := &Request{
-				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-				Target:    "atarget",
+				RequestId: REQUEST_ID,
+				Target:    TARGET,
 				Messages: []*Message{
 					{
 						Descriptor_: &MessageDescriptor{},
@@ -156,17 +138,16 @@ var _ = Describe("IdentityHub Tests", func() {
 			Expect(response.Replies).To(HaveLen(1))
 			Expect(response.Replies[0].Status).To(Not(BeNil()))
 			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			Expect(response.Replies[0].MessageId).To(Equal("bafkreibrw36mqjy3ndlmfuolbyr45dgsnoig7kqhtrhtd6nrjmraodeqga"))
 		})
 
 		It("receives an error if a Message Descriptor method is not implemented", func() {
 			request := &Request{
-				RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-				Target:    "atarget",
+				RequestId: REQUEST_ID,
+				Target:    TARGET,
 				Messages: []*Message{
 					{
 						Descriptor_: &MessageDescriptor{
-							Method: "CollectionsWriteTest",
+							Method: "CollectionsQueryTest",
 						},
 					},
 				},
@@ -178,17 +159,16 @@ var _ = Describe("IdentityHub Tests", func() {
 			Expect(response.Replies).To(HaveLen(1))
 			Expect(response.Replies[0].Status).To(Not(BeNil()))
 			Expect(response.Replies[0].Status.Code).To(Equal(int64(501)))
-			Expect(response.Replies[0].MessageId).To(Equal("bafkreiau3c63kbr35o3wzbmxueh3tpqmp34qqn74t5zfl7naiss5mof4sm"))
 		})
 
 		Context("Collection Tests", func() {
 
 			Context("CollectionsQuery Tests", func() {
 
-				It("receives an response if a Message Descriptor has missing objectID", func() {
+				It("receives a response if a Message Descriptor has missing objectID", func() {
 					request := &Request{
-						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-						Target:    "atarget",
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
 						Messages: []*Message{
 							{
 								Data: "Data!",
@@ -205,13 +185,12 @@ var _ = Describe("IdentityHub Tests", func() {
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-					Expect(response.Replies[0].MessageId).To(Equal("bafkreidjwd7nigpmsvz5gfxvfhi2d6o4es37m56gqmwj7qu3ebs4w6krz4"))
 				})
 
 				It("receives an error if a Message Descriptor has invalid objectID", func() {
 					request := &Request{
-						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-						Target:    "atarget",
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
 						Messages: []*Message{
 							{
 								Descriptor_: &MessageDescriptor{
@@ -228,18 +207,17 @@ var _ = Describe("IdentityHub Tests", func() {
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-					Expect(response.Replies[0].MessageId).To(Equal("bafkreic326ktl6w3hwidjznjpmqepakqbncqj46skfp6ur5vbqm6akzbwa"))
 				})
 
 				It("receives a response if a Message Descriptor has valid objectID", func() {
 					request := &Request{
-						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-						Target:    "atarget",
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
 						Messages: []*Message{
 							{
 								Descriptor_: &MessageDescriptor{
 									Method:   "CollectionsQuery",
-									ObjectId: "d82c0026-ed42-4b26-81f3-94805958a75c",
+									ObjectId: OBJECT_ID,
 								},
 							},
 						},
@@ -251,18 +229,18 @@ var _ = Describe("IdentityHub Tests", func() {
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-					Expect(response.Replies[0].MessageId).To(Equal("bafkreifo63i6zbffdn7gw63zu5n5mwmzjqd2nuk5s3jebyuxfp7ynbffgy"))
 				})
 
 				It("receives an error if a Message Descriptor has invalid schema", func() {
 					request := &Request{
-						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-						Target:    "atarget",
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
 						Messages: []*Message{
 							{
 								Descriptor_: &MessageDescriptor{
-									Method: "CollectionsQuery",
-									Schema: "<invalid>",
+									Method:   "CollectionsQuery",
+									ObjectId: OBJECT_ID,
+									Schema:   "<invalid>",
 								},
 							},
 						},
@@ -274,18 +252,18 @@ var _ = Describe("IdentityHub Tests", func() {
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-					Expect(response.Replies[0].MessageId).To(Equal("bafkreig7mrtisjqg5vaw55uxhylopnhkxbpz3xfgzf4l24z35wqbo5on24"))
 				})
 
 				It("receives a response if a Message Descriptor has valid schema", func() {
 					request := &Request{
-						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-						Target:    "atarget",
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
 						Messages: []*Message{
 							{
 								Descriptor_: &MessageDescriptor{
-									Method: "CollectionsQuery",
-									Schema: "https://test.com",
+									Method:   "CollectionsQuery",
+									ObjectId: OBJECT_ID,
+									Schema:   SCHEMA,
 								},
 							},
 						},
@@ -297,17 +275,18 @@ var _ = Describe("IdentityHub Tests", func() {
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-					Expect(response.Replies[0].MessageId).To(Equal("bafkreif2hijtph6lxoe4ziujaicssrqxzgnrpauuio44vcncnonygpbdpe"))
 				})
 
 				It("receives an error if a Message Descriptor has invalid dataFormat", func() {
 					request := &Request{
-						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-						Target:    "atarget",
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
 						Messages: []*Message{
 							{
 								Descriptor_: &MessageDescriptor{
 									Method:     "CollectionsQuery",
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA,
 									DataFormat: "<invalid>",
 								},
 							},
@@ -320,18 +299,19 @@ var _ = Describe("IdentityHub Tests", func() {
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-					Expect(response.Replies[0].MessageId).To(Equal("bafkreihk6asib3lt2vec4zwl2gbljqawfbvpjiiisr3kgeult2drbjdedm"))
 				})
 
 				It("receives a response if a Message Descriptor has valid dataFormat", func() {
 					request := &Request{
-						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-						Target:    "atarget",
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
 						Messages: []*Message{
 							{
 								Descriptor_: &MessageDescriptor{
 									Method:     "CollectionsQuery",
-									DataFormat: "application/json",
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA,
+									DataFormat: DATA_FORMAT,
 								},
 							},
 						},
@@ -343,18 +323,20 @@ var _ = Describe("IdentityHub Tests", func() {
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-					Expect(response.Replies[0].MessageId).To(Equal("bafkreifrvxr7mn7lskgsu3yvda4alw2ci5onqieo44gnhgpzj627ugnpti"))
 				})
 
 				It("receives an error if a Message Descriptor has invalid dateSort", func() {
 					request := &Request{
-						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-						Target:    "atarget",
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
 						Messages: []*Message{
 							{
 								Descriptor_: &MessageDescriptor{
-									Method:   "CollectionsQuery",
-									DateSort: "<invalid>",
+									Method:     "CollectionsQuery",
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA,
+									DataFormat: DATA_FORMAT,
+									DateSort:   "<invalid>",
 								},
 							},
 						},
@@ -366,19 +348,22 @@ var _ = Describe("IdentityHub Tests", func() {
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-					Expect(response.Replies[0].MessageId).To(Equal("bafkreicb5ymqyxksvqtgsj4xgr77ux2ldgjrw4govmxlpink4k4vmf2hki"))
 				})
 
-				It("receives an error if a Message Descriptor has valid dateSort", func() {
+				It("receives a response if a Message Descriptor has valid dateSort", func() {
 
+					//todo: test with other valid dateSort parameters
 					request := &Request{
-						RequestId: "3eb8ea70-7ea5-4069-a153-cfb0ea682df9",
-						Target:    "atarget",
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
 						Messages: []*Message{
 							{
 								Descriptor_: &MessageDescriptor{
-									Method:   "CollectionsQuery",
-									DateSort: "createdAscending",
+									Method:     "CollectionsQuery",
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA,
+									DataFormat: DATA_FORMAT,
+									DateSort:   "createdAscending",
 								},
 							},
 						},
@@ -390,10 +375,227 @@ var _ = Describe("IdentityHub Tests", func() {
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-					Expect(response.Replies[0].MessageId).To(Equal("bafkreihbret5lecce2ft5jnal3kfv3kze3mgoje3ejpno4v4debge3ucn4"))
 				})
 
 			})
+
+			Context("CollectionsWrite Tests", func() {
+
+				It("receives an error if a Message Descriptor has missing objectID", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Data: "Data!",
+								Descriptor_: &MessageDescriptor{
+									Method: "CollectionsWrite",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
+				It("receives an error if a Message Descriptor has invalid objectID", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:   "CollectionsWrite",
+									ObjectId: "<invalid>",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
+				It("receives an error if a Message Descriptor has missing dateCreated", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:   "CollectionsWrite",
+									ObjectId: OBJECT_ID,
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
+				It("receives an error if a Message Descriptor has invalid dateCreated", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:      "CollectionsWrite",
+									ObjectId:    OBJECT_ID,
+									DateCreated: "<invalid>",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
+				It("receives a response if a Message Descriptor has valid dateCreated", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:      "CollectionsWrite",
+									ObjectId:    OBJECT_ID,
+									DateCreated: DATE_CREATED,
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
+
+				It("receives an error if a Message Descriptor has invalid schema", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:      "CollectionsWrite",
+									ObjectId:    OBJECT_ID,
+									DateCreated: DATE_CREATED,
+									Schema:      "<invalid>",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
+				It("receives an error if a Message Descriptor has valid schema", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:      "CollectionsWrite",
+									ObjectId:    OBJECT_ID,
+									DateCreated: DATE_CREATED,
+									Schema:      SCHEMA,
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
+
+				It("receives an error if a Message Descriptor has invalid datePublished", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:        "CollectionsWrite",
+									ObjectId:      OBJECT_ID,
+									DateCreated:   DATE_CREATED,
+									Schema:        SCHEMA,
+									DatePublished: "<invalid>",
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
+				It("receives a response if a Message Descriptor has valid datePublished", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:        "CollectionsWrite",
+									ObjectId:      OBJECT_ID,
+									DateCreated:   DATE_CREATED,
+									Schema:        SCHEMA,
+									DatePublished: DATE_PUBLISHED,
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.RequestId).To(Equal(request.RequestId))
+					Expect(response.Status).To(Not(BeNil()))
+					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
+
+			})
+
 		})
 	})
 })
