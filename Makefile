@@ -1,3 +1,9 @@
+deploy:
+	cd ui && yarn export && cd .. && make build-aws && eb deploy
+
+build-aws:
+	GOOS=linux GOARCH=amd64 go build -o bin/application
+
 generate:
 	rm -rf gen
 	buf generate
