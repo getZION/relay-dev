@@ -9,7 +9,7 @@ import (
 
 var db *gorm.DB
 
-func Connect(databaseConnectionString string) (*gorm.DB, error) {
+func ConnectSQL(databaseConnectionString string) (*gorm.DB, error) {
 	var err error
 
 	db, err = gorm.Open("mysql", databaseConnectionString)
