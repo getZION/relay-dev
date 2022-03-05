@@ -29,11 +29,11 @@ interface NodeInfoObject {
 
 export const RPCTest = () => {
   useEffect(() => {
-    console.log("Let's test RPC connection and community creation")
+    console.log("Let's test RPC connection and community creation!")
 
     grpc.unary(NodeInfoService.GetNodeInfo, {
       request: nodeInfoRequest,
-      host: 'http://localhost:9090',
+      host: 'https://mouse.zion.fyi/',
       onEnd: (res) => {
         if (res.message) {
           const info = res.message.toObject() as NodeInfoObject
@@ -49,13 +49,13 @@ export const RPCTest = () => {
       },
     })
 
-    grpc.unary(CollectionsService.CollectionsWrite, {
-      request: collectionsWriteRequest,
-      host: 'http://localhost:9090',
-      onEnd: (res) => {
-        console.log('CollectionsWrite response:', res)
-      },
-    })
+    // grpc.unary(CollectionsService.CollectionsWrite, {
+    //   request: collectionsWriteRequest,
+    //   host: 'http://localhost:9090',
+    //   onEnd: (res) => {
+    //     console.log('CollectionsWrite response:', res)
+    //   },
+    // })
 
     // grpc.unary(CommunitiesService.CreateCommunity, {
     //   request: createCommunityRequest,
