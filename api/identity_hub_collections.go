@@ -13,15 +13,6 @@ import (
 
 func CollectionsQuery(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
-	/*
-
-		createdAscending: return results in order from the earliest dateCreated value to the latest.
-		createdDescending: return results in order from the latest dateCreated value to the earliest.
-		publishedAscending: return results in order from the earliest datePublished value to the latest.
-		publishedDescending: return results in order from the latest datePublished value to the earliest.
-
-	*/
-
 	var err error
 	var objectId uuid.UUID
 	var schema *url.URL
@@ -62,8 +53,6 @@ func CollectionsQuery(ctx context.Context, m *Message) (string, *MessageLevelErr
 func CollectionsWrite(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
 	/*
-
-		========================= VALIDATION RULES =========================
 
 		Processing Instructions
 		When processing a CollectionsWrite message, Hub instances MUST perform the following additional steps:
