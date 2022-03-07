@@ -2,8 +2,11 @@ package api
 
 import (
 	"context"
+	"fmt"
+	"net/url"
 
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/google/uuid"
 )
 
 func ThreadsQuery(ctx context.Context, m *Message) (string, *MessageLevelError) {
@@ -12,68 +15,68 @@ func ThreadsQuery(ctx context.Context, m *Message) (string, *MessageLevelError) 
 
 func ThreadsCreate(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
-	/*
+	var err error
+	var objectId uuid.UUID
+	var schema *url.URL
 
-		========================= VALIDATION RULES =========================
+	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
+	} else if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
+	}
 
-		The message object MUST descriptor property MUST be a JSON object composed as follows:
-
-		The object MUST contain a method property, and its value MUST be the string ThreadsCreate.
-		The object MUST contain an objectId property, and its value MUST be an [RFC4122] UUID Version 4 string for the Thread being created.
-		The object MUST contain a schema property, and its value MUST be a URI string that indicates the schema of the associated data.
-
-	*/
+	fmt.Printf("request -> objectId: %s, schema: %s", objectId.String(), schema.String())
 
 	return "", nil
 }
 
 func ThreadsReply(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
-	/*
+	var err error
+	var objectId uuid.UUID
+	var root uuid.UUID
+	var parent uuid.UUID
+	var schema *url.URL
 
-		========================= VALIDATION RULES =========================
+	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
+	} else if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
+	} else if root, err = uuid.Parse(m.Descriptor_.Root); err != nil {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
+	} else if parent, err = uuid.Parse(m.Descriptor_.Parent); err != nil {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
+	}
 
-		The message object MUST descriptor property MUST be a JSON object composed as follows:
-
-		The object MUST contain a method property, and its value MUST be the string ThreadsReply.
-		The object MUST contain an objectId property, and its value MUST be an [RFC4122] UUID Version 4 string representing the reply object.
-		The object MUST contain a schema property, and its value MUST be a URI string that indicates the schema of the associated data.
-		The object MUST contain a root property, and its value MUST be an [RFC4122] UUID Version 4 string of the initiating Thread message.
-		The object MUST contain a parent property, and its value MUST be an [RFC4122] UUID Version 4 string of the message in the Thread being replied to.
-
-	*/
+	fmt.Printf("request -> objectId: %s, schema: %s, root: %s, parent: %s", objectId.String(), schema.String(), root.String(), parent.String())
 
 	return "", nil
 }
 
 func ThreadsClose(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
-	/*
+	var err error
+	var root uuid.UUID
 
-		========================= VALIDATION RULES =========================
+	if root, err = uuid.Parse(m.Descriptor_.Root); err != nil {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
+	}
 
-		The message object MUST descriptor property MUST be a JSON object composed as follows:
-
-		The object MUST contain a method property, and its value MUST be the string ThreadsClose.
-		The object MUST contain a root property, and its value MUST be an [RFC4122] UUID Version 4 string of the initiating Thread message.
-
-	*/
+	fmt.Printf("request -> root: %s", root.String())
 
 	return "", nil
 }
 
 func ThreadsDelete(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
-	/*
+	var err error
+	var root uuid.UUID
 
-		========================= VALIDATION RULES =========================
+	if root, err = uuid.Parse(m.Descriptor_.Root); err != nil {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
+	}
 
-		The message object MUST descriptor property MUST be a JSON object composed as follows:
-
-		The object MUST contain a method property, and its value MUST be the string ThreadsDelete.
-		The object MUST contain a root property, and its value MUST be an [RFC4122] UUID Version 4 string of the initiating Thread message.
-
-	*/
+	fmt.Printf("request -> root: %s", root.String())
 
 	return "", nil
 }

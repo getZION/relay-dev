@@ -15,20 +15,10 @@ func CollectionsQuery(ctx context.Context, m *Message) (string, *MessageLevelErr
 
 	/*
 
-		========================= VALIDATION RULES =========================
-
-		The message object MUST contain a descriptor property, and its value MUST be a JSON object composed as follows:
-
-		+ The object MUST contain a method property, and its value MUST be the string CollectionsQuery.
-		+ The object MAY contain an objectId property, and if present its value MUST be an [RFC4122] UUID Version 4 string intended to identify a logical object the Hub Instance contains.
-		+ The object MAY contain a schema property, and if present its value MUST be a URI string that indicates the schema of the associated data.
-		+ The object MAY contain a dataFormat property, and its value MUST be a string that indicates the format of the data in accordance with its MIME type designation. The most common format is JSON, which is indicated by setting the value of the dataFormat property to application/json.
-		+ The object MAY contain a dateSort field, and if present its value MUST be one of the following strings:
-
-			createdAscending: return results in order from the earliest dateCreated value to the latest.
-			createdDescending: return results in order from the latest dateCreated value to the earliest.
-			publishedAscending: return results in order from the earliest datePublished value to the latest.
-			publishedDescending: return results in order from the latest datePublished value to the earliest.
+		createdAscending: return results in order from the earliest dateCreated value to the latest.
+		createdDescending: return results in order from the latest dateCreated value to the earliest.
+		publishedAscending: return results in order from the earliest datePublished value to the latest.
+		publishedDescending: return results in order from the latest datePublished value to the earliest.
 
 	*/
 
@@ -74,14 +64,6 @@ func CollectionsWrite(ctx context.Context, m *Message) (string, *MessageLevelErr
 	/*
 
 		========================= VALIDATION RULES =========================
-
-		The message object MUST contain a descriptor property, and its value MUST be a JSON object composed as follows:
-
-		+ The object MUST contain a method property, and its value MUST be the string CollectionsWrite.
-		+ The object MUST contain an objectId property, and its value MUST be an [RFC4122] UUID Version 4 string.
-		+ The object MUST contain a dateCreated property, and its value MUST be an Unix epoch timestamp that MUST be set and interpreted as the time the logical entry was created by the DID owner or another permitted party.
-		+ The object MAY contain a schema property, and if present its value MUST be a URI string that indicates the schema of the associated data.
-		+ The object MAY contain a datePublished property, and its value MUST be an Unix epoch timestamp that MUST be set and interpreted as the time the logical entry was published by the DID owner or another permitted party.
 
 		Processing Instructions
 		When processing a CollectionsWrite message, Hub instances MUST perform the following additional steps:
@@ -130,20 +112,6 @@ func CollectionsWrite(ctx context.Context, m *Message) (string, *MessageLevelErr
 
 func CollectionsCommit(ctx context.Context, m *Message) (string, *MessageLevelError) {
 
-	/*
-
-		========================= VALIDATION RULES =========================
-
-		The message object MUST descriptor property MUST be a JSON object composed as follows:
-
-		+ The object MUST contain a method property, and its value MUST be the string CollectionsCommit.
-		+ The object MUST contain an objectId property, and its value MUST be an [RFC4122] UUID Version 4 string.
-		+ The object MUST contain a dateCreated property, and its value MUST be an Unix epoch timestamp that MUST be set and interpreted as the time the logical entry was created by the DID owner or another permitted party.
-		+ The object MAY contain a schema property, and if present its value MUST be a URI string that indicates the schema of the associated data.
-		+ The object MAY contain a datePublished property, and its value MUST be an Unix epoch timestamp that MUST be set and interpreted as the time the logical entry was published by the DID owner or another permitted party.
-
-	*/
-
 	var err error
 	var objectId uuid.UUID
 	var schema *url.URL
@@ -181,16 +149,6 @@ func CollectionsCommit(ctx context.Context, m *Message) (string, *MessageLevelEr
 }
 
 func CollectionsDelete(ctx context.Context, m *Message) (string, *MessageLevelError) {
-
-	/*
-		========================= VALIDATION RULES =========================
-
-		The message object MUST descriptor property MUST be a JSON object composed as follows:
-
-		+ The object MUST contain a method property, and its value MUST be the string CollectionsDelete.
-		+ The object MUST contain an objectId property, and its value MUST be an [RFC4122] UUID Version 4 string of the object to be deleted.
-
-	*/
 
 	var err error
 	var objectId uuid.UUID

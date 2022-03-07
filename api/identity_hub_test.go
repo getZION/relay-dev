@@ -20,6 +20,9 @@ const (
 	DATE_PUBLISHED = "1645917431"
 	SCHEMA         = "https://test.com"
 	DATA_FORMAT    = "application/json"
+	ROOT           = "e23ea8cf-5e64-42d0-b3c6-54e5ab1dcf25"
+	PARENT         = "654a4593-4c01-4a6c-9cd9-6bf04bd3d441"
+	INVALID        = "<invalid>"
 )
 
 var _ = Describe("IdentityHub", func() {
@@ -67,7 +70,7 @@ var _ = Describe("IdentityHub", func() {
 		It("receives an error if RequestID is not len 36 (uuid v4)", func() {
 			request := &Request{
 				Target:    TARGET,
-				RequestId: "<invalid>",
+				RequestId: INVALID,
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())

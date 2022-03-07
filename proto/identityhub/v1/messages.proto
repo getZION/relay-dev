@@ -44,7 +44,8 @@ message MessageDescriptor {
   string datePublished = 6;
   string dateSort = 7;
   string root = 8;
-  string cid = 9;
+  string parent = 9;
+  string cid = 10;
 }
 
 message Attestation {

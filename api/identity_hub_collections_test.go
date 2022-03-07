@@ -69,7 +69,7 @@ var _ = Describe("IdentityHub Collections", func() {
 						{
 							Descriptor_: &MessageDescriptor{
 								Method:   COLLECTIONS_QUERY,
-								ObjectId: "<invalid>",
+								ObjectId: INVALID,
 							},
 						},
 					},
@@ -114,7 +114,7 @@ var _ = Describe("IdentityHub Collections", func() {
 							Descriptor_: &MessageDescriptor{
 								Method:   COLLECTIONS_QUERY,
 								ObjectId: OBJECT_ID,
-								Schema:   "<invalid>",
+								Schema:   INVALID,
 							},
 						},
 					},
@@ -161,7 +161,7 @@ var _ = Describe("IdentityHub Collections", func() {
 								Method:     COLLECTIONS_QUERY,
 								ObjectId:   OBJECT_ID,
 								Schema:     SCHEMA,
-								DataFormat: "<invalid>",
+								DataFormat: INVALID,
 							},
 						},
 					},
@@ -210,7 +210,7 @@ var _ = Describe("IdentityHub Collections", func() {
 								ObjectId:   OBJECT_ID,
 								Schema:     SCHEMA,
 								DataFormat: DATA_FORMAT,
-								DateSort:   "<invalid>",
+								DateSort:   INVALID,
 							},
 						},
 					},
@@ -224,9 +224,8 @@ var _ = Describe("IdentityHub Collections", func() {
 				Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
 			})
 
-			It("receives a response if a Message Descriptor has valid dateSort", func() {
+			It("receives a response if a Message Descriptor has valid dateSort (createdAscending)", func() {
 
-				//todo: test with other valid dateSort parameters
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
@@ -238,6 +237,84 @@ var _ = Describe("IdentityHub Collections", func() {
 								Schema:     SCHEMA,
 								DataFormat: DATA_FORMAT,
 								DateSort:   "createdAscending",
+							},
+						},
+					},
+				}
+				response, err := client.Process(ctx, request)
+				Expect(err).To(BeNil())
+				Expect(response).To(Not(BeNil()))
+				Expect(response.Replies).To(Not(BeNil()))
+				Expect(response.Replies).To(HaveLen(1))
+				Expect(response.Replies[0].Status).To(Not(BeNil()))
+				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+			})
+
+			It("receives a response if a Message Descriptor has valid dateSort (createdDescending)", func() {
+
+				request := &Request{
+					RequestId: REQUEST_ID,
+					Target:    TARGET,
+					Messages: []*Message{
+						{
+							Descriptor_: &MessageDescriptor{
+								Method:     COLLECTIONS_QUERY,
+								ObjectId:   OBJECT_ID,
+								Schema:     SCHEMA,
+								DataFormat: DATA_FORMAT,
+								DateSort:   "createdDescending",
+							},
+						},
+					},
+				}
+				response, err := client.Process(ctx, request)
+				Expect(err).To(BeNil())
+				Expect(response).To(Not(BeNil()))
+				Expect(response.Replies).To(Not(BeNil()))
+				Expect(response.Replies).To(HaveLen(1))
+				Expect(response.Replies[0].Status).To(Not(BeNil()))
+				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+			})
+
+			It("receives a response if a Message Descriptor has valid dateSort (publishedAscending)", func() {
+
+				request := &Request{
+					RequestId: REQUEST_ID,
+					Target:    TARGET,
+					Messages: []*Message{
+						{
+							Descriptor_: &MessageDescriptor{
+								Method:     COLLECTIONS_QUERY,
+								ObjectId:   OBJECT_ID,
+								Schema:     SCHEMA,
+								DataFormat: DATA_FORMAT,
+								DateSort:   "publishedAscending",
+							},
+						},
+					},
+				}
+				response, err := client.Process(ctx, request)
+				Expect(err).To(BeNil())
+				Expect(response).To(Not(BeNil()))
+				Expect(response.Replies).To(Not(BeNil()))
+				Expect(response.Replies).To(HaveLen(1))
+				Expect(response.Replies[0].Status).To(Not(BeNil()))
+				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+			})
+
+			It("receives a response if a Message Descriptor has valid dateSort (publishedDescending)", func() {
+
+				request := &Request{
+					RequestId: REQUEST_ID,
+					Target:    TARGET,
+					Messages: []*Message{
+						{
+							Descriptor_: &MessageDescriptor{
+								Method:     COLLECTIONS_QUERY,
+								ObjectId:   OBJECT_ID,
+								Schema:     SCHEMA,
+								DataFormat: DATA_FORMAT,
+								DateSort:   "publishedDescending",
 							},
 						},
 					},
@@ -284,7 +361,7 @@ var _ = Describe("IdentityHub Collections", func() {
 						{
 							Descriptor_: &MessageDescriptor{
 								Method:   COLLECTIONS_WRITE,
-								ObjectId: "<invalid>",
+								ObjectId: INVALID,
 							},
 						},
 					},
@@ -329,7 +406,7 @@ var _ = Describe("IdentityHub Collections", func() {
 							Descriptor_: &MessageDescriptor{
 								Method:      COLLECTIONS_WRITE,
 								ObjectId:    OBJECT_ID,
-								DateCreated: "<invalid>",
+								DateCreated: INVALID,
 							},
 						},
 					},
@@ -376,7 +453,7 @@ var _ = Describe("IdentityHub Collections", func() {
 								Method:      COLLECTIONS_WRITE,
 								ObjectId:    OBJECT_ID,
 								DateCreated: DATE_CREATED,
-								Schema:      "<invalid>",
+								Schema:      INVALID,
 							},
 						},
 					},
@@ -425,7 +502,7 @@ var _ = Describe("IdentityHub Collections", func() {
 								ObjectId:      OBJECT_ID,
 								DateCreated:   DATE_CREATED,
 								Schema:        SCHEMA,
-								DatePublished: "<invalid>",
+								DatePublished: INVALID,
 							},
 						},
 					},
@@ -500,7 +577,7 @@ var _ = Describe("IdentityHub Collections", func() {
 						{
 							Descriptor_: &MessageDescriptor{
 								Method:   COLLECTIONS_COMMIT,
-								ObjectId: "<invalid>",
+								ObjectId: INVALID,
 							},
 						},
 					},
@@ -545,7 +622,7 @@ var _ = Describe("IdentityHub Collections", func() {
 							Descriptor_: &MessageDescriptor{
 								Method:      COLLECTIONS_COMMIT,
 								ObjectId:    OBJECT_ID,
-								DateCreated: "<invalid>",
+								DateCreated: INVALID,
 							},
 						},
 					},
@@ -592,7 +669,7 @@ var _ = Describe("IdentityHub Collections", func() {
 								Method:      COLLECTIONS_COMMIT,
 								ObjectId:    OBJECT_ID,
 								DateCreated: DATE_CREATED,
-								Schema:      "<invalid>",
+								Schema:      INVALID,
 							},
 						},
 					},
@@ -641,7 +718,7 @@ var _ = Describe("IdentityHub Collections", func() {
 								ObjectId:      OBJECT_ID,
 								DateCreated:   DATE_CREATED,
 								Schema:        SCHEMA,
-								DatePublished: "<invalid>",
+								DatePublished: INVALID,
 							},
 						},
 					},
@@ -716,7 +793,7 @@ var _ = Describe("IdentityHub Collections", func() {
 						{
 							Descriptor_: &MessageDescriptor{
 								Method:   COLLECTIONS_DELETE,
-								ObjectId: "<invalid>",
+								ObjectId: INVALID,
 							},
 						},
 					},
