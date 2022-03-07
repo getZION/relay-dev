@@ -37,10 +37,8 @@ func CollectionsQuery(ctx context.Context, m *Message) (string, *MessageLevelErr
 	var schema *url.URL
 	var dataFormat *mimetype.MIME
 
-	if m.Descriptor_.ObjectId != "" {
-		if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
-			return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
-		}
+	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
 	}
 
 	if m.Descriptor_.Schema != "" {
@@ -59,6 +57,8 @@ func CollectionsQuery(ctx context.Context, m *Message) (string, *MessageLevelErr
 		m.Descriptor_.DateSort != "publishedAscending" && m.Descriptor_.DateSort != "publishedDescending") {
 		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, fmt.Errorf("invalid mime type: %s", m.Descriptor_.DataFormat))
 	}
+
+	//todo: check data & dataFormat only for application/json or do we need provide other formats?
 
 	//todo: process the request
 	fmt.Printf("request -> objectId: %s", objectId.String())
@@ -79,8 +79,8 @@ func CollectionsWrite(ctx context.Context, m *Message) (string, *MessageLevelErr
 
 		+ The object MUST contain a method property, and its value MUST be the string CollectionsWrite.
 		+ The object MUST contain an objectId property, and its value MUST be an [RFC4122] UUID Version 4 string.
-		+ The object MAY contain a schema property, and if present its value MUST be a URI string that indicates the schema of the associated data.
 		+ The object MUST contain a dateCreated property, and its value MUST be an Unix epoch timestamp that MUST be set and interpreted as the time the logical entry was created by the DID owner or another permitted party.
+		+ The object MAY contain a schema property, and if present its value MUST be a URI string that indicates the schema of the associated data.
 		+ The object MAY contain a datePublished property, and its value MUST be an Unix epoch timestamp that MUST be set and interpreted as the time the logical entry was published by the DID owner or another permitted party.
 
 		Processing Instructions
@@ -138,8 +138,8 @@ func CollectionsCommit(ctx context.Context, m *Message) (string, *MessageLevelEr
 
 		+ The object MUST contain a method property, and its value MUST be the string CollectionsCommit.
 		+ The object MUST contain an objectId property, and its value MUST be an [RFC4122] UUID Version 4 string.
-		+ The object MAY contain a schema property, and if present its value MUST be a URI string that indicates the schema of the associated data.
 		+ The object MUST contain a dateCreated property, and its value MUST be an Unix epoch timestamp that MUST be set and interpreted as the time the logical entry was created by the DID owner or another permitted party.
+		+ The object MAY contain a schema property, and if present its value MUST be a URI string that indicates the schema of the associated data.
 		+ The object MAY contain a datePublished property, and its value MUST be an Unix epoch timestamp that MUST be set and interpreted as the time the logical entry was published by the DID owner or another permitted party.
 
 	*/
@@ -152,11 +152,15 @@ func CollectionsCommit(ctx context.Context, m *Message) (string, *MessageLevelEr
 
 	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
 		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
-	} else if m.Descriptor_.Schema != "" {
+	}
+
+	if m.Descriptor_.Schema != "" {
 		if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
 			return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
 		}
-	} else if m.Descriptor_.DateCreated == "" {
+	}
+
+	if m.Descriptor_.DateCreated == "" {
 		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, fmt.Errorf("dateCreated cannot be null"))
 	} else if dateCreated, err = strconv.ParseInt(m.Descriptor_.DateCreated, 10, 64); err != nil {
 		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, err)
