@@ -26,7 +26,7 @@ func main() {
 	lightning.Connect()
 
 	// Connect to MySQL database
-	db, err = storage.Connect("root@tcp(localhost:3306)/relay3")
+	db, err = storage.Connect("root:root@tcp(localhost:3306)/relay3")
 	if err != nil {
 		panic(err)
 	}

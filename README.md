@@ -12,6 +12,7 @@ The new Zion relay server for decentralized social media and messaging.
 - [LND](https://github.com/lightningnetwork/lnd) - Lightning integration
 - [IPFS](https://docs.ipfs.io/concepts/what-is-ipfs/) - Decentralized media storage
 - [ION](https://identity.foundation/ion/) - DIDs anchored to Bitcoin
+- [Docker](https://www.docker.com/) - Containerization Tech
 
 ## Specifications
 We will gradually implement the following specifications:
@@ -41,6 +42,12 @@ Courtesy of [DIF](https://identity.foundation/)
 ![What are Identity Hubs?](docs/hubs1.png)
 
 ![DID + Hub Topology](docs/hubs2.png)
+
+### Development
+
+After the execute docker command written below, you can debug Relay project. Adminer will be running at `http://localhost:8080/` and MySQL will running at `localhost:3306`.
+
+> docker compose up --remove-orphans --force-recreate
 
 ### DID Resolver
 
