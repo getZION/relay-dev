@@ -1,30 +1,37 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
-	"strconv"
-	"time"
 
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
-	. "github.com/getzion/relay/utils"
 	"github.com/google/uuid"
 
 	"github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
 
 	"github.com/go-playground/validator/v10"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
-type IdentityHubService struct {
-	UnimplementedHubRequestServiceServer
+type (
+	interfaceMethodHandler func(ctx context.Context, m *Message) (string, *MessageLevelError)
 
-	validator                *validator.Validate
-	prefix                   cid.Prefix
-	validHubInterfaceMethods map[string]string
-}
+	IdentityHubService struct {
+		UnimplementedHubRequestServiceServer
+
+		validator                *validator.Validate
+		prefix                   cid.Prefix
+		validHubInterfaceMethods map[string]interfaceMethodHandler
+	}
+
+	MessageLevelError struct {
+		Message string
+		Code    int64
+		Error   error
+	}
+)
 
 const (
 	requestLevelProcessingErrorMessage string = "The request could not be processed correctly"
@@ -33,6 +40,33 @@ const (
 	improperlyConstructedErrorMessage   string = "The message was malformed or improperly constructed"
 	interfaceNotImplementedErrorMessage string = "The interface method is not implemented"
 	authorizationFailedErrorMessage     string = "The message failed authorization requirements"
+
+	messageSuccessfullyMessage string = "The message was successfully processed"
+)
+
+var (
+	prefix = cid.Prefix{
+		Version:  1,
+		Codec:    cid.Raw,
+		MhType:   multihash.SHA2_256,
+		MhLength: -1,
+	}
+
+	validHubInterfaceMethods = map[string]interfaceMethodHandler{
+		"CollectionsQuery":   CollectionsQuery,
+		"CollectionsWrite":   CollectionsWrite,
+		"CollectionsCommit":  CollectionsCommit,
+		"CollectionsDelete":  CollectionsDelete,
+		"ThreadsQuery":       ThreadsQuery,
+		"ThreadsCreate":      ThreadsCreate,
+		"ThreadsReply":       ThreadsReply,
+		"ThreadsClose":       ThreadsClose,
+		"ThreadsDelete":      ThreadsDelete,
+		"PermissionsRequest": PermissionsRequest,
+		"PermissionsQuery":   PermissionsQuery,
+		"PermissionsGrant":   PermissionsGrant,
+		"PermissionsRevoke":  PermissionsRevoke,
+	}
 )
 
 func InitIdentityHubService() *IdentityHubService {
@@ -40,28 +74,9 @@ func InitIdentityHubService() *IdentityHubService {
 	validator := validator.New()
 
 	identityHubService := &IdentityHubService{
-		validator: validator,
-		prefix: cid.Prefix{
-			Version:  1,
-			Codec:    cid.Raw,
-			MhType:   multihash.SHA2_256,
-			MhLength: -1,
-		},
-		validHubInterfaceMethods: map[string]string{
-			"CollectionsQuery":   "",
-			"CollectionsWrite":   "",
-			"CollectionsCommit":  "",
-			"CollectionsDelete":  "",
-			"ThreadsQuery":       "",
-			"ThreadsCreate":      "",
-			"ThreadsReply":       "",
-			"ThreadsClose":       "",
-			"ThreadsDelete":      "",
-			"PermissionsRequest": "",
-			"PermissionsQuery":   "",
-			"PermissionsGrant":   "",
-			"PermissionsRevoke":  "",
-		},
+		validator:                validator,
+		prefix:                   prefix,
+		validHubInterfaceMethods: validHubInterfaceMethods,
 	}
 
 	return identityHubService
@@ -71,8 +86,6 @@ func (hub *IdentityHubService) Process(ctx context.Context, r *Request) (*Respon
 	grpc.SendHeader(ctx, metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-unary"))
 	grpc.SetTrailer(ctx, metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-unary"))
 
-	exampleBytes, _ := json.Marshal(r)
-	messageId, err := hub.prefix.Sum(exampleBytes)
 	response := &Response{
 		RequestId: r.RequestId,
 		Status: &Status{
@@ -80,51 +93,82 @@ func (hub *IdentityHubService) Process(ctx context.Context, r *Request) (*Respon
 		},
 	}
 
-	if err != nil {
-		return hub.defaultRequestLevelStatusCoding(response, 500, requestLevelProcessingErrorMessage), nil
-	} else if r.RequestId == "" || r.Target == "" || len(r.Messages) == 0 {
-		return hub.defaultRequestLevelStatusCoding(response, 500, requestLevelProcessingErrorMessage), nil
+	if r.RequestId == "" || r.Target == "" || len(r.Messages) == 0 {
+		response.Status.Code = 500
+		response.Status.Message = requestLevelProcessingErrorMessage
+		return response, nil
 	} else if _, err := uuid.Parse(r.RequestId); err != nil {
-		return hub.defaultRequestLevelStatusCoding(response, 500, requestLevelProcessingErrorMessage), nil
+		response.Status.Code = 500
+		response.Status.Message = requestLevelProcessingErrorMessage
+		return response, nil
 	}
 
 	//todo: If the DID targeted by a request object is not found within the Hub instance, the implementation **MUST** produce a request-level status with the code 404, and **SHOULD** use Target DID not found within the Identity Hub instance as the status text
+	response.Replies = []*Reply{}
 
-	response.Replies = &Reply{
-		MessageId: messageId.String(),
-		Status: &Status{
-			Code: 200,
-		},
-	}
-
+	var method interfaceMethodHandler
+	var ok bool
 	for _, message := range r.Messages {
 
-		if message.Descriptor_ == nil || message.Descriptor_.Method == "" ||
-			len(message.Descriptor_.DateCreated) < 10 ||
-			(message.Data != "" && message.Descriptor_.DataFormat == "") {
-			return hub.defaultMessageLevelStatusCoding(response, 400, improperlyConstructedErrorMessage), nil
-		} else if _, err := uuid.Parse(message.Descriptor_.ObjectId); err != nil {
-			return hub.defaultMessageLevelStatusCoding(response, 400, improperlyConstructedErrorMessage), nil
-		} else if _, ok := hub.validHubInterfaceMethods[message.Descriptor_.Method]; !ok {
-			return hub.defaultMessageLevelStatusCoding(response, 501, interfaceNotImplementedErrorMessage), nil
+		reply := &Reply{
+			Status: &Status{},
 		}
 
-		dateSeconds, _ := strconv.Atoi(message.Descriptor_.DateCreated)
-		t := time.Unix(int64(dateSeconds), 0)
-		Log.Info().Msg(t.String())
+		messageByte, err := json.Marshal(message)
+		if err != nil {
+			reply.Status.Code = 500
+			reply.Status.Message = improperlyConstructedErrorMessage
+			response.Replies = append(response.Replies, reply)
+			//todo: how we handle internal server error?
+			continue
+		}
+
+		messageId, err := hub.prefix.Sum(messageByte)
+		if err != nil {
+			reply.Status.Code = 500
+			reply.Status.Message = improperlyConstructedErrorMessage
+			response.Replies = append(response.Replies, reply)
+			//todo: how we handle internal server error?
+			continue
+		}
+
+		reply.MessageId = messageId.String()
+
+		if message.Descriptor_ == nil || message.Descriptor_.Method == "" {
+			reply.Status.Code = 400
+			reply.Status.Message = improperlyConstructedErrorMessage
+			response.Replies = append(response.Replies, reply)
+			continue
+		} else if method, ok = hub.validHubInterfaceMethods[message.Descriptor_.Method]; !ok {
+			reply.Status.Code = 501
+			reply.Status.Message = interfaceNotImplementedErrorMessage
+			response.Replies = append(response.Replies, reply)
+			continue
+		}
+
+		entry, mErr := method(ctx, message)
+		if mErr != nil {
+			reply.Status.Code = mErr.Code
+			reply.Status.Message = mErr.Message
+			response.Replies = append(response.Replies, reply)
+			continue
+		}
+
+		if entry != "" {
+			reply.Entries = []string{entry}
+		}
+		reply.Status.Code = 200
+		reply.Status.Message = messageSuccessfullyMessage
+		response.Replies = append(response.Replies, reply)
 	}
 
 	return response, nil
 }
 
-func (hub *IdentityHubService) defaultRequestLevelStatusCoding(r *Response, code int64, message string) *Response {
-	r.Status.Code = code
-	r.Status.Message = message
-	return r
-}
-
-func (hub *IdentityHubService) defaultMessageLevelStatusCoding(r *Response, code int64, message string) *Response {
-	r.Replies.Status.Code = code
-	r.Replies.Status.Message = message
-	return r
+func NewMessageLevelError(code int64, message string, err error) *MessageLevelError {
+	return &MessageLevelError{
+		Code:    code,
+		Message: message,
+		Error:   err,
+	}
 }

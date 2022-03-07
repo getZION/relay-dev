@@ -38,9 +38,14 @@ message Message {
 message MessageDescriptor {
   string method = 1;
   string objectId = 2;
-  // string cid = 2;
-  string dataFormat = 3;
-  string dateCreated = 4;
+  string schema = 3;
+  string dataFormat = 4;
+  string dateCreated = 5;
+  string datePublished = 6;
+  string dateSort = 7;
+  string root = 8;
+  string parent = 9;
+  string cid = 10;
 }
 
 message Attestation {
