@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/fs"
 	"net"
 	"net/http"
 	"time"
@@ -10,12 +9,14 @@ import (
 	. "github.com/getzion/relay/api"
 	. "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/getzion/relay/lightning"
+	"github.com/getzion/relay/storage"
 	. "github.com/getzion/relay/utils"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	gorm "github.com/jinzhu/gorm"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/grpclog"
 )
 
+var db *gorm.DB
 var err error
 
 type grpcMultiplexer struct {
@@ -29,6 +30,13 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Connect to LND
 	lightning.Connect()
+
+	// Connect to MySQL database
+	db, err = storage.ConnectDB()
+	if err != nil {
+		Log.Fatal().Err(err)
+		// panic(err)
+	}
 
 	// Start listening on a TCP Port
 	lis, err := net.Listen("tcp", "127.0.0.1:9990")
@@ -82,43 +90,4 @@ func (m *grpcMultiplexer) Handler(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
-}
-
-func init_gRPC() {
-	grpcServer := grpc.NewServer()
-
-	RegisterNodeInfoServiceServer(grpcServer, &NodeinfoService{})
-
-	wrappedServer := grpcweb.WrapServer(grpcServer,
-		grpcweb.WithAllowNonRootResource(true),
-	)
-	handler := func(resp http.ResponseWriter, req *http.Request) {
-		resp.Header().Set("Access-Control-Allow-Origin", "*")
-		resp.Header().Set("Access-Control-Allow-Headers", "x-grpc-web,content-type")
-		if wrappedServer.IsGrpcWebRequest(req) {
-			Log.Info().Msg("Yes is gRPC web request")
-			wrappedServer.ServeHTTP(resp, req)
-		} else {
-			Log.Info().Str("donno", req.RequestURI).Msg("No is not gRPC web request")
-			if req.RequestURI == "/" {
-				// fmt.Fprint(resp, "hello WORLD")
-				distFS, _ := fs.Sub(nextFS, "ui/dist")
-				http.Handle("/", http.FileServer(http.FS(distFS)))
-				// resp.WriteHeader(200)
-
-			}
-		}
-	}
-
-	port := 5000
-
-	httpServer := http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
-		Handler: http.HandlerFunc(handler),
-	}
-
-	Log.Info().Int("port", port).Msg("gRPC listening")
-	if err = httpServer.ListenAndServe(); err != nil {
-		grpclog.Fatalf("failed starting http server: %v", err)
-	}
 }
