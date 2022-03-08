@@ -29,10 +29,16 @@ jobs:
         node-version: '14.x'
 
     - name: Install Node.js dependencies
-      run: npm install --global yarn && cd ui && npm install next react react-dom && yarn export && cd ..
+      working-directory: ui/
+      run: |
+        npm install --global yarn 
+        npm install next react react-dom 
+        yarn export
 
     - name: Build
+      working-directory: ./
       run: go build -v ./...
 
     - name: Test
+      working-directory: ./
       run: go test -v ./...
