@@ -12,10 +12,10 @@ export class Response extends jspb.Message {
   getStatus(): Status | undefined;
   setStatus(value?: Status): void;
 
-  hasReplies(): boolean;
-  clearReplies(): void;
-  getReplies(): Reply | undefined;
-  setReplies(value?: Reply): void;
+  clearRepliesList(): void;
+  getRepliesList(): Array<Reply>;
+  setRepliesList(value: Array<Reply>): void;
+  addReplies(value?: Reply, index?: number): Reply;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Response.AsObject;
@@ -31,7 +31,7 @@ export namespace Response {
   export type AsObject = {
     requestid: string,
     status?: Status.AsObject,
-    replies?: Reply.AsObject,
+    repliesList: Array<Reply.AsObject>,
   }
 }
 
@@ -68,8 +68,10 @@ export class Reply extends jspb.Message {
   getStatus(): Status | undefined;
   setStatus(value?: Status): void;
 
-  getEntries(): string;
-  setEntries(value: string): void;
+  clearEntriesList(): void;
+  getEntriesList(): Array<string>;
+  setEntriesList(value: Array<string>): void;
+  addEntries(value: string, index?: number): string;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Reply.AsObject;
@@ -85,7 +87,7 @@ export namespace Reply {
   export type AsObject = {
     messageid: string,
     status?: Status.AsObject,
-    entries: string,
+    entriesList: Array<string>,
   }
 }
 

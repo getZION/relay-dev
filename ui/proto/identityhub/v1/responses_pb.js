@@ -35,7 +35,7 @@ goog.exportSymbol('proto.proto.identityhub.v1.Status', null, global);
  * @constructor
  */
 proto.proto.identityhub.v1.Response = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.identityhub.v1.Response.repeatedFields_, null);
 };
 goog.inherits(proto.proto.identityhub.v1.Response, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -77,7 +77,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.proto.identityhub.v1.Reply = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.proto.identityhub.v1.Reply.repeatedFields_, null);
 };
 goog.inherits(proto.proto.identityhub.v1.Reply, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -87,6 +87,13 @@ if (goog.DEBUG && !COMPILED) {
    */
   proto.proto.identityhub.v1.Reply.displayName = 'proto.proto.identityhub.v1.Reply';
 }
+
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.identityhub.v1.Response.repeatedFields_ = [3];
 
 
 
@@ -121,7 +128,8 @@ proto.proto.identityhub.v1.Response.toObject = function(includeInstance, msg) {
   var f, obj = {
     requestid: jspb.Message.getFieldWithDefault(msg, 1, ""),
     status: (f = msg.getStatus()) && proto.proto.identityhub.v1.Status.toObject(includeInstance, f),
-    replies: (f = msg.getReplies()) && proto.proto.identityhub.v1.Reply.toObject(includeInstance, f)
+    repliesList: jspb.Message.toObjectList(msg.getRepliesList(),
+    proto.proto.identityhub.v1.Reply.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -170,7 +178,7 @@ proto.proto.identityhub.v1.Response.deserializeBinaryFromReader = function(msg, 
     case 3:
       var value = new proto.proto.identityhub.v1.Reply;
       reader.readMessage(value,proto.proto.identityhub.v1.Reply.deserializeBinaryFromReader);
-      msg.setReplies(value);
+      msg.addReplies(value);
       break;
     default:
       reader.skipField();
@@ -216,9 +224,9 @@ proto.proto.identityhub.v1.Response.serializeBinaryToWriter = function(message, 
       proto.proto.identityhub.v1.Status.serializeBinaryToWriter
     );
   }
-  f = message.getReplies();
-  if (f != null) {
-    writer.writeMessage(
+  f = message.getRepliesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
       3,
       f,
       proto.proto.identityhub.v1.Reply.serializeBinaryToWriter
@@ -283,39 +291,40 @@ proto.proto.identityhub.v1.Response.prototype.hasStatus = function() {
 
 
 /**
- * optional Reply replies = 3;
- * @return {?proto.proto.identityhub.v1.Reply}
+ * repeated Reply replies = 3;
+ * @return {!Array<!proto.proto.identityhub.v1.Reply>}
  */
-proto.proto.identityhub.v1.Response.prototype.getReplies = function() {
-  return /** @type{?proto.proto.identityhub.v1.Reply} */ (
-    jspb.Message.getWrapperField(this, proto.proto.identityhub.v1.Reply, 3));
+proto.proto.identityhub.v1.Response.prototype.getRepliesList = function() {
+  return /** @type{!Array<!proto.proto.identityhub.v1.Reply>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.proto.identityhub.v1.Reply, 3));
 };
 
 
 /**
- * @param {?proto.proto.identityhub.v1.Reply|undefined} value
+ * @param {!Array<!proto.proto.identityhub.v1.Reply>} value
  * @return {!proto.proto.identityhub.v1.Response} returns this
 */
-proto.proto.identityhub.v1.Response.prototype.setReplies = function(value) {
-  return jspb.Message.setWrapperField(this, 3, value);
+proto.proto.identityhub.v1.Response.prototype.setRepliesList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
 
 /**
- * Clears the message field making it undefined.
+ * @param {!proto.proto.identityhub.v1.Reply=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.proto.identityhub.v1.Reply}
+ */
+proto.proto.identityhub.v1.Response.prototype.addReplies = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.proto.identityhub.v1.Reply, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
  * @return {!proto.proto.identityhub.v1.Response} returns this
  */
-proto.proto.identityhub.v1.Response.prototype.clearReplies = function() {
-  return this.setReplies(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.proto.identityhub.v1.Response.prototype.hasReplies = function() {
-  return jspb.Message.getField(this, 3) != null;
+proto.proto.identityhub.v1.Response.prototype.clearRepliesList = function() {
+  return this.setRepliesList([]);
 };
 
 
@@ -480,6 +489,13 @@ proto.proto.identityhub.v1.Status.prototype.setMessage = function(value) {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.proto.identityhub.v1.Reply.repeatedFields_ = [3];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -513,7 +529,7 @@ proto.proto.identityhub.v1.Reply.toObject = function(includeInstance, msg) {
   var f, obj = {
     messageid: jspb.Message.getFieldWithDefault(msg, 1, ""),
     status: (f = msg.getStatus()) && proto.proto.identityhub.v1.Status.toObject(includeInstance, f),
-    entries: jspb.Message.getFieldWithDefault(msg, 3, "")
+    entriesList: (f = jspb.Message.getRepeatedField(msg, 3)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -561,7 +577,7 @@ proto.proto.identityhub.v1.Reply.deserializeBinaryFromReader = function(msg, rea
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setEntries(value);
+      msg.addEntries(value);
       break;
     default:
       reader.skipField();
@@ -607,9 +623,9 @@ proto.proto.identityhub.v1.Reply.serializeBinaryToWriter = function(message, wri
       proto.proto.identityhub.v1.Status.serializeBinaryToWriter
     );
   }
-  f = message.getEntries();
+  f = message.getEntriesList();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeRepeatedString(
       3,
       f
     );
@@ -673,20 +689,39 @@ proto.proto.identityhub.v1.Reply.prototype.hasStatus = function() {
 
 
 /**
- * optional string entries = 3;
- * @return {string}
+ * repeated string entries = 3;
+ * @return {!Array<string>}
  */
-proto.proto.identityhub.v1.Reply.prototype.getEntries = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+proto.proto.identityhub.v1.Reply.prototype.getEntriesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
+};
+
+
+/**
+ * @param {!Array<string>} value
+ * @return {!proto.proto.identityhub.v1.Reply} returns this
+ */
+proto.proto.identityhub.v1.Reply.prototype.setEntriesList = function(value) {
+  return jspb.Message.setField(this, 3, value || []);
 };
 
 
 /**
  * @param {string} value
+ * @param {number=} opt_index
  * @return {!proto.proto.identityhub.v1.Reply} returns this
  */
-proto.proto.identityhub.v1.Reply.prototype.setEntries = function(value) {
-  return jspb.Message.setProto3StringField(this, 3, value);
+proto.proto.identityhub.v1.Reply.prototype.addEntries = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 3, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.proto.identityhub.v1.Reply} returns this
+ */
+proto.proto.identityhub.v1.Reply.prototype.clearEntriesList = function() {
+  return this.setEntriesList([]);
 };
 
 
