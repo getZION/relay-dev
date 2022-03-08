@@ -48,11 +48,29 @@ export class MessageDescriptor extends jspb.Message {
   getObjectid(): string;
   setObjectid(value: string): void;
 
+  getSchema(): string;
+  setSchema(value: string): void;
+
   getDataformat(): string;
   setDataformat(value: string): void;
 
   getDatecreated(): string;
   setDatecreated(value: string): void;
+
+  getDatepublished(): string;
+  setDatepublished(value: string): void;
+
+  getDatesort(): string;
+  setDatesort(value: string): void;
+
+  getRoot(): string;
+  setRoot(value: string): void;
+
+  getParent(): string;
+  setParent(value: string): void;
+
+  getCid(): string;
+  setCid(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessageDescriptor.AsObject;
@@ -68,8 +86,14 @@ export namespace MessageDescriptor {
   export type AsObject = {
     method: string,
     objectid: string,
+    schema: string,
     dataformat: string,
     datecreated: string,
+    datepublished: string,
+    datesort: string,
+    root: string,
+    parent: string,
+    cid: string,
   }
 }
 

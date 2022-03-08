@@ -448,8 +448,14 @@ proto.proto.identityhub.v1.MessageDescriptor.toObject = function(includeInstance
   var f, obj = {
     method: jspb.Message.getFieldWithDefault(msg, 1, ""),
     objectid: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    dataformat: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    datecreated: jspb.Message.getFieldWithDefault(msg, 4, "")
+    schema: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    dataformat: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    datecreated: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    datepublished: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    datesort: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    root: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    parent: jspb.Message.getFieldWithDefault(msg, 9, ""),
+    cid: jspb.Message.getFieldWithDefault(msg, 10, "")
   };
 
   if (includeInstance) {
@@ -496,11 +502,35 @@ proto.proto.identityhub.v1.MessageDescriptor.deserializeBinaryFromReader = funct
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setDataformat(value);
+      msg.setSchema(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
+      msg.setDataformat(value);
+      break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
       msg.setDatecreated(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDatepublished(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDatesort(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setRoot(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setParent(value);
+      break;
+    case 10:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCid(value);
       break;
     default:
       reader.skipField();
@@ -545,17 +575,59 @@ proto.proto.identityhub.v1.MessageDescriptor.serializeBinaryToWriter = function(
       f
     );
   }
-  f = message.getDataformat();
+  f = message.getSchema();
   if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = message.getDatecreated();
+  f = message.getDataformat();
   if (f.length > 0) {
     writer.writeString(
       4,
+      f
+    );
+  }
+  f = message.getDatecreated();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
+      f
+    );
+  }
+  f = message.getDatepublished();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
+  f = message.getDatesort();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
+  f = message.getRoot();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
+  f = message.getParent();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
+      f
+    );
+  }
+  f = message.getCid();
+  if (f.length > 0) {
+    writer.writeString(
+      10,
       f
     );
   }
@@ -599,10 +671,10 @@ proto.proto.identityhub.v1.MessageDescriptor.prototype.setObjectid = function(va
 
 
 /**
- * optional string dataFormat = 3;
+ * optional string schema = 3;
  * @return {string}
  */
-proto.proto.identityhub.v1.MessageDescriptor.prototype.getDataformat = function() {
+proto.proto.identityhub.v1.MessageDescriptor.prototype.getSchema = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -611,16 +683,16 @@ proto.proto.identityhub.v1.MessageDescriptor.prototype.getDataformat = function(
  * @param {string} value
  * @return {!proto.proto.identityhub.v1.MessageDescriptor} returns this
  */
-proto.proto.identityhub.v1.MessageDescriptor.prototype.setDataformat = function(value) {
+proto.proto.identityhub.v1.MessageDescriptor.prototype.setSchema = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional string dateCreated = 4;
+ * optional string dataFormat = 4;
  * @return {string}
  */
-proto.proto.identityhub.v1.MessageDescriptor.prototype.getDatecreated = function() {
+proto.proto.identityhub.v1.MessageDescriptor.prototype.getDataformat = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -629,8 +701,116 @@ proto.proto.identityhub.v1.MessageDescriptor.prototype.getDatecreated = function
  * @param {string} value
  * @return {!proto.proto.identityhub.v1.MessageDescriptor} returns this
  */
-proto.proto.identityhub.v1.MessageDescriptor.prototype.setDatecreated = function(value) {
+proto.proto.identityhub.v1.MessageDescriptor.prototype.setDataformat = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional string dateCreated = 5;
+ * @return {string}
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.getDatecreated = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.identityhub.v1.MessageDescriptor} returns this
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.setDatecreated = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional string datePublished = 6;
+ * @return {string}
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.getDatepublished = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.identityhub.v1.MessageDescriptor} returns this
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.setDatepublished = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional string dateSort = 7;
+ * @return {string}
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.getDatesort = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.identityhub.v1.MessageDescriptor} returns this
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.setDatesort = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional string root = 8;
+ * @return {string}
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.getRoot = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.identityhub.v1.MessageDescriptor} returns this
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.setRoot = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+/**
+ * optional string parent = 9;
+ * @return {string}
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.getParent = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.identityhub.v1.MessageDescriptor} returns this
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.setParent = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
+};
+
+
+/**
+ * optional string cid = 10;
+ * @return {string}
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.getCid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 10, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.identityhub.v1.MessageDescriptor} returns this
+ */
+proto.proto.identityhub.v1.MessageDescriptor.prototype.setCid = function(value) {
+  return jspb.Message.setProto3StringField(this, 10, value);
 };
 
 
