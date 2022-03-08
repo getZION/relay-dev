@@ -7,6 +7,7 @@ import (
 	"time"
 
 	. "github.com/getzion/relay/api"
+	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	. "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/getzion/relay/lightning"
 	"github.com/getzion/relay/storage"
@@ -35,25 +36,27 @@ func main() {
 	db, err = storage.ConnectDB()
 	if err != nil {
 		Log.Fatal().Err(err)
-		// panic(err)
 	}
-
 
 	// Initialize gRPC server
 	init_gRPC()
 }
 
 func init_gRPC() {
-	grpcServer := grpc.NewServer()
-
-	identityHub := InitIdentityHubService()
+	// Start listening on a TCP Port
+	lis, err := net.Listen("tcp", "127.0.0.1:9990")
+	if err != nil {
+		Log.Fatal().Err(err)
+	}
 
 	// We need to tell the code WHAT TO do on each request, ie. The business logic.
 	// In GRPC cases, the Server is acutally just an Interface
 	// So we need a struct which fulfills the server interface
 	// see server.go
 	apiserver := grpc.NewServer()
+	identityHub := InitIdentityHubService()
 	RegisterNodeInfoServiceServer(apiserver, &NodeinfoService{})
+	hub.RegisterHubRequestServiceServer(apiserver, identityHub)
 	// Start serving in a goroutine to not block
 	go func() {
 		Log.Fatal().Err(apiserver.Serve(lis))
