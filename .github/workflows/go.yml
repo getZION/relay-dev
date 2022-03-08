@@ -8,6 +8,8 @@ on:
     paths:
       - '!ui/'
       - '!.vscode/'
+      - '!.gitignore'
+      - '!Makefile'
 
 jobs:
 
@@ -20,6 +22,15 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: 1.17
+
+    - name: Set up Node.js ⚙️
+      uses: actions/setup-node@v2
+      with:
+        node-version: '17.x'
+
+    # ESLint and Prettier must be in `package.json`
+    - name: Install Node.js dependencies
+      run: npm install --global yarn && cd ui && yarn export && cd ..
 
     - name: Build
       run: go build -v ./...
