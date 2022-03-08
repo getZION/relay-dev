@@ -30,7 +30,7 @@ jobs:
 
     # ESLint and Prettier must be in `package.json`
     - name: Install Node.js dependencies
-      run: npm install --global yarn && cd ui && yarn export && cd ..
+      run: npm install --global yarn && cd ui && npx next -h && yarn export && cd ..
 
     - name: Build
       run: go build -v ./...
