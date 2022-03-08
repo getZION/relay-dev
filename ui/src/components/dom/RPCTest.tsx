@@ -29,11 +29,11 @@ interface NodeInfoObject {
 
 export const RPCTest = () => {
   useEffect(() => {
-    console.log("Let's test RPC connection and community creation!")
+    console.log('Testing RPC connection')
 
     grpc.unary(NodeInfoService.GetNodeInfo, {
       request: nodeInfoRequest,
-      host: 'https://mouse.zion.fyi/',
+      host: 'https://mouse.zion.fyi',
       onEnd: (res) => {
         if (res.message) {
           const info = res.message.toObject() as NodeInfoObject
