@@ -5,21 +5,28 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	rp "github.com/getzion/relampago"
+	. "github.com/getzion/relay/utils"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	"github.com/lightningnetwork/lnd/macaroons"
-	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	macaroon "gopkg.in/macaroon.v2"
 )
 
 type ConnectionParams struct {
-	Host         string `envconfig:"LND_HOST"`
-	CertPath     string `envconfig:"LND_CERT_PATH"`
-	MacaroonPath string `envconfig:"LND_MACAROON_PATH"`
+	Host            string `envconfig:"LND_HOST"`
+	KeyBucketRegion string `envconfig:"S3_KEY_BUCKET_REGION"`
+	KeyBucketName   string `envconfig:"S3_KEY_BUCKET_NAME"`
+	MacaroonKey     string `envconfig:"S3_MACAROON_KEY"`
+	CertKey         string `envconfig:"S3_CERT_KEY"`
 }
 
 type LndWallet struct {
@@ -33,25 +40,27 @@ type LndWallet struct {
 	paymentStatusListeners []chan rp.PaymentStatus
 }
 
-var log = zerolog.New(os.Stderr).Output(zerolog.ConsoleWriter{Out: os.Stdout})
 var wallet LndWallet
+var params ConnectionParams
 
 func Connect() (*LndWallet, error) {
-	var params ConnectionParams
 	envconfig.Process("", &params)
-	log.Info().Str("LND_HOST", params.Host).Msg("Connecting to LND...")
+	LoadLNDCredentials()
+
+	Log.Info().Str("LND_HOST", params.Host).Msg("Connecting to LND...")
 
 	var dialOpts []grpc.DialOption
 
 	// TLS
-	tls, err := credentials.NewClientTLSFromFile(params.CertPath, "")
+	tls, err := credentials.NewClientTLSFromFile("tls.cert", "")
 	if err != nil {
+		log.Fatal().Err(err)
 		return nil, err
 	}
 	dialOpts = append(dialOpts, grpc.WithTransportCredentials(tls))
 
 	// Macaroon Auth
-	macBytes, err := ioutil.ReadFile(params.MacaroonPath)
+	macBytes, err := ioutil.ReadFile("admin.macaroon")
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +94,7 @@ func Connect() (*LndWallet, error) {
 
 	balance, pubkey := GetNodeInfo()
 
-	log.Info().Uint64("Balance", balance).Str("Pubkey", pubkey).Msg("Connected to LND.")
+	Log.Info().Uint64("Balance", balance).Str("Pubkey", pubkey).Msg("Connected to LND.")
 
 	return l, nil
 }
@@ -106,4 +115,51 @@ func GetNodeInfo() (balance uint64, pubkey string) {
 	pubkey = info.IdentityPubkey
 
 	return balance, pubkey
+}
+
+func LoadLNDCredentials() {
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String(params.KeyBucketRegion)},
+	)
+	if err != nil {
+		Log.Fatal().Err(err)
+	}
+
+	macaroonFile, err := os.Create("admin.macaroon")
+	if err != nil {
+		Log.Fatal().Err(err)
+	}
+	downloader := s3manager.NewDownloader(sess)
+	downloaded, err := downloader.Download(macaroonFile, &s3.GetObjectInput{
+		Bucket: aws.String(params.KeyBucketName),
+		Key:    aws.String(params.MacaroonKey),
+	})
+	if err != nil {
+		Log.Fatal().Err(err)
+	}
+
+	Log.Info().Int64("bytes", downloaded).Msg("Loaded macaroon file.")
+
+	file, err := os.Create("tls.cert")
+	if err != nil {
+		Log.Fatal().Err(err)
+	}
+	defer file.Close()
+	downloaded2, err := downloader.Download(file, &s3.GetObjectInput{
+		Bucket: aws.String(params.KeyBucketName),
+		Key:    aws.String(params.CertKey),
+	})
+
+	if err != nil {
+		Log.Fatal().Err(err)
+	}
+
+	Log.Info().Int64("bytes", downloaded2).Msg("Loaded cert file.")
+}
+
+type LndCredentials struct {
+	macaroon     []byte
+	macaroonFile *os.File
+	cert         []byte
+	certFile     *os.File
 }

@@ -3,11 +3,8 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
-const withOffline = require('next-offline')
-
 const nextConfig = {
   webpack(config, { webpack, dev, isServer }) {
-
     // audio support
     config.module.rules.push({
       test: /\.(ogg|mp3|wav|mpe?g)$/i,
@@ -48,7 +45,6 @@ if (process.env.EXPORT !== 'true') {
 module.exports = plugins(
   [
     [
-      withOffline,
       {
         workboxOpts: {
           swDest: process.env.NEXT_EXPORT

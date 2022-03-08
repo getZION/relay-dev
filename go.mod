@@ -7,6 +7,7 @@ require (
 	github.com/getzion/relampago v0.2.1
 	github.com/go-playground/validator/v10 v10.10.0
 	github.com/google/uuid v1.3.0
+	github.com/gorilla/mux v1.8.0
 	github.com/improbable-eng/grpc-web v0.15.0
 	github.com/infobloxopen/atlas-app-toolkit v1.1.2
 	github.com/infobloxopen/protoc-gen-gorm v1.1.0
@@ -19,7 +20,7 @@ require (
 	github.com/onsi/gomega v1.18.1
 	github.com/rs/zerolog v1.26.1
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/net v0.0.0-20220114011407-0dd24b26b47d
+	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
 	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.27.1
@@ -30,6 +31,7 @@ require (
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/aead/siphash v1.0.1 // indirect
 	github.com/andybalholm/brotli v1.0.3 // indirect
+	github.com/aws/aws-sdk-go v1.43.12 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd v0.22.0-beta.0.20211005184431-e3449998be39 // indirect
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
@@ -78,6 +80,7 @@ require (
 	github.com/jackc/pgtype v1.8.1 // indirect
 	github.com/jackc/pgx/v4 v4.13.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/jrick/logrotate v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
