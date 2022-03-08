@@ -33,7 +33,7 @@ const Page = () => {
     <>
       <DOM />
       {/* @ts-ignore */}
-      <R3F r3f />
+      {/* <R3F r3f /> */}
     </>
   )
 }
