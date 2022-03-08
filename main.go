@@ -38,11 +38,15 @@ func main() {
 		// panic(err)
 	}
 
-	// Start listening on a TCP Port
-	lis, err := net.Listen("tcp", "127.0.0.1:9990")
-	if err != nil {
-		Log.Fatal().Err(err)
-	}
+
+	// Initialize gRPC server
+	init_gRPC()
+}
+
+func init_gRPC() {
+	grpcServer := grpc.NewServer()
+
+	identityHub := InitIdentityHubService()
 
 	// We need to tell the code WHAT TO do on each request, ie. The business logic.
 	// In GRPC cases, the Server is acutally just an Interface
