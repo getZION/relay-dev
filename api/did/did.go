@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	. "github.com/getzion/relay/utils"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -38,7 +38,7 @@ func Parse(didUrl string) *ParsedDID {
 	r := regexp.MustCompile(DID_MATCHER)
 	match := r.MatchString(didUrl)
 
-	Log.Info().Bool("match", match).Str("didUrl", didUrl).Msg("Parse")
+	logrus.Infof("match: %s, didUrl: %s", match, didUrl)
 
 	if !match {
 		return nil

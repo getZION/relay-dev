@@ -6,19 +6,17 @@ import (
 	"net/http"
 	"time"
 
-	. "github.com/getzion/relay/api"
+	"github.com/getzion/relay/api/database"
+	"github.com/getzion/relay/api/datastore"
+	"github.com/getzion/relay/api/identityhub"
+	"github.com/getzion/relay/api/lightning"
+	"github.com/getzion/relay/api/nodeinfo"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
-	. "github.com/getzion/relay/gen/proto/zion/v1"
-	"github.com/getzion/relay/lightning"
-	"github.com/getzion/relay/storage"
-	. "github.com/getzion/relay/utils"
+	zion "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
-	gorm "github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
-
-var db *gorm.DB
-var err error
 
 type grpcMultiplexer struct {
 	*grpcweb.WrappedGrpcServer
@@ -29,24 +27,29 @@ func helloWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	//todo: move to nodeinfo
 	// Connect to LND
 	lightning.Connect()
 
-	// Connect to MySQL database
-	db, err = storage.ConnectDB()
+	connection, err := database.NewDatabase("mysql")
 	if err != nil {
-		Log.Fatal().Err(err)
+		logrus.Panic(err)
+	}
+
+	store, err := datastore.NewStore(connection)
+	if err != nil {
+		logrus.Panic(err)
 	}
 
 	// Initialize gRPC server
-	init_gRPC()
+	init_gRPC(store)
 }
 
-func init_gRPC() {
+func init_gRPC(store *datastore.Store) {
 	// Start listening on a TCP Port
 	lis, err := net.Listen("tcp", "127.0.0.1:9990")
 	if err != nil {
-		Log.Fatal().Err(err)
+		logrus.Panic(err)
 	}
 
 	// We need to tell the code WHAT TO do on each request, ie. The business logic.
@@ -54,12 +57,12 @@ func init_gRPC() {
 	// So we need a struct which fulfills the server interface
 	// see server.go
 	apiserver := grpc.NewServer()
-	identityHub := InitIdentityHubService()
-	RegisterNodeInfoServiceServer(apiserver, &NodeinfoService{})
+	identityHub := identityhub.InitIdentityHubService(store)
+	zion.RegisterNodeInfoServiceServer(apiserver, &nodeinfo.NodeinfoService{})
 	hub.RegisterHubRequestServiceServer(apiserver, identityHub)
 	// Start serving in a goroutine to not block
 	go func() {
-		Log.Fatal().Err(apiserver.Serve(lis))
+		logrus.Fatal(apiserver.Serve(lis))
 	}()
 
 	// Wrap the GRPC Server in grpc-web and also host the UI
@@ -85,7 +88,7 @@ func init_gRPC() {
 		ReadTimeout:  15 * time.Second,
 	}
 	// Serve the webapp over TLS
-	Log.Fatal().Err(srv.ListenAndServe())
+	logrus.Error(srv.ListenAndServe())
 }
 
 // Handler is used to route requests to either grpc or to regular http

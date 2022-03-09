@@ -10,7 +10,13 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/main.go",
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "DB_HOST": "localhost:3306",
+                "DB_NAME": "relay3",
+                "DB_USER": "root",
+                "DB_PASS": "root",
+            }
         }
     ]
 }

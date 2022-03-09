@@ -1,19 +1,19 @@
-package api
+package identityhub
 
 import (
 	"context"
 	"fmt"
 	"net/url"
 
-	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/google/uuid"
 )
 
-func ThreadsQuery(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func ThreadsQuery(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 	return "", nil
 }
 
-func ThreadsCreate(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func ThreadsCreate(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID
@@ -30,7 +30,7 @@ func ThreadsCreate(ctx context.Context, m *Message) (string, *MessageLevelError)
 	return "", nil
 }
 
-func ThreadsReply(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func ThreadsReply(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID
@@ -53,7 +53,7 @@ func ThreadsReply(ctx context.Context, m *Message) (string, *MessageLevelError) 
 	return "", nil
 }
 
-func ThreadsClose(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func ThreadsClose(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var root uuid.UUID
@@ -67,7 +67,7 @@ func ThreadsClose(ctx context.Context, m *Message) (string, *MessageLevelError) 
 	return "", nil
 }
 
-func ThreadsDelete(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func ThreadsDelete(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var root uuid.UUID
