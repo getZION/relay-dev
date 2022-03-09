@@ -9,6 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
 )
 
@@ -34,7 +35,7 @@ var _ = Describe("IdentityHub", func() {
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		conn, err = grpc.DialContext(ctx, "", grpc.WithInsecure(), grpc.WithContextDialer(dialer()))
+		conn, err = grpc.DialContext(ctx, "", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithContextDialer(dialer()))
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -48,6 +48,7 @@ const (
 )
 
 var (
+	//note: https://github.com/ipfs/go-cid maybe we can use this package
 	prefix = cid.Prefix{
 		Version:  1,
 		Codec:    cid.Raw,
