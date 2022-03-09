@@ -1,4 +1,4 @@
-package api
+package identityhub
 
 import (
 	"context"
@@ -7,11 +7,11 @@ import (
 	"strconv"
 
 	"github.com/gabriel-vasile/mimetype"
-	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/google/uuid"
 )
 
-func CollectionsQuery(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func CollectionsQuery(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID
@@ -50,7 +50,7 @@ func CollectionsQuery(ctx context.Context, m *Message) (string, *MessageLevelErr
 	return "", nil
 }
 
-func CollectionsWrite(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func CollectionsWrite(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	/*
 
@@ -99,7 +99,7 @@ func CollectionsWrite(ctx context.Context, m *Message) (string, *MessageLevelErr
 	return "", nil
 }
 
-func CollectionsCommit(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func CollectionsCommit(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID
@@ -137,7 +137,7 @@ func CollectionsCommit(ctx context.Context, m *Message) (string, *MessageLevelEr
 	return "", nil
 }
 
-func CollectionsDelete(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func CollectionsDelete(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID

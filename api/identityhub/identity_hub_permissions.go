@@ -1,15 +1,15 @@
-package api
+package identityhub
 
 import (
 	"context"
 	"fmt"
 	"net/url"
 
-	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/google/uuid"
 )
 
-func PermissionsRequest(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func PermissionsRequest(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var schema *url.URL
@@ -23,7 +23,7 @@ func PermissionsRequest(ctx context.Context, m *Message) (string, *MessageLevelE
 	return "", nil
 }
 
-func PermissionsQuery(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func PermissionsQuery(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var schema *url.URL
@@ -37,7 +37,7 @@ func PermissionsQuery(ctx context.Context, m *Message) (string, *MessageLevelErr
 	return "", nil
 }
 
-func PermissionsGrant(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func PermissionsGrant(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var schema *url.URL
@@ -51,7 +51,7 @@ func PermissionsGrant(ctx context.Context, m *Message) (string, *MessageLevelErr
 	return "", nil
 }
 
-func PermissionsRevoke(ctx context.Context, m *Message) (string, *MessageLevelError) {
+func PermissionsRevoke(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID

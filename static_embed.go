@@ -5,8 +5,8 @@ import (
 	"io/fs"
 	"net/http"
 
-	. "github.com/getzion/relay/utils"
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 )
 
 //go:embed ui/dist
@@ -20,7 +20,7 @@ var nextFS embed.FS
 
 func serveStaticClient(router *mux.Router) {
 	if clientFS, err := fs.Sub(nextFS, "ui/dist"); err != nil {
-		Log.Fatal().Err(err).Msg("failed to load static files subdir")
+		logrus.Fatal("failed to load static files subdir")
 		return
 	} else {
 		spaFS := SpaFS{clientFS}

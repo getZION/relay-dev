@@ -19,7 +19,7 @@ require (
 	github.com/multiformats/go-multihash v0.0.15
 	github.com/onsi/ginkgo/v2 v2.1.3
 	github.com/onsi/gomega v1.18.1
-	github.com/rs/zerolog v1.26.1
+	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
@@ -99,7 +99,6 @@ require (
 	github.com/lightningnetwork/lnd/queue v1.1.0 // indirect
 	github.com/lightningnetwork/lnd/ticker v1.1.0 // indirect
 	github.com/ltcsuite/ltcd v0.0.0-20190101042124-f37f8bf35796 // indirect
-	github.com/magefile/mage v1.10.0 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mholt/archiver/v3 v3.5.0 // indirect
@@ -122,7 +121,6 @@ require (
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/rogpeppe/fastuuid v1.2.0 // indirect
 	github.com/rs/cors v1.7.0 // indirect
-	github.com/sirupsen/logrus v1.8.0 // indirect
 	github.com/soheilhy/cmux v0.1.5 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20201229170055-e5319fda7802 // indirect
@@ -156,6 +154,7 @@ require (
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba // indirect
+	golang.org/x/tools v0.1.7 // indirect
 	gopkg.in/errgo.v1 v1.0.1 // indirect
 	gopkg.in/macaroon-bakery.v2 v2.0.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect

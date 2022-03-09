@@ -10,12 +10,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	rp "github.com/getzion/relampago"
-	. "github.com/getzion/relay/utils"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/lightningnetwork/lnd/lnrpc"
 	"github.com/lightningnetwork/lnd/lnrpc/routerrpc"
 	"github.com/lightningnetwork/lnd/macaroons"
-	"github.com/rs/zerolog/log"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	macaroon "gopkg.in/macaroon.v2"
@@ -44,17 +43,20 @@ var wallet LndWallet
 var params ConnectionParams
 
 func Connect() (*LndWallet, error) {
+	//todo: need to change and must work on development environment
+	return nil, nil
+
 	envconfig.Process("", &params)
 	LoadLNDCredentials()
 
-	Log.Info().Str("LND_HOST", params.Host).Msg("Connecting to LND...")
+	logrus.Infof("Connecting to LND: %s", params.Host)
 
 	var dialOpts []grpc.DialOption
 
 	// TLS
 	tls, err := credentials.NewClientTLSFromFile("tls.cert", "")
 	if err != nil {
-		log.Fatal().Err(err)
+		logrus.Fatal(err)
 		return nil, err
 	}
 	dialOpts = append(dialOpts, grpc.WithTransportCredentials(tls))
@@ -93,8 +95,7 @@ func Connect() (*LndWallet, error) {
 	wallet = *l
 
 	balance, pubkey := GetNodeInfo()
-
-	Log.Info().Uint64("Balance", balance).Str("Pubkey", pubkey).Msg("Connected to LND.")
+	logrus.Infof("Balance: %d, PubKey: %s Connected to LND", balance, pubkey)
 
 	return l, nil
 }
@@ -102,15 +103,14 @@ func Connect() (*LndWallet, error) {
 func GetNodeInfo() (balance uint64, pubkey string) {
 	res, err := wallet.Lightning.ChannelBalance(context.Background(), &lnrpc.ChannelBalanceRequest{})
 	if err != nil {
-		log.Fatal().Err(err).Msg("Error calling ChannelBalance")
+		logrus.Panicf("Error calling ChannelBalance: %v", err)
 		panic(err)
 	}
 	balance = uint64(res.LocalBalance.Sat)
 
-	info, err2 := wallet.Lightning.GetInfo(context.Background(), &lnrpc.GetInfoRequest{})
-	if err2 != nil {
-		log.Fatal().Err(err2).Msg("Error calling GetInfo")
-		panic(err2)
+	info, err := wallet.Lightning.GetInfo(context.Background(), &lnrpc.GetInfoRequest{})
+	if err != nil {
+		logrus.Panicf("Error calling GetInfo: %v", err)
 	}
 	pubkey = info.IdentityPubkey
 
@@ -122,44 +122,37 @@ func LoadLNDCredentials() {
 		Region: aws.String(params.KeyBucketRegion)},
 	)
 	if err != nil {
-		Log.Fatal().Err(err)
+		logrus.Panic(err)
 	}
 
 	macaroonFile, err := os.Create("admin.macaroon")
 	if err != nil {
-		Log.Fatal().Err(err)
+		logrus.Panic(err)
 	}
 	downloader := s3manager.NewDownloader(sess)
-	downloaded, err := downloader.Download(macaroonFile, &s3.GetObjectInput{
+	_, err = downloader.Download(macaroonFile, &s3.GetObjectInput{
 		Bucket: aws.String(params.KeyBucketName),
 		Key:    aws.String(params.MacaroonKey),
 	})
 	if err != nil {
-		Log.Fatal().Err(err)
+		logrus.Panic(err)
 	}
 
-	Log.Info().Int64("bytes", downloaded).Msg("Loaded macaroon file.")
+	logrus.Infof("Loaded macaroon file.")
 
 	file, err := os.Create("tls.cert")
 	if err != nil {
-		Log.Fatal().Err(err)
+		logrus.Panic(err)
 	}
 	defer file.Close()
-	downloaded2, err := downloader.Download(file, &s3.GetObjectInput{
+	_, err = downloader.Download(file, &s3.GetObjectInput{
 		Bucket: aws.String(params.KeyBucketName),
 		Key:    aws.String(params.CertKey),
 	})
 
 	if err != nil {
-		Log.Fatal().Err(err)
+		logrus.Panic(err)
 	}
 
-	Log.Info().Int64("bytes", downloaded2).Msg("Loaded cert file.")
-}
-
-type LndCredentials struct {
-	macaroon     []byte
-	macaroonFile *os.File
-	cert         []byte
-	certFile     *os.File
+	logrus.Infof("Loaded cert file.")
 }

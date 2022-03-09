@@ -8,11 +8,12 @@ The new Zion relay server for decentralized social media and messaging.
   - Connects to a funding source - initially [LND](https://github.com/lightningnetwork/lnd)
 
 ## Tech Stack
-- [Go](https://go.dev/) 1.17
+- [Go](https://go.dev/) - v1.17
 - [LND](https://github.com/lightningnetwork/lnd) - Lightning integration
 - [IPFS](https://docs.ipfs.io/concepts/what-is-ipfs/) - Decentralized media storage
 - [ION](https://identity.foundation/ion/) - DIDs anchored to Bitcoin
-- [Docker](https://www.docker.com/) - Containerization Tech
+- [Nodejs](https://nodejs.org/) - v14.19.0
+- [Docker](https://www.docker.com/) - Containerization Technology
 
 ## Specifications
 We will gradually implement the following specifications:
@@ -57,3 +58,10 @@ Make some researches about DID Resolver
   - https://github.com/nuts-foundation/go-did
   - https://github.com/ockam-network/did
   - https://github.com/hyperledger/aries-framework-go
+
+### Proto Validation
+
+  - https://wiki.nikitavoloboev.xyz/programming/protocol-buffers
+
+
+https://github.com/decentralized-identity/identity-hub/blob/main/packages/implementations/javascript/lib/storage.mjs

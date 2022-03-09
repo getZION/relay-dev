@@ -4,8 +4,6 @@ import (
 	"encoding/base64"
 	"regexp"
 	"strings"
-
-	. "github.com/getzion/relay/utils"
 )
 
 const (
@@ -38,7 +36,7 @@ func Parse(didUrl string) *ParsedDID {
 	r := regexp.MustCompile(DID_MATCHER)
 	match := r.MatchString(didUrl)
 
-	Log.Info().Bool("match", match).Str("didUrl", didUrl).Msg("Parse")
+	//Log.Info().Bool("match", match).Str("didUrl", didUrl).Msg("Parse")
 
 	if !match {
 		return nil
