@@ -24,9 +24,9 @@ message User {
     primary_key: true
   }];
   // User's decentralized identifier (DID), e.g. did:ion:[fingerprint]
-  string did = 2; // Required
+  string did = 2; // Required; unique
   // User's username, unique in Zion
-  string username = 3; // Required
+  string username = 3; // Required; unique
   // User's display name
   string name = 4; // Optional
   // User's email address for opt-in marketing updates
