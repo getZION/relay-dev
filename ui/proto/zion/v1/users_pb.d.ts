@@ -8,23 +8,26 @@ export class User extends jspb.Message {
   getId(): number;
   setId(value: number): void;
 
-  getName(): string;
-  setName(value: string): void;
+  getDid(): string;
+  setDid(value: string): void;
 
   getUsername(): string;
   setUsername(value: string): void;
 
+  getName(): string;
+  setName(value: string): void;
+
   getEmail(): string;
   setEmail(value: string): void;
-
-  getPubkey(): string;
-  setPubkey(value: string): void;
 
   getBio(): string;
   setBio(value: string): void;
 
   getPicture(): string;
   setPicture(value: string): void;
+
+  getPriceToMessage(): number;
+  setPriceToMessage(value: number): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
@@ -39,12 +42,13 @@ export class User extends jspb.Message {
 export namespace User {
   export type AsObject = {
     id: number,
-    name: string,
+    did: string,
     username: string,
+    name: string,
     email: string,
-    pubkey: string,
     bio: string,
     picture: string,
+    priceToMessage: number,
   }
 }
 

@@ -254,7 +254,14 @@ proto.proto.zion.v1.Message.prototype.toObject = function(opt_includeInstance) {
 proto.proto.zion.v1.Message.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    text: jspb.Message.getFieldWithDefault(msg, 2, "")
+    zionId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    userDid: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    receivingUserDid: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    conversationId: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    replyToMessageId: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    text: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    link: jspb.Message.getFieldWithDefault(msg, 8, ""),
+    img: jspb.Message.getFieldWithDefault(msg, 9, "")
   };
 
   if (includeInstance) {
@@ -297,7 +304,35 @@ proto.proto.zion.v1.Message.deserializeBinaryFromReader = function(msg, reader) 
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
+      msg.setZionId(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setUserDid(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setReceivingUserDid(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setConversationId(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setReplyToMessageId(value);
+      break;
+    case 7:
+      var value = /** @type {string} */ (reader.readString());
       msg.setText(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setLink(value);
+      break;
+    case 9:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setImg(value);
       break;
     default:
       reader.skipField();
@@ -335,10 +370,59 @@ proto.proto.zion.v1.Message.serializeBinaryToWriter = function(message, writer) 
       f
     );
   }
-  f = message.getText();
+  f = message.getZionId();
   if (f.length > 0) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = message.getUserDid();
+  if (f !== 0) {
+    writer.writeInt64(
+      3,
+      f
+    );
+  }
+  f = message.getReceivingUserDid();
+  if (f !== 0) {
+    writer.writeInt64(
+      4,
+      f
+    );
+  }
+  f = message.getConversationId();
+  if (f !== 0) {
+    writer.writeInt64(
+      5,
+      f
+    );
+  }
+  f = message.getReplyToMessageId();
+  if (f !== 0) {
+    writer.writeInt64(
+      6,
+      f
+    );
+  }
+  f = message.getText();
+  if (f.length > 0) {
+    writer.writeString(
+      7,
+      f
+    );
+  }
+  f = message.getLink();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
+      f
+    );
+  }
+  f = message.getImg();
+  if (f.length > 0) {
+    writer.writeString(
+      9,
       f
     );
   }
@@ -364,10 +448,10 @@ proto.proto.zion.v1.Message.prototype.setId = function(value) {
 
 
 /**
- * optional string text = 2;
+ * optional string zion_id = 2;
  * @return {string}
  */
-proto.proto.zion.v1.Message.prototype.getText = function() {
+proto.proto.zion.v1.Message.prototype.getZionId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -376,8 +460,134 @@ proto.proto.zion.v1.Message.prototype.getText = function() {
  * @param {string} value
  * @return {!proto.proto.zion.v1.Message} returns this
  */
-proto.proto.zion.v1.Message.prototype.setText = function(value) {
+proto.proto.zion.v1.Message.prototype.setZionId = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional int64 user_did = 3;
+ * @return {number}
+ */
+proto.proto.zion.v1.Message.prototype.getUserDid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.zion.v1.Message} returns this
+ */
+proto.proto.zion.v1.Message.prototype.setUserDid = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional int64 receiving_user_did = 4;
+ * @return {number}
+ */
+proto.proto.zion.v1.Message.prototype.getReceivingUserDid = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.zion.v1.Message} returns this
+ */
+proto.proto.zion.v1.Message.prototype.setReceivingUserDid = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional int64 conversation_id = 5;
+ * @return {number}
+ */
+proto.proto.zion.v1.Message.prototype.getConversationId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.zion.v1.Message} returns this
+ */
+proto.proto.zion.v1.Message.prototype.setConversationId = function(value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional int64 reply_to_message_id = 6;
+ * @return {number}
+ */
+proto.proto.zion.v1.Message.prototype.getReplyToMessageId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.zion.v1.Message} returns this
+ */
+proto.proto.zion.v1.Message.prototype.setReplyToMessageId = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional string text = 7;
+ * @return {string}
+ */
+proto.proto.zion.v1.Message.prototype.getText = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.zion.v1.Message} returns this
+ */
+proto.proto.zion.v1.Message.prototype.setText = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional string link = 8;
+ * @return {string}
+ */
+proto.proto.zion.v1.Message.prototype.getLink = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.zion.v1.Message} returns this
+ */
+proto.proto.zion.v1.Message.prototype.setLink = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
+};
+
+
+/**
+ * optional string img = 9;
+ * @return {string}
+ */
+proto.proto.zion.v1.Message.prototype.getImg = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 9, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.zion.v1.Message} returns this
+ */
+proto.proto.zion.v1.Message.prototype.setImg = function(value) {
+  return jspb.Message.setProto3StringField(this, 9, value);
 };
 
 

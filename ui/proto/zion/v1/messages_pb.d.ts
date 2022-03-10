@@ -8,8 +8,29 @@ export class Message extends jspb.Message {
   getId(): number;
   setId(value: number): void;
 
+  getZionId(): string;
+  setZionId(value: string): void;
+
+  getUserDid(): number;
+  setUserDid(value: number): void;
+
+  getReceivingUserDid(): number;
+  setReceivingUserDid(value: number): void;
+
+  getConversationId(): number;
+  setConversationId(value: number): void;
+
+  getReplyToMessageId(): number;
+  setReplyToMessageId(value: number): void;
+
   getText(): string;
   setText(value: string): void;
+
+  getLink(): string;
+  setLink(value: string): void;
+
+  getImg(): string;
+  setImg(value: string): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Message.AsObject;
@@ -24,7 +45,14 @@ export class Message extends jspb.Message {
 export namespace Message {
   export type AsObject = {
     id: number,
+    zionId: string,
+    userDid: number,
+    receivingUserDid: number,
+    conversationId: number,
+    replyToMessageId: number,
     text: string,
+    link: string,
+    img: string,
   }
 }
 

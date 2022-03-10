@@ -8,8 +8,17 @@ export class Community extends jspb.Message {
   getId(): number;
   setId(value: number): void;
 
+  getZionId(): string;
+  setZionId(value: string): void;
+
   getName(): string;
   setName(value: string): void;
+
+  getOwnerDid(): string;
+  setOwnerDid(value: string): void;
+
+  getOwnerUsername(): string;
+  setOwnerUsername(value: string): void;
 
   getDescription(): string;
   setDescription(value: string): void;
@@ -21,12 +30,6 @@ export class Community extends jspb.Message {
   getTagsList(): Array<string>;
   setTagsList(value: Array<string>): void;
   addTags(value: string, index?: number): string;
-
-  getOwnerPubkey(): string;
-  setOwnerPubkey(value: string): void;
-
-  getOwnerAlias(): string;
-  setOwnerAlias(value: string): void;
 
   getPriceToJoin(): number;
   setPriceToJoin(value: number): void;
@@ -65,12 +68,13 @@ export class Community extends jspb.Message {
 export namespace Community {
   export type AsObject = {
     id: number,
+    zionId: string,
     name: string,
+    ownerDid: string,
+    ownerUsername: string,
     description: string,
     img: string,
     tagsList: Array<string>,
-    ownerPubkey: string,
-    ownerAlias: string,
     priceToJoin: number,
     pricePerMessage: number,
     escrowAmount: number,
