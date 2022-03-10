@@ -18,16 +18,25 @@ service UsersService {
 
 message User {
   option (gorm.opts).ormable = true;
+  // User primary ID & key
   int64 id = 1 [(gorm.field).tag = {
     unique: true
     primary_key: true
   }];
-  string name = 2;
-  string username = 3;
-  string email = 4;
-  string pubkey = 5;
-  string bio = 6;
-  string picture = 7;
+  // User's decentralized identifier (DID), e.g. did:ion:[fingerprint]
+  string did = 2; // Required
+  // User's username, unique in Zion
+  string username = 3; // Required
+  // User's display name
+  string name = 4; // Optional
+  // User's email address for opt-in marketing updates
+  string email = 5; // Optional
+  // User's personal biography that shows on their profile
+  string bio = 6; // Optional
+  // URL for user's profile picture
+  string picture = 7; // Optional
+  // How many sats it costs to direct-message this user
+  int64 price_to_message = 8; // Optional - Default to 0
 }
 
 message CreateUserRequest {
