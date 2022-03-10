@@ -210,12 +210,13 @@ proto.proto.zion.v1.User.prototype.toObject = function(opt_includeInstance) {
 proto.proto.zion.v1.User.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    did: jspb.Message.getFieldWithDefault(msg, 2, ""),
     username: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    email: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    pubkey: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    name: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    email: jspb.Message.getFieldWithDefault(msg, 5, ""),
     bio: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    picture: jspb.Message.getFieldWithDefault(msg, 7, "")
+    picture: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    priceToMessage: jspb.Message.getFieldWithDefault(msg, 8, 0)
   };
 
   if (includeInstance) {
@@ -258,7 +259,7 @@ proto.proto.zion.v1.User.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
+      msg.setDid(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
@@ -266,11 +267,11 @@ proto.proto.zion.v1.User.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
-      msg.setEmail(value);
+      msg.setName(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
-      msg.setPubkey(value);
+      msg.setEmail(value);
       break;
     case 6:
       var value = /** @type {string} */ (reader.readString());
@@ -279,6 +280,10 @@ proto.proto.zion.v1.User.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {string} */ (reader.readString());
       msg.setPicture(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPriceToMessage(value);
       break;
     default:
       reader.skipField();
@@ -316,7 +321,7 @@ proto.proto.zion.v1.User.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getName();
+  f = message.getDid();
   if (f.length > 0) {
     writer.writeString(
       2,
@@ -330,14 +335,14 @@ proto.proto.zion.v1.User.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getEmail();
+  f = message.getName();
   if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = message.getPubkey();
+  f = message.getEmail();
   if (f.length > 0) {
     writer.writeString(
       5,
@@ -355,6 +360,13 @@ proto.proto.zion.v1.User.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       7,
+      f
+    );
+  }
+  f = message.getPriceToMessage();
+  if (f !== 0) {
+    writer.writeInt64(
+      8,
       f
     );
   }
@@ -380,10 +392,10 @@ proto.proto.zion.v1.User.prototype.setId = function(value) {
 
 
 /**
- * optional string name = 2;
+ * optional string did = 2;
  * @return {string}
  */
-proto.proto.zion.v1.User.prototype.getName = function() {
+proto.proto.zion.v1.User.prototype.getDid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -392,7 +404,7 @@ proto.proto.zion.v1.User.prototype.getName = function() {
  * @param {string} value
  * @return {!proto.proto.zion.v1.User} returns this
  */
-proto.proto.zion.v1.User.prototype.setName = function(value) {
+proto.proto.zion.v1.User.prototype.setDid = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -416,10 +428,10 @@ proto.proto.zion.v1.User.prototype.setUsername = function(value) {
 
 
 /**
- * optional string email = 4;
+ * optional string name = 4;
  * @return {string}
  */
-proto.proto.zion.v1.User.prototype.getEmail = function() {
+proto.proto.zion.v1.User.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -428,16 +440,16 @@ proto.proto.zion.v1.User.prototype.getEmail = function() {
  * @param {string} value
  * @return {!proto.proto.zion.v1.User} returns this
  */
-proto.proto.zion.v1.User.prototype.setEmail = function(value) {
+proto.proto.zion.v1.User.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * optional string pubkey = 5;
+ * optional string email = 5;
  * @return {string}
  */
-proto.proto.zion.v1.User.prototype.getPubkey = function() {
+proto.proto.zion.v1.User.prototype.getEmail = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
 };
 
@@ -446,7 +458,7 @@ proto.proto.zion.v1.User.prototype.getPubkey = function() {
  * @param {string} value
  * @return {!proto.proto.zion.v1.User} returns this
  */
-proto.proto.zion.v1.User.prototype.setPubkey = function(value) {
+proto.proto.zion.v1.User.prototype.setEmail = function(value) {
   return jspb.Message.setProto3StringField(this, 5, value);
 };
 
@@ -484,6 +496,24 @@ proto.proto.zion.v1.User.prototype.getPicture = function() {
  */
 proto.proto.zion.v1.User.prototype.setPicture = function(value) {
   return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional int64 price_to_message = 8;
+ * @return {number}
+ */
+proto.proto.zion.v1.User.prototype.getPriceToMessage = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.zion.v1.User} returns this
+ */
+proto.proto.zion.v1.User.prototype.setPriceToMessage = function(value) {
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 

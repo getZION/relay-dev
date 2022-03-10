@@ -315,7 +315,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.proto.zion.v1.Community.repeatedFields_ = [5];
+proto.proto.zion.v1.Community.repeatedFields_ = [8];
 
 
 
@@ -349,20 +349,21 @@ proto.proto.zion.v1.Community.prototype.toObject = function(opt_includeInstance)
 proto.proto.zion.v1.Community.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    description: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    img: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    tagsList: (f = jspb.Message.getRepeatedField(msg, 5)) == null ? undefined : f,
-    ownerPubkey: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    ownerAlias: jspb.Message.getFieldWithDefault(msg, 7, ""),
-    priceToJoin: jspb.Message.getFieldWithDefault(msg, 8, 0),
-    pricePerMessage: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    escrowAmount: jspb.Message.getFieldWithDefault(msg, 10, 0),
-    lastActive: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    pb_public: jspb.Message.getBooleanFieldWithDefault(msg, 12, false),
-    deleted: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
-    created: jspb.Message.getFieldWithDefault(msg, 14, 0),
-    updated: jspb.Message.getFieldWithDefault(msg, 15, 0)
+    zionId: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    name: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    ownerDid: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    ownerUsername: jspb.Message.getFieldWithDefault(msg, 5, ""),
+    description: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    img: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    tagsList: (f = jspb.Message.getRepeatedField(msg, 8)) == null ? undefined : f,
+    priceToJoin: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    pricePerMessage: jspb.Message.getFieldWithDefault(msg, 10, 0),
+    escrowAmount: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    lastActive: jspb.Message.getFieldWithDefault(msg, 12, 0),
+    pb_public: jspb.Message.getBooleanFieldWithDefault(msg, 13, false),
+    deleted: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
+    created: jspb.Message.getFieldWithDefault(msg, 15, 0),
+    updated: jspb.Message.getFieldWithDefault(msg, 16, 0)
   };
 
   if (includeInstance) {
@@ -405,57 +406,61 @@ proto.proto.zion.v1.Community.deserializeBinaryFromReader = function(msg, reader
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setName(value);
+      msg.setZionId(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setDescription(value);
+      msg.setName(value);
       break;
     case 4:
       var value = /** @type {string} */ (reader.readString());
-      msg.setImg(value);
+      msg.setOwnerDid(value);
       break;
     case 5:
       var value = /** @type {string} */ (reader.readString());
-      msg.addTags(value);
+      msg.setOwnerUsername(value);
       break;
     case 6:
       var value = /** @type {string} */ (reader.readString());
-      msg.setOwnerPubkey(value);
+      msg.setDescription(value);
       break;
     case 7:
       var value = /** @type {string} */ (reader.readString());
-      msg.setOwnerAlias(value);
+      msg.setImg(value);
       break;
     case 8:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setPriceToJoin(value);
+      var value = /** @type {string} */ (reader.readString());
+      msg.addTags(value);
       break;
     case 9:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setPricePerMessage(value);
+      msg.setPriceToJoin(value);
       break;
     case 10:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setEscrowAmount(value);
+      msg.setPricePerMessage(value);
       break;
     case 11:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setLastActive(value);
+      msg.setEscrowAmount(value);
       break;
     case 12:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setPublic(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setLastActive(value);
       break;
     case 13:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setDeleted(value);
+      msg.setPublic(value);
       break;
     case 14:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setDeleted(value);
+      break;
+    case 15:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setCreated(value);
       break;
-    case 15:
+    case 16:
       var value = /** @type {number} */ (reader.readInt64());
       msg.setUpdated(value);
       break;
@@ -495,101 +500,108 @@ proto.proto.zion.v1.Community.serializeBinaryToWriter = function(message, writer
       f
     );
   }
-  f = message.getName();
+  f = message.getZionId();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = message.getDescription();
+  f = message.getName();
   if (f.length > 0) {
     writer.writeString(
       3,
       f
     );
   }
-  f = message.getImg();
+  f = message.getOwnerDid();
   if (f.length > 0) {
     writer.writeString(
       4,
       f
     );
   }
-  f = message.getTagsList();
+  f = message.getOwnerUsername();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writeString(
       5,
       f
     );
   }
-  f = message.getOwnerPubkey();
+  f = message.getDescription();
   if (f.length > 0) {
     writer.writeString(
       6,
       f
     );
   }
-  f = message.getOwnerAlias();
+  f = message.getImg();
   if (f.length > 0) {
     writer.writeString(
       7,
       f
     );
   }
-  f = message.getPriceToJoin();
-  if (f !== 0) {
-    writer.writeInt64(
+  f = message.getTagsList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
       8,
       f
     );
   }
-  f = message.getPricePerMessage();
+  f = message.getPriceToJoin();
   if (f !== 0) {
     writer.writeInt64(
       9,
       f
     );
   }
-  f = message.getEscrowAmount();
+  f = message.getPricePerMessage();
   if (f !== 0) {
     writer.writeInt64(
       10,
       f
     );
   }
-  f = message.getLastActive();
+  f = message.getEscrowAmount();
   if (f !== 0) {
     writer.writeInt64(
       11,
       f
     );
   }
-  f = message.getPublic();
-  if (f) {
-    writer.writeBool(
+  f = message.getLastActive();
+  if (f !== 0) {
+    writer.writeInt64(
       12,
       f
     );
   }
-  f = message.getDeleted();
+  f = message.getPublic();
   if (f) {
     writer.writeBool(
       13,
       f
     );
   }
+  f = message.getDeleted();
+  if (f) {
+    writer.writeBool(
+      14,
+      f
+    );
+  }
   f = message.getCreated();
   if (f !== 0) {
     writer.writeInt64(
-      14,
+      15,
       f
     );
   }
   f = message.getUpdated();
   if (f !== 0) {
     writer.writeInt64(
-      15,
+      16,
       f
     );
   }
@@ -615,10 +627,10 @@ proto.proto.zion.v1.Community.prototype.setId = function(value) {
 
 
 /**
- * optional string name = 2;
+ * optional string zion_id = 2;
  * @return {string}
  */
-proto.proto.zion.v1.Community.prototype.getName = function() {
+proto.proto.zion.v1.Community.prototype.getZionId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -627,16 +639,16 @@ proto.proto.zion.v1.Community.prototype.getName = function() {
  * @param {string} value
  * @return {!proto.proto.zion.v1.Community} returns this
  */
-proto.proto.zion.v1.Community.prototype.setName = function(value) {
+proto.proto.zion.v1.Community.prototype.setZionId = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * optional string description = 3;
+ * optional string name = 3;
  * @return {string}
  */
-proto.proto.zion.v1.Community.prototype.getDescription = function() {
+proto.proto.zion.v1.Community.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -645,16 +657,16 @@ proto.proto.zion.v1.Community.prototype.getDescription = function() {
  * @param {string} value
  * @return {!proto.proto.zion.v1.Community} returns this
  */
-proto.proto.zion.v1.Community.prototype.setDescription = function(value) {
+proto.proto.zion.v1.Community.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional string img = 4;
+ * optional string owner_did = 4;
  * @return {string}
  */
-proto.proto.zion.v1.Community.prototype.getImg = function() {
+proto.proto.zion.v1.Community.prototype.getOwnerDid = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
@@ -663,17 +675,71 @@ proto.proto.zion.v1.Community.prototype.getImg = function() {
  * @param {string} value
  * @return {!proto.proto.zion.v1.Community} returns this
  */
-proto.proto.zion.v1.Community.prototype.setImg = function(value) {
+proto.proto.zion.v1.Community.prototype.setOwnerDid = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * repeated string tags = 5;
+ * optional string owner_username = 5;
+ * @return {string}
+ */
+proto.proto.zion.v1.Community.prototype.getOwnerUsername = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.zion.v1.Community} returns this
+ */
+proto.proto.zion.v1.Community.prototype.setOwnerUsername = function(value) {
+  return jspb.Message.setProto3StringField(this, 5, value);
+};
+
+
+/**
+ * optional string description = 6;
+ * @return {string}
+ */
+proto.proto.zion.v1.Community.prototype.getDescription = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.zion.v1.Community} returns this
+ */
+proto.proto.zion.v1.Community.prototype.setDescription = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional string img = 7;
+ * @return {string}
+ */
+proto.proto.zion.v1.Community.prototype.getImg = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.zion.v1.Community} returns this
+ */
+proto.proto.zion.v1.Community.prototype.setImg = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * repeated string tags = 8;
  * @return {!Array<string>}
  */
 proto.proto.zion.v1.Community.prototype.getTagsList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 5));
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 8));
 };
 
 
@@ -682,7 +748,7 @@ proto.proto.zion.v1.Community.prototype.getTagsList = function() {
  * @return {!proto.proto.zion.v1.Community} returns this
  */
 proto.proto.zion.v1.Community.prototype.setTagsList = function(value) {
-  return jspb.Message.setField(this, 5, value || []);
+  return jspb.Message.setField(this, 8, value || []);
 };
 
 
@@ -692,7 +758,7 @@ proto.proto.zion.v1.Community.prototype.setTagsList = function(value) {
  * @return {!proto.proto.zion.v1.Community} returns this
  */
 proto.proto.zion.v1.Community.prototype.addTags = function(value, opt_index) {
-  return jspb.Message.addToRepeatedField(this, 5, value, opt_index);
+  return jspb.Message.addToRepeatedField(this, 8, value, opt_index);
 };
 
 
@@ -706,64 +772,10 @@ proto.proto.zion.v1.Community.prototype.clearTagsList = function() {
 
 
 /**
- * optional string owner_pubkey = 6;
- * @return {string}
- */
-proto.proto.zion.v1.Community.prototype.getOwnerPubkey = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.proto.zion.v1.Community} returns this
- */
-proto.proto.zion.v1.Community.prototype.setOwnerPubkey = function(value) {
-  return jspb.Message.setProto3StringField(this, 6, value);
-};
-
-
-/**
- * optional string owner_alias = 7;
- * @return {string}
- */
-proto.proto.zion.v1.Community.prototype.getOwnerAlias = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.proto.zion.v1.Community} returns this
- */
-proto.proto.zion.v1.Community.prototype.setOwnerAlias = function(value) {
-  return jspb.Message.setProto3StringField(this, 7, value);
-};
-
-
-/**
- * optional int64 price_to_join = 8;
+ * optional int64 price_to_join = 9;
  * @return {number}
  */
 proto.proto.zion.v1.Community.prototype.getPriceToJoin = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.proto.zion.v1.Community} returns this
- */
-proto.proto.zion.v1.Community.prototype.setPriceToJoin = function(value) {
-  return jspb.Message.setProto3IntField(this, 8, value);
-};
-
-
-/**
- * optional int64 price_per_message = 9;
- * @return {number}
- */
-proto.proto.zion.v1.Community.prototype.getPricePerMessage = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
@@ -772,16 +784,16 @@ proto.proto.zion.v1.Community.prototype.getPricePerMessage = function() {
  * @param {number} value
  * @return {!proto.proto.zion.v1.Community} returns this
  */
-proto.proto.zion.v1.Community.prototype.setPricePerMessage = function(value) {
+proto.proto.zion.v1.Community.prototype.setPriceToJoin = function(value) {
   return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
 /**
- * optional int64 escrow_amount = 10;
+ * optional int64 price_per_message = 10;
  * @return {number}
  */
-proto.proto.zion.v1.Community.prototype.getEscrowAmount = function() {
+proto.proto.zion.v1.Community.prototype.getPricePerMessage = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 10, 0));
 };
 
@@ -790,16 +802,16 @@ proto.proto.zion.v1.Community.prototype.getEscrowAmount = function() {
  * @param {number} value
  * @return {!proto.proto.zion.v1.Community} returns this
  */
-proto.proto.zion.v1.Community.prototype.setEscrowAmount = function(value) {
+proto.proto.zion.v1.Community.prototype.setPricePerMessage = function(value) {
   return jspb.Message.setProto3IntField(this, 10, value);
 };
 
 
 /**
- * optional int64 last_active = 11;
+ * optional int64 escrow_amount = 11;
  * @return {number}
  */
-proto.proto.zion.v1.Community.prototype.getLastActive = function() {
+proto.proto.zion.v1.Community.prototype.getEscrowAmount = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
 };
 
@@ -808,34 +820,34 @@ proto.proto.zion.v1.Community.prototype.getLastActive = function() {
  * @param {number} value
  * @return {!proto.proto.zion.v1.Community} returns this
  */
-proto.proto.zion.v1.Community.prototype.setLastActive = function(value) {
+proto.proto.zion.v1.Community.prototype.setEscrowAmount = function(value) {
   return jspb.Message.setProto3IntField(this, 11, value);
 };
 
 
 /**
- * optional bool public = 12;
+ * optional int64 last_active = 12;
+ * @return {number}
+ */
+proto.proto.zion.v1.Community.prototype.getLastActive = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.zion.v1.Community} returns this
+ */
+proto.proto.zion.v1.Community.prototype.setLastActive = function(value) {
+  return jspb.Message.setProto3IntField(this, 12, value);
+};
+
+
+/**
+ * optional bool public = 13;
  * @return {boolean}
  */
 proto.proto.zion.v1.Community.prototype.getPublic = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 12, false));
-};
-
-
-/**
- * @param {boolean} value
- * @return {!proto.proto.zion.v1.Community} returns this
- */
-proto.proto.zion.v1.Community.prototype.setPublic = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 12, value);
-};
-
-
-/**
- * optional bool deleted = 13;
- * @return {boolean}
- */
-proto.proto.zion.v1.Community.prototype.getDeleted = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 13, false));
 };
 
@@ -844,34 +856,34 @@ proto.proto.zion.v1.Community.prototype.getDeleted = function() {
  * @param {boolean} value
  * @return {!proto.proto.zion.v1.Community} returns this
  */
-proto.proto.zion.v1.Community.prototype.setDeleted = function(value) {
+proto.proto.zion.v1.Community.prototype.setPublic = function(value) {
   return jspb.Message.setProto3BooleanField(this, 13, value);
 };
 
 
 /**
- * optional int64 created = 14;
+ * optional bool deleted = 14;
+ * @return {boolean}
+ */
+proto.proto.zion.v1.Community.prototype.getDeleted = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.proto.zion.v1.Community} returns this
+ */
+proto.proto.zion.v1.Community.prototype.setDeleted = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 14, value);
+};
+
+
+/**
+ * optional int64 created = 15;
  * @return {number}
  */
 proto.proto.zion.v1.Community.prototype.getCreated = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 14, 0));
-};
-
-
-/**
- * @param {number} value
- * @return {!proto.proto.zion.v1.Community} returns this
- */
-proto.proto.zion.v1.Community.prototype.setCreated = function(value) {
-  return jspb.Message.setProto3IntField(this, 14, value);
-};
-
-
-/**
- * optional int64 updated = 15;
- * @return {number}
- */
-proto.proto.zion.v1.Community.prototype.getUpdated = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 15, 0));
 };
 
@@ -880,8 +892,26 @@ proto.proto.zion.v1.Community.prototype.getUpdated = function() {
  * @param {number} value
  * @return {!proto.proto.zion.v1.Community} returns this
  */
-proto.proto.zion.v1.Community.prototype.setUpdated = function(value) {
+proto.proto.zion.v1.Community.prototype.setCreated = function(value) {
   return jspb.Message.setProto3IntField(this, 15, value);
+};
+
+
+/**
+ * optional int64 updated = 16;
+ * @return {number}
+ */
+proto.proto.zion.v1.Community.prototype.getUpdated = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 16, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.proto.zion.v1.Community} returns this
+ */
+proto.proto.zion.v1.Community.prototype.setUpdated = function(value) {
+  return jspb.Message.setProto3IntField(this, 16, value);
 };
 
 

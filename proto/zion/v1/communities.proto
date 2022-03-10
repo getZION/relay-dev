@@ -31,34 +31,36 @@ message Community {
     unique: true
     primary_key: true
   }];
+  // Community id unique across Zion
+  string zion_id = 2; // Required; must be uuid v4
   // The name of the community
-  string name = 2 [(gorm.field).tag = { not_null: true }];
+  string name = 3 [(gorm.field).tag = { not_null: true }]; // Required; unique
+  // Owner DID
+  string owner_did = 4 [(gorm.field).tag = { not_null: true }]; // Required
+  // Owner username
+  string owner_username = 5 [(gorm.field).tag = { not_null: true }]; // Required
   // The community's description or mission statement
-  string description = 3 [(gorm.field).tag = { not_null: true }];
+  string description = 6 [(gorm.field).tag = { not_null: true }]; // Required
   // Image URL
-  string img = 4;
+  string img = 7; // Optional
   // User-defined tags
-  repeated string tags = 5;
-  // Owner pubkey
-  string owner_pubkey = 6 [(gorm.field).tag = { not_null: true }];
-  // Owner alias
-  string owner_alias = 7 [(gorm.field).tag = { not_null: true }];
+  repeated string tags = 8; // Optional
   // How much it costs to join
-  int64 price_to_join = 8 [(gorm.field).tag = { not_null: true }];
+  int64 price_to_join = 9 [(gorm.field).tag = { not_null: true }]; // Required
   // How much each message costs
-  int64 price_per_message = 9 [(gorm.field).tag = { not_null: true }];
+  int64 price_per_message = 10 [(gorm.field).tag = { not_null: true }]; // Required
   // Escrow amount
-  int64 escrow_amount = 10 [(gorm.field).tag = { not_null: true }];
+  int64 escrow_amount = 11 [(gorm.field).tag = { not_null: true }]; // Required
   // When last active
-  int64 last_active = 11;
+  int64 last_active = 12; // Optional
   // Is this a public community?
-  bool public = 12;
+  bool public = 13; // Required; defaults true
   // Deleted
-  bool deleted = 13;
+  bool deleted = 14; // Optional, defaults 0
   // Created when?
-  int64 created = 14;
+  int64 created = 15; // Required
   // Updated when?
-  int64 updated = 15;
+  int64 updated = 16; // Optional
 }
 
 // Create
