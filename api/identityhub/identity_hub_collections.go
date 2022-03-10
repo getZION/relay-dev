@@ -1,17 +1,20 @@
 package identityhub
 
 import (
-	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/gabriel-vasile/mimetype"
+	"github.com/getzion/relay/api/datastore"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	v1 "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/google/uuid"
 )
 
-func CollectionsQuery(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
+func CollectionsQuery(store *datastore.Store, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID
@@ -47,10 +50,16 @@ func CollectionsQuery(ctx context.Context, m *hub.Message) (string, *MessageLeve
 
 	}
 
-	return "", nil
+	communities := store.CommunityService.GetAll()
+	result, err := json.Marshal(communities)
+	if err != nil {
+		return "", NewMessageLevelError(500, requestLevelProcessingErrorMessage, err)
+	}
+
+	return string(result), nil
 }
 
-func CollectionsWrite(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
+func CollectionsWrite(store *datastore.Store, m *hub.Message) (string, *MessageLevelError) {
 
 	/*
 
@@ -96,10 +105,18 @@ func CollectionsWrite(ctx context.Context, m *hub.Message) (string, *MessageLeve
 
 	}
 
+	if strings.Trim(m.Data, " ") == "" {
+		return "", NewMessageLevelError(400, improperlyConstructedErrorMessage, fmt.Errorf("data cannot be null or empty"))
+	}
+
+	var community v1.CommunityORM
+	json.Unmarshal([]byte(m.Data), &community)
+	store.CommunityService.Insert(&community)
+
 	return "", nil
 }
 
-func CollectionsCommit(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
+func CollectionsCommit(store *datastore.Store, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID
@@ -137,7 +154,7 @@ func CollectionsCommit(ctx context.Context, m *hub.Message) (string, *MessageLev
 	return "", nil
 }
 
-func CollectionsDelete(ctx context.Context, m *hub.Message) (string, *MessageLevelError) {
+func CollectionsDelete(store *datastore.Store, m *hub.Message) (string, *MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID

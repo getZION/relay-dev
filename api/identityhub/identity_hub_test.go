@@ -4,9 +4,14 @@ import (
 	"log"
 	"net"
 
+	"github.com/getzion/relay/api"
+	"github.com/getzion/relay/api/datastore"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -176,10 +181,26 @@ func dialer() func(context.Context, string) (net.Conn, error) {
 
 	server := grpc.NewServer()
 
+	//todo: mock mysql database
+	db, err := gorm.Open("mysql", "root:root@tcp(localhost:3306)/relay3")
+	if err != nil {
+		logrus.Panic(err)
+	}
+
+	connection := &api.Connection{
+		DB: db,
+	}
+
+	store, err := datastore.NewStore(connection)
+	if err != nil {
+		logrus.Panic(err)
+	}
+
 	RegisterHubRequestServiceServer(server, &mockIdentityHubServer{
 		IdentityHubService: IdentityHubService{
 			prefix:                   prefix,
 			validHubInterfaceMethods: validHubInterfaceMethods,
+			store:                    store,
 		},
 	})
 

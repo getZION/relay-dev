@@ -17,7 +17,8 @@ import (
 )
 
 type (
-	interfaceMethodHandler func(ctx context.Context, m *hub.Message) (string, *MessageLevelError)
+	//todo: wrap request with a handler?
+	interfaceMethodHandler func(store *datastore.Store, m *hub.Message) (string, *MessageLevelError)
 
 	IdentityHubService struct {
 		hub.UnimplementedHubRequestServiceServer
@@ -56,6 +57,7 @@ var (
 		MhLength: -1,
 	}
 
+	//todo: change request handler implemantation
 	validHubInterfaceMethods = map[string]interfaceMethodHandler{
 		"CollectionsQuery":   CollectionsQuery,
 		"CollectionsWrite":   CollectionsWrite,
@@ -151,7 +153,7 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 			continue
 		}
 
-		entry, mErr := method(ctx, message)
+		entry, mErr := method(identityHub.store, message)
 		if mErr != nil {
 			reply.Status.Code = mErr.Code
 			reply.Status.Message = mErr.Message
