@@ -545,6 +545,35 @@ var _ = Describe("IdentityHub Collections", func() {
 				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
 			})
 
+			It("receives a response if a Message Descriptor has valid data", func() {
+				request := &Request{
+					RequestId: REQUEST_ID,
+					Target:    TARGET,
+					Messages: []*Message{
+						{
+							Data: `{ "Name": "test", "Description": "test", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
+							Descriptor_: &MessageDescriptor{
+								Method:        COLLECTIONS_WRITE,
+								ObjectId:      OBJECT_ID,
+								DateCreated:   DATE_CREATED,
+								Schema:        SCHEMA,
+								DatePublished: DATE_PUBLISHED,
+							},
+						},
+					},
+				}
+				response, err := client.Process(ctx, request)
+				Expect(err).To(BeNil())
+				Expect(response).To(Not(BeNil()))
+				Expect(response.RequestId).To(Equal(request.RequestId))
+				Expect(response.Status).To(Not(BeNil()))
+				Expect(response.Status.Code).To(Equal(int64(200)))
+				Expect(response.Replies).To(Not(BeNil()))
+				Expect(response.Replies).To(HaveLen(1))
+				Expect(response.Replies[0].Status).To(Not(BeNil()))
+				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+			})
+
 		})
 
 		Context("Commit Tests", func() {

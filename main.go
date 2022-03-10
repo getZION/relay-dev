@@ -53,7 +53,7 @@ func init_gRPC(store *datastore.Store) {
 	}
 
 	// We need to tell the code WHAT TO do on each request, ie. The business logic.
-	// In GRPC cases, the Server is acutally just an Interface
+	// In GRPC cases, the Server is actually just an Interface
 	// So we need a struct which fulfills the server interface
 	// see server.go
 	apiserver := grpc.NewServer()
