@@ -49,22 +49,6 @@ Courtesy of [DIF](https://identity.foundation/)
 
 ### Development
 
-After the execute docker command written below, you can debug Relay project. Adminer will be running at `http://localhost:8080/` and MySQL will running at `localhost:3306`.
+After executing the following Docker command, you can debug relay locally. Adminer will be running at `http://localhost:8080/` and MySQL will running at `localhost:3306`.
 
 > docker compose up --remove-orphans --force-recreate
-
-### DID Resolver
-
-Make some researches about DID Resolver
-
-  - https://github.com/TBD54566975/did-sdk
-  - https://github.com/nuts-foundation/go-did
-  - https://github.com/ockam-network/did
-  - https://github.com/hyperledger/aries-framework-go
-
-### Proto Validation
-
-  - https://wiki.nikitavoloboev.xyz/programming/protocol-buffers
-
-
-https://github.com/decentralized-identity/identity-hub/blob/main/packages/implementations/javascript/lib/storage.mjs
