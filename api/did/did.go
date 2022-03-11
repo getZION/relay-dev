@@ -38,7 +38,7 @@ func Parse(didUrl string) *ParsedDID {
 	r := regexp.MustCompile(DID_MATCHER)
 	match := r.MatchString(didUrl)
 
-	logrus.Infof("match: %s, didUrl: %s", match, didUrl)
+	logrus.Infof("match: %t, didUrl: %s", match, didUrl)
 
 	if !match {
 		return nil

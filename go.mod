@@ -3,6 +3,7 @@ module github.com/getzion/relay
 go 1.17
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/aws/aws-sdk-go v1.43.12
 	github.com/gabriel-vasile/mimetype v1.4.0
 	github.com/getzion/relampago v0.2.1

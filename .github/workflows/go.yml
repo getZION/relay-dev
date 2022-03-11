@@ -3,11 +3,11 @@ name: Go
 on:
   pull_request:
     branches: [ main ]
-    paths:
-      - '!ui/'
-      - '!.vscode/'
-      - '!.gitignore'
-      - '!Makefile'
+    # paths:
+    #   - '!ui/'
+    #   - '!.vscode/'
+    #   - '!.gitignore'
+    #   - '!Makefile'
 
 jobs:
 

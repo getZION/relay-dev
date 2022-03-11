@@ -1,0 +1,26 @@
+package errors
+
+const (
+	RequestLevelProcessingErrorMessage string = "The request could not be processed correctly"
+	TargetDIDNotFoundErrorMessage      string = "Target DID not found within the Identity Hub instance"
+
+	ImproperlyConstructedErrorMessage   string = "The message was malformed or improperly constructed"
+	InterfaceNotImplementedErrorMessage string = "The interface method is not implemented"
+	AuthorizationFailedErrorMessage     string = "The message failed authorization requirements"
+
+	MessageSuccessfullyMessage string = "The message was successfully processed"
+)
+
+type MessageLevelError struct {
+	Message string
+	Code    int64
+	Error   error
+}
+
+func NewMessageLevelError(code int64, message string, err error) *MessageLevelError {
+	return &MessageLevelError{
+		Code:    code,
+		Message: message,
+		Error:   err,
+	}
+}

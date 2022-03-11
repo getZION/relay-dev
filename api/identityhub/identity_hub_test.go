@@ -1,9 +1,9 @@
 package identityhub
 
 import (
-	"log"
-	"net"
+	"database/sql"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/datastore"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
@@ -13,9 +13,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/test/bufconn"
 )
 
 const (
@@ -33,22 +30,37 @@ const (
 
 var _ = Describe("IdentityHub", func() {
 
-	var client HubRequestServiceClient
+	var client *IdentityHubService
 	var ctx context.Context
-	var conn *grpc.ClientConn
-	var err error
 
 	BeforeEach(func() {
-		ctx = context.Background()
-		conn, err = grpc.DialContext(ctx, "", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithContextDialer(dialer()))
-		if err != nil {
-			log.Fatal(err)
-		}
-		client = NewHubRequestServiceClient(conn)
-	})
+		var err error
+		var db *sql.DB
 
-	AfterEach(func() {
-		defer conn.Close()
+		db, _, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
+		if err != nil {
+			logrus.Panic(err)
+		}
+
+		gormDb, err := gorm.Open("mysql", db)
+		if err != nil {
+			logrus.Panic(err)
+		}
+
+		connection := &api.Connection{
+			DB: gormDb,
+		}
+
+		store, err := datastore.NewStore(connection)
+		if err != nil {
+			logrus.Panic(err)
+		}
+
+		client = &IdentityHubService{
+			prefix:                   prefix,
+			validHubInterfaceMethods: validHubInterfaceMethods,
+			store:                    store,
+		}
 	})
 
 	Context("Request Level Tests", func() {
@@ -107,7 +119,6 @@ var _ = Describe("IdentityHub", func() {
 			Expect(response.Status).To(Not(BeNil()))
 			Expect(response.Status.Code).To(Equal(int64(500)))
 		})
-
 	})
 
 	Context("Message Level Tests", func() {
@@ -171,46 +182,3 @@ var _ = Describe("IdentityHub", func() {
 
 	})
 })
-
-type mockIdentityHubServer struct {
-	IdentityHubService
-}
-
-func dialer() func(context.Context, string) (net.Conn, error) {
-	listener := bufconn.Listen(1024 * 1024)
-
-	server := grpc.NewServer()
-
-	//todo: mock mysql database
-	db, err := gorm.Open("mysql", "root:root@tcp(localhost:3306)/relay3")
-	if err != nil {
-		logrus.Panic(err)
-	}
-
-	connection := &api.Connection{
-		DB: db,
-	}
-
-	store, err := datastore.NewStore(connection)
-	if err != nil {
-		logrus.Panic(err)
-	}
-
-	RegisterHubRequestServiceServer(server, &mockIdentityHubServer{
-		IdentityHubService: IdentityHubService{
-			prefix:                   prefix,
-			validHubInterfaceMethods: validHubInterfaceMethods,
-			store:                    store,
-		},
-	})
-
-	go func() {
-		if err := server.Serve(listener); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
-	return func(context.Context, string) (net.Conn, error) {
-		return listener.Dial()
-	}
-}

@@ -1,14 +1,17 @@
 package identityhub
 
 import (
-	"log"
+	"database/sql"
 
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/getzion/relay/api"
+	"github.com/getzion/relay/api/datastore"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/jinzhu/gorm"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -19,22 +22,38 @@ const (
 )
 
 var _ = Describe("IdentityHub Permissions", func() {
-	var client HubRequestServiceClient
+	var client *IdentityHubService
 	var ctx context.Context
-	var conn *grpc.ClientConn
-	var err error
+	//var mock sqlmock.Sqlmock
 
 	BeforeEach(func() {
-		ctx = context.Background()
-		conn, err = grpc.DialContext(ctx, "", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithContextDialer(dialer()))
-		if err != nil {
-			log.Fatal(err)
-		}
-		client = NewHubRequestServiceClient(conn)
-	})
+		var err error
+		var db *sql.DB
 
-	AfterEach(func() {
-		defer conn.Close()
+		db, _, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
+		if err != nil {
+			logrus.Panic(err)
+		}
+
+		gormDb, err := gorm.Open("mysql", db)
+		if err != nil {
+			logrus.Panic(err)
+		}
+
+		connection := &api.Connection{
+			DB: gormDb,
+		}
+
+		store, err := datastore.NewStore(connection)
+		if err != nil {
+			logrus.Panic(err)
+		}
+
+		client = &IdentityHubService{
+			prefix:                   prefix,
+			validHubInterfaceMethods: validHubInterfaceMethods,
+			store:                    store,
+		}
 	})
 
 	Context("Message Level", func() {
