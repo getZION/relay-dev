@@ -16,7 +16,7 @@ The new Zion relay server for decentralized social media and messaging.
 
 ## Protobuf Documentation
 - [Identity Hub](docs/grpc-identityhub.md)
-- [Zion](docs/zion.md)
+- [Zion](docs/grpc-zion.md)
 
 ## Specifications
 We will gradually implement the following specifications:
