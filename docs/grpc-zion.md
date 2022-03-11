@@ -227,6 +227,7 @@
 | amount | [int64](#int64) |  | Amount in sats - Required |
 | type | [int64](#int64) |  | Type of payment: boost, P2P send, community join, stake, etc. - Required |
 | memo | [string](#string) |  | Memo describing transaction - Optional |
+| message_zid | [string](#string) |  | Zion ID of associated message, if boost/stake - Optional |
 
 
 

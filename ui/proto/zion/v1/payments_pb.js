@@ -86,7 +86,8 @@ proto.proto.zion.v1.Payment.toObject = function(includeInstance, msg) {
     status: jspb.Message.getFieldWithDefault(msg, 7, ""),
     amount: jspb.Message.getFieldWithDefault(msg, 8, 0),
     type: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    memo: jspb.Message.getFieldWithDefault(msg, 10, "")
+    memo: jspb.Message.getFieldWithDefault(msg, 10, ""),
+    messageZid: jspb.Message.getFieldWithDefault(msg, 11, "")
   };
 
   if (includeInstance) {
@@ -162,6 +163,10 @@ proto.proto.zion.v1.Payment.deserializeBinaryFromReader = function(msg, reader) 
     case 10:
       var value = /** @type {string} */ (reader.readString());
       msg.setMemo(value);
+      break;
+    case 11:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setMessageZid(value);
       break;
     default:
       reader.skipField();
@@ -259,6 +264,13 @@ proto.proto.zion.v1.Payment.serializeBinaryToWriter = function(message, writer) 
   if (f.length > 0) {
     writer.writeString(
       10,
+      f
+    );
+  }
+  f = message.getMessageZid();
+  if (f.length > 0) {
+    writer.writeString(
+      11,
       f
     );
   }
@@ -442,6 +454,24 @@ proto.proto.zion.v1.Payment.prototype.getMemo = function() {
  */
 proto.proto.zion.v1.Payment.prototype.setMemo = function(value) {
   return jspb.Message.setProto3StringField(this, 10, value);
+};
+
+
+/**
+ * optional string message_zid = 11;
+ * @return {string}
+ */
+proto.proto.zion.v1.Payment.prototype.getMessageZid = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 11, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.proto.zion.v1.Payment} returns this
+ */
+proto.proto.zion.v1.Payment.prototype.setMessageZid = function(value) {
+  return jspb.Message.setProto3StringField(this, 11, value);
 };
 
 

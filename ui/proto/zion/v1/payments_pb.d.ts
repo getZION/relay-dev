@@ -35,6 +35,9 @@ export class Payment extends jspb.Message {
   getMemo(): string;
   setMemo(value: string): void;
 
+  getMessageZid(): string;
+  setMessageZid(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Payment.AsObject;
   static toObject(includeInstance: boolean, msg: Payment): Payment.AsObject;
@@ -57,6 +60,7 @@ export namespace Payment {
     amount: number,
     type: number,
     memo: string,
+    messageZid: string,
   }
 }
 
