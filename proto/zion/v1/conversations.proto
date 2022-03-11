@@ -5,6 +5,7 @@ package proto.zion.v1;
 option go_package = "github.com/getzion/relay/gen/zion/v1";
 
 import "proto/protoc-gen-gorm/options/gorm.proto";
+import "proto/zion/v1/messages.proto";
 
 message Conversation {
   option (gorm.opts).ormable = true;
@@ -13,6 +14,14 @@ message Conversation {
     unique: true
     primary_key: true
   }];
-  // Text
-  string text = 2 [(gorm.field).tag = { not_null: true }];
+  // Conversation ID unique across Zion
+  string zid = 2; // Required; must be uuid v4
+  // Zion ID of the community this conversation belongs to
+  string community_zid = 3; // Required; must be uuid v4
+  // The Message that starts the conversation
+  Message message = 4; // Required
+  // Is this conversation publicly visible?
+  bool public = 5; // Optional; defaults to false
+  // Price in sats for non-community members to read, if public = true
+  int64 public_price = 6; // Optional; defaults to 0
 }
