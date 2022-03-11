@@ -31,4 +31,6 @@ message Payment {
   int64 type = 9;
   // Memo describing transaction - Optional
   string memo = 10;
+  // Zion ID of associated message, if boost/stake - Optional
+  string message_zid = 11;
 }

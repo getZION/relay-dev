@@ -13,6 +13,7 @@ type PaymentORM struct {
 	Amount              int64
 	Id                  int64 `gorm:"primary_key;unique"`
 	Memo                string
+	MessageZid          string
 	RecipientDid        string
 	RecipientNodePubkey string
 	RecipientRelayUrl   string
@@ -47,6 +48,7 @@ func (m *Payment) ToORM(ctx context.Context) (PaymentORM, error) {
 	to.Amount = m.Amount
 	to.Type = m.Type
 	to.Memo = m.Memo
+	to.MessageZid = m.MessageZid
 	if posthook, ok := interface{}(m).(PaymentWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -73,6 +75,7 @@ func (m *PaymentORM) ToPB(ctx context.Context) (Payment, error) {
 	to.Amount = m.Amount
 	to.Type = m.Type
 	to.Memo = m.Memo
+	to.MessageZid = m.MessageZid
 	if posthook, ok := interface{}(m).(PaymentWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -420,6 +423,10 @@ func DefaultApplyFieldMaskPayment(ctx context.Context, patchee *Payment, patcher
 		}
 		if f == prefix+"Memo" {
 			patchee.Memo = patcher.Memo
+			continue
+		}
+		if f == prefix+"MessageZid" {
+			patchee.MessageZid = patcher.MessageZid
 			continue
 		}
 	}
