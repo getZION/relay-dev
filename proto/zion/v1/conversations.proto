@@ -16,14 +16,3 @@ message Conversation {
   // Text
   string text = 2 [(gorm.field).tag = { not_null: true }];
 }
-
-message Comment {
-  option (gorm.opts).ormable = true;
-  // The community's unique ID (primary key)
-  int64 id = 1 [(gorm.field).tag = {
-    unique: true
-    primary_key: true
-  }];
-  // Text
-  string text = 2 [(gorm.field).tag = { not_null: true }];
-}
