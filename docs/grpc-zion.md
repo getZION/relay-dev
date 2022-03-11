@@ -44,51 +44,21 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [int64](#int64) |  | The community&#39;s unique ID (primary key) |
-| zid | [string](#string) |  | Community id unique across Zion
-
-Required; must be uuid v4 |
-| name | [string](#string) |  | The name of the community
-
-Required; unique |
-| owner_did | [string](#string) |  | Owner DID
-
-Required |
-| owner_username | [string](#string) |  | Owner username
-
-Required |
-| description | [string](#string) |  | The community&#39;s description or mission statement
-
-Required |
-| img | [string](#string) |  | Image URL
-
-Optional |
-| tags | [string](#string) | repeated | User-defined tags
-
-Optional |
-| price_to_join | [int64](#int64) |  | How much it costs to join
-
-Required |
-| price_per_message | [int64](#int64) |  | How much each message costs
-
-Required |
-| escrow_amount | [int64](#int64) |  | Escrow amount
-
-Required |
-| last_active | [int64](#int64) |  | When last active
-
-Optional |
-| public | [bool](#bool) |  | Is this a public community?
-
-Required; defaults true |
-| deleted | [bool](#bool) |  | Deleted
-
-Optional, defaults 0 |
-| created | [int64](#int64) |  | Created when?
-
-Required |
-| updated | [int64](#int64) |  | Updated when?
-
-Optional |
+| zid | [string](#string) |  | Community id unique across Zion - Required; must be uuid v4 |
+| name | [string](#string) |  | The name of the community - Required; unique |
+| owner_did | [string](#string) |  | Owner DID - Required |
+| owner_username | [string](#string) |  | Owner username - Required |
+| description | [string](#string) |  | The community&#39;s description or mission statement - Required |
+| img | [string](#string) |  | Image URL - Optional |
+| tags | [string](#string) | repeated | User-defined tags - Optional |
+| price_to_join | [int64](#int64) |  | How much it costs to join - Required |
+| price_per_message | [int64](#int64) |  | How much each message costs - Required |
+| escrow_amount | [int64](#int64) |  | Escrow amount - Required |
+| last_active | [int64](#int64) |  | When last active - Optional |
+| public | [bool](#bool) |  | Is this a public community? - Required; defaults true |
+| deleted | [bool](#bool) |  | Deleted - Optional, defaults 0 |
+| created | [int64](#int64) |  | Created when? - Required |
+| updated | [int64](#int64) |  | Updated when? - Optional |
 
 
 
