@@ -10,9 +10,9 @@ The new Zion relay server for decentralized social media and messaging.
 ## Tech Stack
 - [Go](https://go.dev/) - v1.17
 - [LND](https://github.com/lightningnetwork/lnd) - Lightning integration
-- [IPFS](https://docs.ipfs.io/concepts/what-is-ipfs/) - Decentralized media storage
 - [ION](https://identity.foundation/ion/) - DIDs anchored to Bitcoin
 - [Docker](https://www.docker.com/) - Containers
+- _[IPFS](https://docs.ipfs.io/concepts/what-is-ipfs/) - Decentralized media storage_
 
 ## Protobuf Documentation
 - [Identity Hub](docs/grpc-identityhub.md)
