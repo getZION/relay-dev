@@ -14,7 +14,7 @@ The new Zion relay server for decentralized social media and messaging.
 - [ION](https://identity.foundation/ion/) - DIDs anchored to Bitcoin
 - [Docker](https://www.docker.com/) - Containers
 
-# Protocol Documentation
+## Protobuf Documentation
 - [Identity Hub](docs/grpc-identityhub.md)
 - [Zion](docs/zion.md)
 
