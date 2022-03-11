@@ -28,5 +28,7 @@ message Message {
   // URL link to external piece of content
   string link = 8; // Optional if text is non-null, otherwise required
   // URL for associated image
-  string img = 9;
+  string img = 9; // Optional
+  // URL for associated video
+  string video = 10; // Optional
 }
