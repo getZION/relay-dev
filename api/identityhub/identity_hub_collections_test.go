@@ -1,14 +1,17 @@
 package identityhub
 
 import (
-	"log"
+	"database/sql"
 
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/getzion/relay/api"
+	"github.com/getzion/relay/api/datastore"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/jinzhu/gorm"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -19,22 +22,42 @@ const (
 )
 
 var _ = Describe("IdentityHub Collections", func() {
-	var client HubRequestServiceClient
+	var client *IdentityHubService
 	var ctx context.Context
-	var conn *grpc.ClientConn
-	var err error
+	var mock sqlmock.Sqlmock
 
 	BeforeEach(func() {
-		ctx = context.Background()
-		conn, err = grpc.DialContext(ctx, "", grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithContextDialer(dialer()))
+		var err error
+		var db *sql.DB
+
+		db, mock, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
 		if err != nil {
-			log.Fatal(err)
+			logrus.Panic(err)
 		}
-		client = NewHubRequestServiceClient(conn)
+
+		gormDb, err := gorm.Open("mysql", db)
+		if err != nil {
+			logrus.Panic(err)
+		}
+
+		connection := &api.Connection{
+			DB: gormDb,
+		}
+
+		store, err := datastore.NewStore(connection)
+		if err != nil {
+			logrus.Panic(err)
+		}
+
+		client = &IdentityHubService{
+			prefix:                   prefix,
+			validHubInterfaceMethods: validHubInterfaceMethods,
+			store:                    store,
+		}
 	})
 
 	AfterEach(func() {
-		defer conn.Close()
+		//defer conn.Close()
 	})
 
 	Context("Message Level", func() {
@@ -85,6 +108,11 @@ var _ = Describe("IdentityHub Collections", func() {
 			})
 
 			It("receives a response if a Message Descriptor has valid objectID", func() {
+
+				mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
@@ -130,6 +158,11 @@ var _ = Describe("IdentityHub Collections", func() {
 			})
 
 			It("receives a response if a Message Descriptor has valid schema", func() {
+
+				mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
@@ -177,6 +210,11 @@ var _ = Describe("IdentityHub Collections", func() {
 			})
 
 			It("receives a response if a Message Descriptor has valid dataFormat", func() {
+
+				mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
@@ -227,6 +265,10 @@ var _ = Describe("IdentityHub Collections", func() {
 
 			It("receives a response if a Message Descriptor has valid dateSort (createdAscending)", func() {
 
+				mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
@@ -252,6 +294,10 @@ var _ = Describe("IdentityHub Collections", func() {
 			})
 
 			It("receives a response if a Message Descriptor has valid dateSort (createdDescending)", func() {
+
+				mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
 
 				request := &Request{
 					RequestId: REQUEST_ID,
@@ -279,6 +325,10 @@ var _ = Describe("IdentityHub Collections", func() {
 
 			It("receives a response if a Message Descriptor has valid dateSort (publishedAscending)", func() {
 
+				mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
@@ -304,6 +354,10 @@ var _ = Describe("IdentityHub Collections", func() {
 			})
 
 			It("receives a response if a Message Descriptor has valid dateSort (publishedDescending)", func() {
+
+				mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
 
 				request := &Request{
 					RequestId: REQUEST_ID,
@@ -422,11 +476,18 @@ var _ = Describe("IdentityHub Collections", func() {
 			})
 
 			It("receives a response if a Message Descriptor has valid dateCreated", func() {
+
+				mock.ExpectBegin()
+				mock.ExpectExec("INSERT[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectCommit()
+				mock.ExpectClose()
+
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
 					Messages: []*Message{
 						{
+							Data: `{ "Name": "test", "Description": "test", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
 							Descriptor_: &MessageDescriptor{
 								Method:      COLLECTIONS_WRITE,
 								ObjectId:    OBJECT_ID,
@@ -469,11 +530,18 @@ var _ = Describe("IdentityHub Collections", func() {
 			})
 
 			It("receives a response if a Message Descriptor has valid schema", func() {
+
+				mock.ExpectBegin()
+				mock.ExpectExec("INSERT[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectCommit()
+				mock.ExpectClose()
+
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
 					Messages: []*Message{
 						{
+							Data: `{ "Name": "test", "Description": "test", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
 							Descriptor_: &MessageDescriptor{
 								Method:      COLLECTIONS_WRITE,
 								ObjectId:    OBJECT_ID,
@@ -518,11 +586,18 @@ var _ = Describe("IdentityHub Collections", func() {
 			})
 
 			It("receives a response if a Message Descriptor has valid datePublished", func() {
+
+				mock.ExpectBegin()
+				mock.ExpectExec("INSERT[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectCommit()
+				mock.ExpectClose()
+
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
 					Messages: []*Message{
 						{
+							Data: `{ "Name": "test", "Description": "test", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
 							Descriptor_: &MessageDescriptor{
 								Method:        COLLECTIONS_WRITE,
 								ObjectId:      OBJECT_ID,
@@ -546,6 +621,12 @@ var _ = Describe("IdentityHub Collections", func() {
 			})
 
 			It("receives a response if a Message Descriptor has valid data", func() {
+
+				mock.ExpectBegin()
+				mock.ExpectExec("INSERT[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectCommit()
+				mock.ExpectClose()
+
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,

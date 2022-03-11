@@ -9,7 +9,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//go:embed ui/dist
 //go:embed ui/dist/_next
 //go:embed ui/dist/_next/static/*/*.js
 //go:embed ui/dist/_next/static/chunks/*.js

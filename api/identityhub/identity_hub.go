@@ -5,6 +5,10 @@ import (
 	"encoding/json"
 
 	"github.com/getzion/relay/api/datastore"
+	"github.com/getzion/relay/api/identityhub/errors"
+	"github.com/getzion/relay/api/identityhub/handler/collections"
+	"github.com/getzion/relay/api/identityhub/handler/permissions"
+	"github.com/getzion/relay/api/identityhub/handler/threads"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/google/uuid"
 
@@ -12,13 +16,11 @@ import (
 	"github.com/multiformats/go-multihash"
 
 	"github.com/go-playground/validator/v10"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 type (
 	//todo: wrap request with a handler?
-	interfaceMethodHandler func(store *datastore.Store, m *hub.Message) (string, *MessageLevelError)
+	interfaceMethodHandler func(store *datastore.Store, m *hub.Message) (string, *errors.MessageLevelError)
 
 	IdentityHubService struct {
 		hub.UnimplementedHubRequestServiceServer
@@ -29,23 +31,6 @@ type (
 
 		store *datastore.Store
 	}
-
-	MessageLevelError struct {
-		Message string
-		Code    int64
-		Error   error
-	}
-)
-
-const (
-	requestLevelProcessingErrorMessage string = "The request could not be processed correctly"
-	targetDIDNotFoundErrorMessage      string = "Target DID not found within the Identity Hub instance"
-
-	improperlyConstructedErrorMessage   string = "The message was malformed or improperly constructed"
-	interfaceNotImplementedErrorMessage string = "The interface method is not implemented"
-	authorizationFailedErrorMessage     string = "The message failed authorization requirements"
-
-	messageSuccessfullyMessage string = "The message was successfully processed"
 )
 
 var (
@@ -59,19 +44,19 @@ var (
 
 	//todo: change request handler implemantation
 	validHubInterfaceMethods = map[string]interfaceMethodHandler{
-		"CollectionsQuery":   CollectionsQuery,
-		"CollectionsWrite":   CollectionsWrite,
-		"CollectionsCommit":  CollectionsCommit,
-		"CollectionsDelete":  CollectionsDelete,
-		"ThreadsQuery":       ThreadsQuery,
-		"ThreadsCreate":      ThreadsCreate,
-		"ThreadsReply":       ThreadsReply,
-		"ThreadsClose":       ThreadsClose,
-		"ThreadsDelete":      ThreadsDelete,
-		"PermissionsRequest": PermissionsRequest,
-		"PermissionsQuery":   PermissionsQuery,
-		"PermissionsGrant":   PermissionsGrant,
-		"PermissionsRevoke":  PermissionsRevoke,
+		"CollectionsQuery":   collections.CollectionsQuery,
+		"CollectionsWrite":   collections.CollectionsWrite,
+		"CollectionsCommit":  collections.CollectionsCommit,
+		"CollectionsDelete":  collections.CollectionsDelete,
+		"ThreadsQuery":       threads.ThreadsQuery,
+		"ThreadsCreate":      threads.ThreadsCreate,
+		"ThreadsReply":       threads.ThreadsReply,
+		"ThreadsClose":       threads.ThreadsClose,
+		"ThreadsDelete":      threads.ThreadsDelete,
+		"PermissionsRequest": permissions.PermissionsRequest,
+		"PermissionsQuery":   permissions.PermissionsQuery,
+		"PermissionsGrant":   permissions.PermissionsGrant,
+		"PermissionsRevoke":  permissions.PermissionsRevoke,
 	}
 )
 
@@ -90,8 +75,8 @@ func InitIdentityHubService(store *datastore.Store) *IdentityHubService {
 }
 
 func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Request) (*hub.Response, error) {
-	grpc.SendHeader(ctx, metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-unary"))
-	grpc.SetTrailer(ctx, metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-unary"))
+	//grpc.SendHeader(ctx, metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-unary"))
+	//grpc.SetTrailer(ctx, metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-unary"))
 
 	response := &hub.Response{
 		RequestId: r.RequestId,
@@ -102,11 +87,11 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 
 	if r.RequestId == "" || r.Target == "" || len(r.Messages) == 0 {
 		response.Status.Code = 500
-		response.Status.Message = requestLevelProcessingErrorMessage
+		response.Status.Message = errors.RequestLevelProcessingErrorMessage
 		return response, nil
 	} else if _, err := uuid.Parse(r.RequestId); err != nil {
 		response.Status.Code = 500
-		response.Status.Message = requestLevelProcessingErrorMessage
+		response.Status.Message = errors.RequestLevelProcessingErrorMessage
 		return response, nil
 	}
 
@@ -124,7 +109,7 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 		messageByte, err := json.Marshal(message)
 		if err != nil {
 			reply.Status.Code = 500
-			reply.Status.Message = improperlyConstructedErrorMessage
+			reply.Status.Message = errors.ImproperlyConstructedErrorMessage
 			response.Replies = append(response.Replies, reply)
 			//todo: how we handle internal server error?
 			continue
@@ -133,7 +118,7 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 		messageId, err := identityHub.prefix.Sum(messageByte)
 		if err != nil {
 			reply.Status.Code = 500
-			reply.Status.Message = improperlyConstructedErrorMessage
+			reply.Status.Message = errors.ImproperlyConstructedErrorMessage
 			response.Replies = append(response.Replies, reply)
 			//todo: how we handle internal server error?
 			continue
@@ -143,12 +128,12 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 
 		if message.Descriptor_ == nil || message.Descriptor_.Method == "" {
 			reply.Status.Code = 400
-			reply.Status.Message = improperlyConstructedErrorMessage
+			reply.Status.Message = errors.ImproperlyConstructedErrorMessage
 			response.Replies = append(response.Replies, reply)
 			continue
 		} else if method, ok = identityHub.validHubInterfaceMethods[message.Descriptor_.Method]; !ok {
 			reply.Status.Code = 501
-			reply.Status.Message = interfaceNotImplementedErrorMessage
+			reply.Status.Message = errors.InterfaceNotImplementedErrorMessage
 			response.Replies = append(response.Replies, reply)
 			continue
 		}
@@ -165,17 +150,9 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 			reply.Entries = []string{entry}
 		}
 		reply.Status.Code = 200
-		reply.Status.Message = messageSuccessfullyMessage
+		reply.Status.Message = errors.MessageSuccessfullyMessage
 		response.Replies = append(response.Replies, reply)
 	}
 
 	return response, nil
-}
-
-func NewMessageLevelError(code int64, message string, err error) *MessageLevelError {
-	return &MessageLevelError{
-		Code:    code,
-		Message: message,
-		Error:   err,
-	}
 }
