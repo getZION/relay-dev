@@ -5,25 +5,7 @@ package proto.zion.v1;
 option go_package = "github.com/getzion/relay/gen/zion/v1";
 
 import "proto/protoc-gen-gorm/options/gorm.proto";
-
-service ConversationService {
-  // Create a conversation
-  rpc CreateConversation(CreateConversationRequest) returns (CreateConversationResponse) {}
-  // Delete a comment of mine, or in a conversation I started
-  rpc DeleteComment(DeleteCommentRequest) returns (DeleteCommentResponse) {
-    option (gorm.method).object_type = "Comment";
-  }
-  // Delete a conversation I started
-  rpc DeleteConversation(DeleteConversationRequest) returns (DeleteConversationResponse) {
-    option (gorm.method).object_type = "Conversation";
-  }
-  // Get list of my activity (notifications)
-  rpc GetActivity(GetActivityRequest) returns (GetActivityResponse) {}
-  // Get a conversation and its comments
-  rpc GetConversation(GetConversationRequest) returns (GetConversationResponse) {}
-  // Get my feed of conversations
-  rpc GetFeed(GetFeedRequest) returns (GetFeedResponse) {}
-}
+import "proto/zion/v1/messages.proto";
 
 message Conversation {
   option (gorm.opts).ormable = true;
@@ -32,38 +14,14 @@ message Conversation {
     unique: true
     primary_key: true
   }];
-  // Text
-  string text = 2 [(gorm.field).tag = { not_null: true }];
+  // Conversation ID unique across Zion - Required; must be uuid v4
+  string zid = 2;
+  // Zion ID of the community this conversation belongs to - Required; must be uuid v4
+  string community_zid = 3;
+  // The Message that starts the conversation - Required
+  Message message = 4;
+  // Is this conversation publicly visible? - Optional; defaults to false
+  bool public = 5;
+  // Price in sats for non-community members to read, if public = true - Optional; defaults to 0
+  int64 public_price = 6;
 }
-
-message Comment {
-  option (gorm.opts).ormable = true;
-  // The community's unique ID (primary key)
-  int64 id = 1 [(gorm.field).tag = {
-    unique: true
-    primary_key: true
-  }];
-  // Text
-  string text = 2 [(gorm.field).tag = { not_null: true }];
-}
-
-message CreateConversationRequest {
-  Conversation payload = 1;
-}
-message CreateConversationResponse {
-  Conversation result = 1;
-}
-message DeleteCommentRequest {
-  int64 id = 1;
-}
-message DeleteCommentResponse {}
-message DeleteConversationRequest {
-  int64 id = 1;
-}
-message DeleteConversationResponse {}
-message GetActivityRequest {}
-message GetActivityResponse {}
-message GetConversationRequest {}
-message GetConversationResponse {}
-message GetFeedRequest {}
-message GetFeedResponse {}

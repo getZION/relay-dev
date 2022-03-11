@@ -6,37 +6,29 @@ option go_package = "github.com/getzion/relay/gen/zion/v1";
 
 import "proto/protoc-gen-gorm/options/gorm.proto";
 
-service PaymentsService {
-  // Create invoice to fund account
-  rpc CreateInvoice(CreateInvoiceRequest) returns (CreateInvoiceResponse) {}
-  // Get my payments history
-  rpc GetPaymentsHistory(GetPaymentsHistoryRequest) returns (GetPaymentsHistoryResponse) {}
-  // Pay Lightning invoice
-  rpc PayInvoice(PayInvoiceRequest) returns (PayInvoiceResponse) {}
-  // Send sats to another user
-  rpc PayUser(PayUserRequest) returns (PayUserResponse) {}
-}
-
-message Invoice {
+message Payment {
   option (gorm.opts).ormable = true;
   // The community's unique ID (primary key)
   int64 id = 1 [(gorm.field).tag = {
     unique: true
     primary_key: true
   }];
-  // Text
-  string text = 2 [(gorm.field).tag = { not_null: true }];
+  // Payment id unique across Zion - Required; must be uuid v4
+  string zid = 2;
+  // DID of payment sender - Required
+  string sender_did = 3;
+  // DID of payment recipient - Required
+  string recipient_did = 4;
+  // Pubkey of recipient LND node - Required
+  string recipient_node_pubkey = 5;
+  // URL of recipient relay - Required
+  string recipient_relay_url = 6;
+  // Status - Required; default "pending"
+  string status = 7;
+  // Amount in sats - Required
+  int64 amount = 8;
+  // Type of payment: boost, P2P send, community join, stake, etc. - Required
+  int64 type = 9;
+  // Memo describing transaction - Optional
+  string memo = 10;
 }
-
-message CreateInvoiceRequest {
-  Invoice payload = 1;
-}
-message CreateInvoiceResponse {
-  Invoice result = 1;
-}
-message GetPaymentsHistoryRequest {}
-message GetPaymentsHistoryResponse {}
-message PayInvoiceRequest {}
-message PayInvoiceResponse {}
-message PayUserRequest {}
-message PayUserResponse {}

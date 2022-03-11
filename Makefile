@@ -26,3 +26,12 @@ compile-ts:
 		--plugin=./ui/node_modules/.bin/protoc-gen-ts \
 		--js_out="import_style=commonjs,binary:./ui" \
 		--ts_out=service=grpc-web:./ui
+
+compile-docs:
+	protoc proto/zion/v1/*.proto \
+		--doc_out=./docs \
+		--doc_opt=markdown,grpc-zion.md
+
+	protoc proto/identityhub/v1/*.proto \
+		--doc_out=./docs \
+		--doc_opt=markdown,grpc-identityhub.md
