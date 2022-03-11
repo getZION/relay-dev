@@ -12,8 +12,11 @@ The new Zion relay server for decentralized social media and messaging.
 - [LND](https://github.com/lightningnetwork/lnd) - Lightning integration
 - [IPFS](https://docs.ipfs.io/concepts/what-is-ipfs/) - Decentralized media storage
 - [ION](https://identity.foundation/ion/) - DIDs anchored to Bitcoin
-- [Nodejs](https://nodejs.org/) - v14.19.0
-- [Docker](https://www.docker.com/) - Containerization Technology
+- [Docker](https://www.docker.com/) - Containers
+
+# Protocol Documentation
+- [Identity Hub](docs/grpc-identityhub.md)
+- [Zion](docs/zion.md)
 
 ## Specifications
 We will gradually implement the following specifications:
