@@ -40,9 +40,9 @@ Anyone can run their own relay. Users can connect their app to these other relay
 
 Courtesy of [DIF](https://identity.foundation/)
 
-![What are Identity Hubs?](docs/hubs1.png)
+![What are Identity Hubs?](docs/images/hubs1.png)
 
-![DID + Hub Topology](docs/hubs2.png)
+![DID + Hub Topology](docs/images/hubs2.png)
 
 ### Development
 
