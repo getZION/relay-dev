@@ -13,22 +13,22 @@ message Message {
     unique: true
     primary_key: true
   }];
-  // Message id unique across Zion
-  string zid = 2; // Required; must be uuid v4
-  // DID of user who sent this message
-  int64 user_did = 3; // Required
-  // DID of user recipient of this message (if DM)
-  int64 receiving_user_did = 4; // Optional if conversation_id is non-null, otherwise required
-  // Zion ID of conversation of this message (if community/conversation message)
-  int64 conversation_zid = 5; // Optional if receiving_user_id is non-null, otherwise required
-  // Zion ID of message this message is a reply to
-  int64 reply_to_message_zid = 6; // Optional
-  // Main message body
-  string text = 7; // Optional if link is non-null, otherwise required
-  // URL link to external piece of content
-  string link = 8; // Optional if text is non-null, otherwise required
-  // URL for associated image
-  string img = 9; // Optional
-  // URL for associated video
-  string video = 10; // Optional
+  // Message id unique across Zion - Required; must be uuid v4
+  string zid = 2;
+  // DID of user who sent this message - Required
+  int64 user_did = 3;
+  // DID of user recipient of this message (if DM) - Optional if conversation_id is non-null, otherwise required
+  int64 receiving_user_did = 4;
+  // Zion ID of conversation of this message (if community/conversation message) - Optional if receiving_user_id is non-null, otherwise required
+  int64 conversation_zid = 5;
+  // Zion ID of message this message is a reply to - Optional
+  int64 reply_to_message_zid = 6;
+  // Main message body - Optional if link is non-null, otherwise required
+  string text = 7;
+  // URL link to external piece of content - Optional if text is non-null, otherwise required
+  string link = 8;
+  // URL for associated image - Optional
+  string img = 9;
+  // URL for associated video - Optional
+  string video = 10;
 }

@@ -13,22 +13,22 @@ message Payment {
     unique: true
     primary_key: true
   }];
-  // Payment id unique across Zion
-  string zid = 2; // Required; must be uuid v4
-  // DID of payment sender
-  string sender_did = 3; // Required
-  // DID of payment recipient
-  string recipient_did = 4; // Required
-  // Pubkey of recipient LND node
-  string recipient_node_pubkey = 5; // Required
-  // URL of recipient relay
-  string recipient_relay_url = 6; // Required
-  // Status
-  string status = 7; // Required; default "pending"
-  // Amount in sats
-  int64 amount = 8; // Required
-  // Type of payment: boost, P2P send, community join, stake, etc.
+  // Payment id unique across Zion - Required; must be uuid v4
+  string zid = 2;
+  // DID of payment sender - Required
+  string sender_did = 3;
+  // DID of payment recipient - Required
+  string recipient_did = 4;
+  // Pubkey of recipient LND node - Required
+  string recipient_node_pubkey = 5;
+  // URL of recipient relay - Required
+  string recipient_relay_url = 6;
+  // Status - Required; default "pending"
+  string status = 7;
+  // Amount in sats - Required
+  int64 amount = 8;
+  // Type of payment: boost, P2P send, community join, stake, etc. - Required
   int64 type = 9;
-  // Memo describing transaction
-  string memo = 10; // Optional
+  // Memo describing transaction - Optional
+  string memo = 10;
 }

@@ -14,14 +14,14 @@ message Conversation {
     unique: true
     primary_key: true
   }];
-  // Conversation ID unique across Zion
-  string zid = 2; // Required; must be uuid v4
-  // Zion ID of the community this conversation belongs to
-  string community_zid = 3; // Required; must be uuid v4
-  // The Message that starts the conversation
-  Message message = 4; // Required
-  // Is this conversation publicly visible?
-  bool public = 5; // Optional; defaults to false
-  // Price in sats for non-community members to read, if public = true
-  int64 public_price = 6; // Optional; defaults to 0
+  // Conversation ID unique across Zion - Required; must be uuid v4
+  string zid = 2;
+  // Zion ID of the community this conversation belongs to - Required; must be uuid v4
+  string community_zid = 3;
+  // The Message that starts the conversation - Required
+  Message message = 4;
+  // Is this conversation publicly visible? - Optional; defaults to false
+  bool public = 5;
+  // Price in sats for non-community members to read, if public = true - Optional; defaults to 0
+  int64 public_price = 6;
 }

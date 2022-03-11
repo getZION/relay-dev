@@ -90,21 +90,11 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [int64](#int64) |  | The community&#39;s unique ID (primary key) |
-| zid | [string](#string) |  | Conversation ID unique across Zion
-
-Required; must be uuid v4 |
-| community_zid | [string](#string) |  | Zion ID of the community this conversation belongs to
-
-Required; must be uuid v4 |
-| message | [Message](#proto.zion.v1.Message) |  | The Message that starts the conversation
-
-Required |
-| public | [bool](#bool) |  | Is this conversation publicly visible?
-
-Optional; defaults to false |
-| public_price | [int64](#int64) |  | Price in sats for non-community members to read, if public = true
-
-Optional; defaults to 0 |
+| zid | [string](#string) |  | Conversation ID unique across Zion - Required; must be uuid v4 |
+| community_zid | [string](#string) |  | Zion ID of the community this conversation belongs to - Required; must be uuid v4 |
+| message | [Message](#proto.zion.v1.Message) |  | The Message that starts the conversation - Required |
+| public | [bool](#bool) |  | Is this conversation publicly visible? - Optional; defaults to false |
+| public_price | [int64](#int64) |  | Price in sats for non-community members to read, if public = true - Optional; defaults to 0 |
 
 
 
@@ -136,33 +126,15 @@ Optional; defaults to 0 |
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [int64](#int64) |  | Message primary ID &amp; key - unique only to this relay |
-| zid | [string](#string) |  | Message id unique across Zion
-
-Required; must be uuid v4 |
-| user_did | [int64](#int64) |  | DID of user who sent this message
-
-Required |
-| receiving_user_did | [int64](#int64) |  | DID of user recipient of this message (if DM)
-
-Optional if conversation_id is non-null, otherwise required |
-| conversation_zid | [int64](#int64) |  | Zion ID of conversation of this message (if community/conversation message)
-
-Optional if receiving_user_id is non-null, otherwise required |
-| reply_to_message_zid | [int64](#int64) |  | Zion ID of message this message is a reply to
-
-Optional |
-| text | [string](#string) |  | Main message body
-
-Optional if link is non-null, otherwise required |
-| link | [string](#string) |  | URL link to external piece of content
-
-Optional if text is non-null, otherwise required |
-| img | [string](#string) |  | URL for associated image
-
-Optional |
-| video | [string](#string) |  | URL for associated video
-
-Optional |
+| zid | [string](#string) |  | Message id unique across Zion - Required; must be uuid v4 |
+| user_did | [int64](#int64) |  | DID of user who sent this message - Required |
+| receiving_user_did | [int64](#int64) |  | DID of user recipient of this message (if DM) - Optional if conversation_id is non-null, otherwise required |
+| conversation_zid | [int64](#int64) |  | Zion ID of conversation of this message (if community/conversation message) - Optional if receiving_user_id is non-null, otherwise required |
+| reply_to_message_zid | [int64](#int64) |  | Zion ID of message this message is a reply to - Optional |
+| text | [string](#string) |  | Main message body - Optional if link is non-null, otherwise required |
+| link | [string](#string) |  | URL link to external piece of content - Optional if text is non-null, otherwise required |
+| img | [string](#string) |  | URL for associated image - Optional |
+| video | [string](#string) |  | URL for associated video - Optional |
 
 
 
@@ -246,31 +218,15 @@ Optional |
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [int64](#int64) |  | The community&#39;s unique ID (primary key) |
-| zid | [string](#string) |  | Payment id unique across Zion
-
-Required; must be uuid v4 |
-| sender_did | [string](#string) |  | DID of payment sender
-
-Required |
-| recipient_did | [string](#string) |  | DID of payment recipient
-
-Required |
-| recipient_node_pubkey | [string](#string) |  | Pubkey of recipient LND node
-
-Required |
-| recipient_relay_url | [string](#string) |  | URL of recipient relay
-
-Required |
-| status | [string](#string) |  | Status
-
-Required; default &#34;pending&#34; |
-| amount | [int64](#int64) |  | Amount in sats
-
-Required |
-| type | [int64](#int64) |  | Type of payment: boost, P2P send, community join, stake, etc. |
-| memo | [string](#string) |  | Memo describing transaction
-
-Optional |
+| zid | [string](#string) |  | Payment id unique across Zion - Required; must be uuid v4 |
+| sender_did | [string](#string) |  | DID of payment sender - Required |
+| recipient_did | [string](#string) |  | DID of payment recipient - Required |
+| recipient_node_pubkey | [string](#string) |  | Pubkey of recipient LND node - Required |
+| recipient_relay_url | [string](#string) |  | URL of recipient relay - Required |
+| status | [string](#string) |  | Status - Required; default &#34;pending&#34; |
+| amount | [int64](#int64) |  | Amount in sats - Required |
+| type | [int64](#int64) |  | Type of payment: boost, P2P send, community join, stake, etc. - Required |
+| memo | [string](#string) |  | Memo describing transaction - Optional |
 
 
 
@@ -302,27 +258,13 @@ Optional |
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [int64](#int64) |  | User primary ID &amp; key |
-| did | [string](#string) |  | User&#39;s decentralized identifier (DID), e.g. did:ion:[fingerprint]
-
-Required; unique |
-| username | [string](#string) |  | User&#39;s username, unique in Zion
-
-Required; unique |
-| name | [string](#string) |  | User&#39;s display name
-
-Optional |
-| email | [string](#string) |  | User&#39;s email address for opt-in marketing updates
-
-Optional |
-| bio | [string](#string) |  | User&#39;s personal biography that shows on their profile
-
-Optional |
-| picture | [string](#string) |  | URL for user&#39;s profile picture
-
-Optional |
-| price_to_message | [int64](#int64) |  | How many sats it costs to direct-message this user
-
-Optional - Default to 0 |
+| did | [string](#string) |  | User&#39;s decentralized identifier (DID), e.g. did:ion:[fingerprint] - Required; unique |
+| username | [string](#string) |  | User&#39;s username, unique in Zion - Required; unique |
+| name | [string](#string) |  | User&#39;s display name - Optional |
+| email | [string](#string) |  | User&#39;s email address for opt-in marketing updates - Optional |
+| bio | [string](#string) |  | User&#39;s personal biography that shows on their profile - Optional |
+| picture | [string](#string) |  | URL for user&#39;s profile picture - Optional |
+| price_to_message | [int64](#int64) |  | How many sats it costs to direct-message this user - Optional - Default to 0 |
 
 
 

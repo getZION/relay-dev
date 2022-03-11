@@ -13,18 +13,18 @@ message User {
     unique: true
     primary_key: true
   }];
-  // User's decentralized identifier (DID), e.g. did:ion:[fingerprint]
-  string did = 2; // Required; unique
-  // User's username, unique in Zion
-  string username = 3; // Required; unique
-  // User's display name
-  string name = 4; // Optional
-  // User's email address for opt-in marketing updates
-  string email = 5; // Optional
-  // User's personal biography that shows on their profile
-  string bio = 6; // Optional
-  // URL for user's profile picture
-  string picture = 7; // Optional
-  // How many sats it costs to direct-message this user
-  int64 price_to_message = 8; // Optional - Default to 0
+  // User's decentralized identifier (DID), e.g. did:ion:[fingerprint] - Required; unique
+  string did = 2;
+  // User's username, unique in Zion - Required; unique
+  string username = 3;
+  // User's display name - Optional
+  string name = 4;
+  // User's email address for opt-in marketing updates - Optional
+  string email = 5;
+  // User's personal biography that shows on their profile - Optional
+  string bio = 6;
+  // URL for user's profile picture - Optional
+  string picture = 7;
+  // How many sats it costs to direct-message this user - Optional - Default to 0
+  int64 price_to_message = 8;
 }
