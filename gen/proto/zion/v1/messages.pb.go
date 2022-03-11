@@ -28,22 +28,24 @@ type Message struct {
 
 	// Message primary ID & key - unique only to this relay
 	Id int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// Message id unique across Zion
-	ZionId string `protobuf:"bytes,2,opt,name=zion_id,json=zionId,proto3" json:"zion_id,omitempty"` // Required; must be uuid v4
-	// DID of user who sent this message
-	UserDid int64 `protobuf:"varint,3,opt,name=user_did,json=userDid,proto3" json:"user_did,omitempty"` // Required
-	// DID of user recipient of this message (if DM)
-	ReceivingUserDid int64 `protobuf:"varint,4,opt,name=receiving_user_did,json=receivingUserDid,proto3" json:"receiving_user_did,omitempty"` // Optional if conversation_id is non-null, otherwise required
-	// Primary id of conversation of this message (if community/conversation message)
-	ConversationId int64 `protobuf:"varint,5,opt,name=conversation_id,json=conversationId,proto3" json:"conversation_id,omitempty"` // Optional if receiving_user_id is non-null, otherwise required
-	// Primary id of message this message is a reply to
-	ReplyToMessageId int64 `protobuf:"varint,6,opt,name=reply_to_message_id,json=replyToMessageId,proto3" json:"reply_to_message_id,omitempty"` // Optional
-	// Main message body
-	Text string `protobuf:"bytes,7,opt,name=text,proto3" json:"text,omitempty"` // Optional if link is non-null, otherwise required
-	// URL link to external piece of content
-	Link string `protobuf:"bytes,8,opt,name=link,proto3" json:"link,omitempty"` // Optional if text is non-null, otherwise required
-	// URL for associated image
+	// Message id unique across Zion - Required; must be uuid v4
+	Zid string `protobuf:"bytes,2,opt,name=zid,proto3" json:"zid,omitempty"`
+	// DID of user who sent this message - Required
+	UserDid int64 `protobuf:"varint,3,opt,name=user_did,json=userDid,proto3" json:"user_did,omitempty"`
+	// DID of user recipient of this message (if DM) - Optional if conversation_id is non-null, otherwise required
+	ReceivingUserDid int64 `protobuf:"varint,4,opt,name=receiving_user_did,json=receivingUserDid,proto3" json:"receiving_user_did,omitempty"`
+	// Zion ID of conversation of this message (if community/conversation message) - Optional if receiving_user_id is non-null, otherwise required
+	ConversationZid int64 `protobuf:"varint,5,opt,name=conversation_zid,json=conversationZid,proto3" json:"conversation_zid,omitempty"`
+	// Zion ID of message this message is a reply to - Optional
+	ReplyToMessageZid int64 `protobuf:"varint,6,opt,name=reply_to_message_zid,json=replyToMessageZid,proto3" json:"reply_to_message_zid,omitempty"`
+	// Main message body - Optional if link is non-null, otherwise required
+	Text string `protobuf:"bytes,7,opt,name=text,proto3" json:"text,omitempty"`
+	// URL link to external piece of content - Optional if text is non-null, otherwise required
+	Link string `protobuf:"bytes,8,opt,name=link,proto3" json:"link,omitempty"`
+	// URL for associated image - Optional
 	Img string `protobuf:"bytes,9,opt,name=img,proto3" json:"img,omitempty"`
+	// URL for associated video - Optional
+	Video string `protobuf:"bytes,10,opt,name=video,proto3" json:"video,omitempty"`
 }
 
 func (x *Message) Reset() {
@@ -85,9 +87,9 @@ func (x *Message) GetId() int64 {
 	return 0
 }
 
-func (x *Message) GetZionId() string {
+func (x *Message) GetZid() string {
 	if x != nil {
-		return x.ZionId
+		return x.Zid
 	}
 	return ""
 }
@@ -106,16 +108,16 @@ func (x *Message) GetReceivingUserDid() int64 {
 	return 0
 }
 
-func (x *Message) GetConversationId() int64 {
+func (x *Message) GetConversationZid() int64 {
 	if x != nil {
-		return x.ConversationId
+		return x.ConversationZid
 	}
 	return 0
 }
 
-func (x *Message) GetReplyToMessageId() int64 {
+func (x *Message) GetReplyToMessageZid() int64 {
 	if x != nil {
-		return x.ReplyToMessageId
+		return x.ReplyToMessageZid
 	}
 	return 0
 }
@@ -141,317 +143,11 @@ func (x *Message) GetImg() string {
 	return ""
 }
 
-type BoostMessageRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *BoostMessageRequest) Reset() {
-	*x = BoostMessageRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_messages_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *BoostMessageRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*BoostMessageRequest) ProtoMessage() {}
-
-func (x *BoostMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_messages_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use BoostMessageRequest.ProtoReflect.Descriptor instead.
-func (*BoostMessageRequest) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_messages_proto_rawDescGZIP(), []int{1}
-}
-
-type BoostMessageResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *BoostMessageResponse) Reset() {
-	*x = BoostMessageResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_messages_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *BoostMessageResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*BoostMessageResponse) ProtoMessage() {}
-
-func (x *BoostMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_messages_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use BoostMessageResponse.ProtoReflect.Descriptor instead.
-func (*BoostMessageResponse) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_messages_proto_rawDescGZIP(), []int{2}
-}
-
-type DeleteMessageRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-}
-
-func (x *DeleteMessageRequest) Reset() {
-	*x = DeleteMessageRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_messages_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DeleteMessageRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteMessageRequest) ProtoMessage() {}
-
-func (x *DeleteMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_messages_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteMessageRequest.ProtoReflect.Descriptor instead.
-func (*DeleteMessageRequest) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_messages_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *DeleteMessageRequest) GetId() int64 {
+func (x *Message) GetVideo() string {
 	if x != nil {
-		return x.Id
+		return x.Video
 	}
-	return 0
-}
-
-type DeleteMessageResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *DeleteMessageResponse) Reset() {
-	*x = DeleteMessageResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_messages_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DeleteMessageResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteMessageResponse) ProtoMessage() {}
-
-func (x *DeleteMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_messages_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteMessageResponse.ProtoReflect.Descriptor instead.
-func (*DeleteMessageResponse) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_messages_proto_rawDescGZIP(), []int{4}
-}
-
-type GetMessagesRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *GetMessagesRequest) Reset() {
-	*x = GetMessagesRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_messages_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetMessagesRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetMessagesRequest) ProtoMessage() {}
-
-func (x *GetMessagesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_messages_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetMessagesRequest.ProtoReflect.Descriptor instead.
-func (*GetMessagesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_messages_proto_rawDescGZIP(), []int{5}
-}
-
-type GetMessagesResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *GetMessagesResponse) Reset() {
-	*x = GetMessagesResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_messages_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GetMessagesResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetMessagesResponse) ProtoMessage() {}
-
-func (x *GetMessagesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_messages_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetMessagesResponse.ProtoReflect.Descriptor instead.
-func (*GetMessagesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_messages_proto_rawDescGZIP(), []int{6}
-}
-
-type SendMessageRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *SendMessageRequest) Reset() {
-	*x = SendMessageRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_messages_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *SendMessageRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SendMessageRequest) ProtoMessage() {}
-
-func (x *SendMessageRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_messages_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SendMessageRequest.ProtoReflect.Descriptor instead.
-func (*SendMessageRequest) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_messages_proto_rawDescGZIP(), []int{7}
-}
-
-type SendMessageResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *SendMessageResponse) Reset() {
-	*x = SendMessageResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_messages_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *SendMessageResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SendMessageResponse) ProtoMessage() {}
-
-func (x *SendMessageResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_messages_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SendMessageResponse.ProtoReflect.Descriptor instead.
-func (*SendMessageResponse) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_messages_proto_rawDescGZIP(), []int{8}
+	return ""
 }
 
 var File_proto_zion_v1_messages_proto protoreflect.FileDescriptor
@@ -462,65 +158,29 @@ var file_proto_zion_v1_messages_proto_rawDesc = []byte{
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x1a, 0x28, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x2d, 0x67, 0x65, 0x6e, 0x2d,
 	0x67, 0x6f, 0x72, 0x6d, 0x2f, 0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x67, 0x6f, 0x72,
-	0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa1, 0x02, 0x0a, 0x07, 0x4d, 0x65, 0x73, 0x73,
+	0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb4, 0x02, 0x0a, 0x07, 0x4d, 0x65, 0x73, 0x73,
 	0x61, 0x67, 0x65, 0x12, 0x1a, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x42,
 	0x0a, 0xba, 0xb9, 0x19, 0x06, 0x0a, 0x04, 0x28, 0x01, 0x30, 0x01, 0x52, 0x02, 0x69, 0x64, 0x12,
-	0x17, 0x0a, 0x07, 0x7a, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x06, 0x7a, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x19, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72,
-	0x5f, 0x64, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x75, 0x73, 0x65, 0x72,
-	0x44, 0x69, 0x64, 0x12, 0x2c, 0x0a, 0x12, 0x72, 0x65, 0x63, 0x65, 0x69, 0x76, 0x69, 0x6e, 0x67,
-	0x5f, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x64, 0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52,
-	0x10, 0x72, 0x65, 0x63, 0x65, 0x69, 0x76, 0x69, 0x6e, 0x67, 0x55, 0x73, 0x65, 0x72, 0x44, 0x69,
-	0x64, 0x12, 0x27, 0x0a, 0x0f, 0x63, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x73, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x5f, 0x69, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0e, 0x63, 0x6f, 0x6e, 0x76,
-	0x65, 0x72, 0x73, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x2d, 0x0a, 0x13, 0x72, 0x65,
-	0x70, 0x6c, 0x79, 0x5f, 0x74, 0x6f, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x5f, 0x69,
-	0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x03, 0x52, 0x10, 0x72, 0x65, 0x70, 0x6c, 0x79, 0x54, 0x6f,
-	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x78,
-	0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x12, 0x12, 0x0a,
-	0x04, 0x6c, 0x69, 0x6e, 0x6b, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6c, 0x69, 0x6e,
-	0x6b, 0x12, 0x10, 0x0a, 0x03, 0x69, 0x6d, 0x67, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
-	0x69, 0x6d, 0x67, 0x3a, 0x06, 0xba, 0xb9, 0x19, 0x02, 0x08, 0x01, 0x22, 0x15, 0x0a, 0x13, 0x42,
-	0x6f, 0x6f, 0x73, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x22, 0x16, 0x0a, 0x14, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61,
-	0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x26, 0x0a, 0x14, 0x44, 0x65,
-	0x6c, 0x65, 0x74, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x02,
-	0x69, 0x64, 0x22, 0x17, 0x0a, 0x15, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x4d, 0x65, 0x73, 0x73,
-	0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x14, 0x0a, 0x12, 0x47,
-	0x65, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x22, 0x15, 0x0a, 0x13, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x14, 0x0a, 0x12, 0x53, 0x65, 0x6e, 0x64,
-	0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x15,
-	0x0a, 0x13, 0x53, 0x65, 0x6e, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0x87, 0x03, 0x0a, 0x0f, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67,
-	0x65, 0x73, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x59, 0x0a, 0x0c, 0x42, 0x6f, 0x6f,
-	0x73, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x22, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f, 0x6f, 0x73, 0x74, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x42, 0x6f,
-	0x6f, 0x73, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x00, 0x12, 0x69, 0x0a, 0x0d, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x4d, 0x65,
-	0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x23, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69,
-	0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x4d, 0x65, 0x73, 0x73,
-	0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74,
-	0x65, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x0d, 0xba, 0xb9, 0x19, 0x09, 0x0a, 0x07, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12,
-	0x56, 0x0a, 0x0b, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x12, 0x21,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x47,
-	0x65, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x22, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76,
-	0x31, 0x2e, 0x47, 0x65, 0x74, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x56, 0x0a, 0x0b, 0x53, 0x65, 0x6e, 0x64, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x21, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a,
-	0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x6e, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61,
-	0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x6e, 0x64, 0x4d, 0x65,
-	0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42,
-	0x26, 0x5a, 0x24, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x65,
-	0x74, 0x7a, 0x69, 0x6f, 0x6e, 0x2f, 0x72, 0x65, 0x6c, 0x61, 0x79, 0x2f, 0x67, 0x65, 0x6e, 0x2f,
-	0x7a, 0x69, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x10, 0x0a, 0x03, 0x7a, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x7a, 0x69,
+	0x64, 0x12, 0x19, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x64, 0x69, 0x64, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x03, 0x52, 0x07, 0x75, 0x73, 0x65, 0x72, 0x44, 0x69, 0x64, 0x12, 0x2c, 0x0a, 0x12,
+	0x72, 0x65, 0x63, 0x65, 0x69, 0x76, 0x69, 0x6e, 0x67, 0x5f, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x64,
+	0x69, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x10, 0x72, 0x65, 0x63, 0x65, 0x69, 0x76,
+	0x69, 0x6e, 0x67, 0x55, 0x73, 0x65, 0x72, 0x44, 0x69, 0x64, 0x12, 0x29, 0x0a, 0x10, 0x63, 0x6f,
+	0x6e, 0x76, 0x65, 0x72, 0x73, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x7a, 0x69, 0x64, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x03, 0x52, 0x0f, 0x63, 0x6f, 0x6e, 0x76, 0x65, 0x72, 0x73, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x5a, 0x69, 0x64, 0x12, 0x2f, 0x0a, 0x14, 0x72, 0x65, 0x70, 0x6c, 0x79, 0x5f, 0x74,
+	0x6f, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x5f, 0x7a, 0x69, 0x64, 0x18, 0x06, 0x20,
+	0x01, 0x28, 0x03, 0x52, 0x11, 0x72, 0x65, 0x70, 0x6c, 0x79, 0x54, 0x6f, 0x4d, 0x65, 0x73, 0x73,
+	0x61, 0x67, 0x65, 0x5a, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x18, 0x07,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x6c, 0x69,
+	0x6e, 0x6b, 0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6c, 0x69, 0x6e, 0x6b, 0x12, 0x10,
+	0x0a, 0x03, 0x69, 0x6d, 0x67, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x69, 0x6d, 0x67,
+	0x12, 0x14, 0x0a, 0x05, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x76, 0x69, 0x64, 0x65, 0x6f, 0x3a, 0x06, 0xba, 0xb9, 0x19, 0x02, 0x08, 0x01, 0x42, 0x26,
+	0x5a, 0x24, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x65, 0x74,
+	0x7a, 0x69, 0x6f, 0x6e, 0x2f, 0x72, 0x65, 0x6c, 0x61, 0x79, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x7a,
+	0x69, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -535,29 +195,13 @@ func file_proto_zion_v1_messages_proto_rawDescGZIP() []byte {
 	return file_proto_zion_v1_messages_proto_rawDescData
 }
 
-var file_proto_zion_v1_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_proto_zion_v1_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_zion_v1_messages_proto_goTypes = []interface{}{
-	(*Message)(nil),               // 0: proto.zion.v1.Message
-	(*BoostMessageRequest)(nil),   // 1: proto.zion.v1.BoostMessageRequest
-	(*BoostMessageResponse)(nil),  // 2: proto.zion.v1.BoostMessageResponse
-	(*DeleteMessageRequest)(nil),  // 3: proto.zion.v1.DeleteMessageRequest
-	(*DeleteMessageResponse)(nil), // 4: proto.zion.v1.DeleteMessageResponse
-	(*GetMessagesRequest)(nil),    // 5: proto.zion.v1.GetMessagesRequest
-	(*GetMessagesResponse)(nil),   // 6: proto.zion.v1.GetMessagesResponse
-	(*SendMessageRequest)(nil),    // 7: proto.zion.v1.SendMessageRequest
-	(*SendMessageResponse)(nil),   // 8: proto.zion.v1.SendMessageResponse
+	(*Message)(nil), // 0: proto.zion.v1.Message
 }
 var file_proto_zion_v1_messages_proto_depIdxs = []int32{
-	1, // 0: proto.zion.v1.MessagesService.BoostMessage:input_type -> proto.zion.v1.BoostMessageRequest
-	3, // 1: proto.zion.v1.MessagesService.DeleteMessage:input_type -> proto.zion.v1.DeleteMessageRequest
-	5, // 2: proto.zion.v1.MessagesService.GetMessages:input_type -> proto.zion.v1.GetMessagesRequest
-	7, // 3: proto.zion.v1.MessagesService.SendMessage:input_type -> proto.zion.v1.SendMessageRequest
-	2, // 4: proto.zion.v1.MessagesService.BoostMessage:output_type -> proto.zion.v1.BoostMessageResponse
-	4, // 5: proto.zion.v1.MessagesService.DeleteMessage:output_type -> proto.zion.v1.DeleteMessageResponse
-	6, // 6: proto.zion.v1.MessagesService.GetMessages:output_type -> proto.zion.v1.GetMessagesResponse
-	8, // 7: proto.zion.v1.MessagesService.SendMessage:output_type -> proto.zion.v1.SendMessageResponse
-	4, // [4:8] is the sub-list for method output_type
-	0, // [0:4] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for method output_type
+	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -581,102 +225,6 @@ func file_proto_zion_v1_messages_proto_init() {
 				return nil
 			}
 		}
-		file_proto_zion_v1_messages_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BoostMessageRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_messages_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*BoostMessageResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_messages_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeleteMessageRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_messages_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DeleteMessageResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_messages_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetMessagesRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_messages_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetMessagesResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_messages_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SendMessageRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_messages_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SendMessageResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -684,9 +232,9 @@ func file_proto_zion_v1_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_zion_v1_messages_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   1,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   0,
 		},
 		GoTypes:           file_proto_zion_v1_messages_proto_goTypes,
 		DependencyIndexes: file_proto_zion_v1_messages_proto_depIdxs,

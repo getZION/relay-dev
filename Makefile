@@ -4,6 +4,9 @@ deploy:
 build-aws:
 	GOOS=linux GOARCH=amd64 go build -o bin/application
 
+defs:
+	make generate && make compile-ts && make compile-docs
+
 generate:
 	rm -rf gen
 	buf generate

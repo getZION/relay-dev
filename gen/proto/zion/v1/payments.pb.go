@@ -21,19 +21,35 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Invoice struct {
+type Payment struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// The community's unique ID (primary key)
 	Id int64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	// Text
-	Text string `protobuf:"bytes,2,opt,name=text,proto3" json:"text,omitempty"`
+	// Payment id unique across Zion - Required; must be uuid v4
+	Zid string `protobuf:"bytes,2,opt,name=zid,proto3" json:"zid,omitempty"`
+	// DID of payment sender - Required
+	SenderDid string `protobuf:"bytes,3,opt,name=sender_did,json=senderDid,proto3" json:"sender_did,omitempty"`
+	// DID of payment recipient - Required
+	RecipientDid string `protobuf:"bytes,4,opt,name=recipient_did,json=recipientDid,proto3" json:"recipient_did,omitempty"`
+	// Pubkey of recipient LND node - Required
+	RecipientNodePubkey string `protobuf:"bytes,5,opt,name=recipient_node_pubkey,json=recipientNodePubkey,proto3" json:"recipient_node_pubkey,omitempty"`
+	// URL of recipient relay - Required
+	RecipientRelayUrl string `protobuf:"bytes,6,opt,name=recipient_relay_url,json=recipientRelayUrl,proto3" json:"recipient_relay_url,omitempty"`
+	// Status - Required; default "pending"
+	Status string `protobuf:"bytes,7,opt,name=status,proto3" json:"status,omitempty"`
+	// Amount in sats - Required
+	Amount int64 `protobuf:"varint,8,opt,name=amount,proto3" json:"amount,omitempty"`
+	// Type of payment: boost, P2P send, community join, stake, etc. - Required
+	Type int64 `protobuf:"varint,9,opt,name=type,proto3" json:"type,omitempty"`
+	// Memo describing transaction - Optional
+	Memo string `protobuf:"bytes,10,opt,name=memo,proto3" json:"memo,omitempty"`
 }
 
-func (x *Invoice) Reset() {
-	*x = Invoice{}
+func (x *Payment) Reset() {
+	*x = Payment{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_proto_zion_v1_payments_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -41,13 +57,13 @@ func (x *Invoice) Reset() {
 	}
 }
 
-func (x *Invoice) String() string {
+func (x *Payment) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Invoice) ProtoMessage() {}
+func (*Payment) ProtoMessage() {}
 
-func (x *Invoice) ProtoReflect() protoreflect.Message {
+func (x *Payment) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_zion_v1_payments_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -59,345 +75,79 @@ func (x *Invoice) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Invoice.ProtoReflect.Descriptor instead.
-func (*Invoice) Descriptor() ([]byte, []int) {
+// Deprecated: Use Payment.ProtoReflect.Descriptor instead.
+func (*Payment) Descriptor() ([]byte, []int) {
 	return file_proto_zion_v1_payments_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Invoice) GetId() int64 {
+func (x *Payment) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *Invoice) GetText() string {
+func (x *Payment) GetZid() string {
 	if x != nil {
-		return x.Text
+		return x.Zid
 	}
 	return ""
 }
 
-type CreateInvoiceRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Payload *Invoice `protobuf:"bytes,1,opt,name=payload,proto3" json:"payload,omitempty"`
-}
-
-func (x *CreateInvoiceRequest) Reset() {
-	*x = CreateInvoiceRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_payments_proto_msgTypes[1]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CreateInvoiceRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateInvoiceRequest) ProtoMessage() {}
-
-func (x *CreateInvoiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_payments_proto_msgTypes[1]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateInvoiceRequest.ProtoReflect.Descriptor instead.
-func (*CreateInvoiceRequest) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_payments_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *CreateInvoiceRequest) GetPayload() *Invoice {
+func (x *Payment) GetSenderDid() string {
 	if x != nil {
-		return x.Payload
+		return x.SenderDid
 	}
-	return nil
+	return ""
 }
 
-type CreateInvoiceResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Result *Invoice `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
-}
-
-func (x *CreateInvoiceResponse) Reset() {
-	*x = CreateInvoiceResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_payments_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *CreateInvoiceResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateInvoiceResponse) ProtoMessage() {}
-
-func (x *CreateInvoiceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_payments_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateInvoiceResponse.ProtoReflect.Descriptor instead.
-func (*CreateInvoiceResponse) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_payments_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *CreateInvoiceResponse) GetResult() *Invoice {
+func (x *Payment) GetRecipientDid() string {
 	if x != nil {
-		return x.Result
+		return x.RecipientDid
 	}
-	return nil
+	return ""
 }
 
-type GetPaymentsHistoryRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *GetPaymentsHistoryRequest) Reset() {
-	*x = GetPaymentsHistoryRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_payments_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
+func (x *Payment) GetRecipientNodePubkey() string {
+	if x != nil {
+		return x.RecipientNodePubkey
 	}
+	return ""
 }
 
-func (x *GetPaymentsHistoryRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetPaymentsHistoryRequest) ProtoMessage() {}
-
-func (x *GetPaymentsHistoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_payments_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+func (x *Payment) GetRecipientRelayUrl() string {
+	if x != nil {
+		return x.RecipientRelayUrl
 	}
-	return mi.MessageOf(x)
+	return ""
 }
 
-// Deprecated: Use GetPaymentsHistoryRequest.ProtoReflect.Descriptor instead.
-func (*GetPaymentsHistoryRequest) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_payments_proto_rawDescGZIP(), []int{3}
-}
-
-type GetPaymentsHistoryResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *GetPaymentsHistoryResponse) Reset() {
-	*x = GetPaymentsHistoryResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_payments_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
+func (x *Payment) GetStatus() string {
+	if x != nil {
+		return x.Status
 	}
+	return ""
 }
 
-func (x *GetPaymentsHistoryResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetPaymentsHistoryResponse) ProtoMessage() {}
-
-func (x *GetPaymentsHistoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_payments_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+func (x *Payment) GetAmount() int64 {
+	if x != nil {
+		return x.Amount
 	}
-	return mi.MessageOf(x)
+	return 0
 }
 
-// Deprecated: Use GetPaymentsHistoryResponse.ProtoReflect.Descriptor instead.
-func (*GetPaymentsHistoryResponse) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_payments_proto_rawDescGZIP(), []int{4}
-}
-
-type PayInvoiceRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *PayInvoiceRequest) Reset() {
-	*x = PayInvoiceRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_payments_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
+func (x *Payment) GetType() int64 {
+	if x != nil {
+		return x.Type
 	}
+	return 0
 }
 
-func (x *PayInvoiceRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PayInvoiceRequest) ProtoMessage() {}
-
-func (x *PayInvoiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_payments_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+func (x *Payment) GetMemo() string {
+	if x != nil {
+		return x.Memo
 	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PayInvoiceRequest.ProtoReflect.Descriptor instead.
-func (*PayInvoiceRequest) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_payments_proto_rawDescGZIP(), []int{5}
-}
-
-type PayInvoiceResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *PayInvoiceResponse) Reset() {
-	*x = PayInvoiceResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_payments_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *PayInvoiceResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PayInvoiceResponse) ProtoMessage() {}
-
-func (x *PayInvoiceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_payments_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PayInvoiceResponse.ProtoReflect.Descriptor instead.
-func (*PayInvoiceResponse) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_payments_proto_rawDescGZIP(), []int{6}
-}
-
-type PayUserRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *PayUserRequest) Reset() {
-	*x = PayUserRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_payments_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *PayUserRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PayUserRequest) ProtoMessage() {}
-
-func (x *PayUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_payments_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PayUserRequest.ProtoReflect.Descriptor instead.
-func (*PayUserRequest) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_payments_proto_rawDescGZIP(), []int{7}
-}
-
-type PayUserResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *PayUserResponse) Reset() {
-	*x = PayUserResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_zion_v1_payments_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *PayUserResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PayUserResponse) ProtoMessage() {}
-
-func (x *PayUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_zion_v1_payments_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PayUserResponse.ProtoReflect.Descriptor instead.
-func (*PayUserResponse) Descriptor() ([]byte, []int) {
-	return file_proto_zion_v1_payments_proto_rawDescGZIP(), []int{8}
+	return ""
 }
 
 var File_proto_zion_v1_payments_proto protoreflect.FileDescriptor
@@ -408,57 +158,30 @@ var file_proto_zion_v1_payments_proto_rawDesc = []byte{
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x1a, 0x28, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x2d, 0x67, 0x65, 0x6e, 0x2d,
 	0x67, 0x6f, 0x72, 0x6d, 0x2f, 0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x67, 0x6f, 0x72,
-	0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x4b, 0x0a, 0x07, 0x49, 0x6e, 0x76, 0x6f, 0x69,
-	0x63, 0x65, 0x12, 0x1a, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x42, 0x0a,
-	0xba, 0xb9, 0x19, 0x06, 0x0a, 0x04, 0x28, 0x01, 0x30, 0x01, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1c,
-	0x0a, 0x04, 0x74, 0x65, 0x78, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x08, 0xba, 0xb9,
-	0x19, 0x04, 0x0a, 0x02, 0x40, 0x01, 0x52, 0x04, 0x74, 0x65, 0x78, 0x74, 0x3a, 0x06, 0xba, 0xb9,
-	0x19, 0x02, 0x08, 0x01, 0x22, 0x48, 0x0a, 0x14, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x49, 0x6e,
-	0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x30, 0x0a, 0x07,
-	0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x49, 0x6e,
-	0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0x47,
-	0x0a, 0x15, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2e, 0x0a, 0x06, 0x72, 0x65, 0x73, 0x75, 0x6c,
-	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e,
-	0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52,
-	0x06, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x22, 0x1b, 0x0a, 0x19, 0x47, 0x65, 0x74, 0x50, 0x61,
-	0x79, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x22, 0x1c, 0x0a, 0x1a, 0x47, 0x65, 0x74, 0x50, 0x61, 0x79, 0x6d, 0x65,
-	0x6e, 0x74, 0x73, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x13, 0x0a, 0x11, 0x50, 0x61, 0x79, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x14, 0x0a, 0x12, 0x50, 0x61, 0x79, 0x49, 0x6e,
-	0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x10, 0x0a,
-	0x0e, 0x50, 0x61, 0x79, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22,
-	0x11, 0x0a, 0x0f, 0x50, 0x61, 0x79, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x32, 0xfd, 0x02, 0x0a, 0x0f, 0x50, 0x61, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x53,
-	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x5c, 0x0a, 0x0d, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x12, 0x23, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e,
-	0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x49, 0x6e,
-	0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x00, 0x12, 0x6b, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x50, 0x61, 0x79, 0x6d, 0x65,
-	0x6e, 0x74, 0x73, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x12, 0x28, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x61,
-	0x79, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f,
-	0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x47, 0x65, 0x74, 0x50, 0x61, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x73,
-	0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
-	0x00, 0x12, 0x53, 0x0a, 0x0a, 0x50, 0x61, 0x79, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x12,
-	0x20, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e,
-	0x50, 0x61, 0x79, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x21, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76,
-	0x31, 0x2e, 0x50, 0x61, 0x79, 0x49, 0x6e, 0x76, 0x6f, 0x69, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x4a, 0x0a, 0x07, 0x50, 0x61, 0x79, 0x55, 0x73, 0x65,
-	0x72, 0x12, 0x1d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76,
-	0x31, 0x2e, 0x50, 0x61, 0x79, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x1e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x7a, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x31,
-	0x2e, 0x50, 0x61, 0x79, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x00, 0x42, 0x26, 0x5a, 0x24, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
-	0x2f, 0x67, 0x65, 0x74, 0x7a, 0x69, 0x6f, 0x6e, 0x2f, 0x72, 0x65, 0x6c, 0x61, 0x79, 0x2f, 0x67,
-	0x65, 0x6e, 0x2f, 0x7a, 0x69, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xbf, 0x02, 0x0a, 0x07, 0x50, 0x61, 0x79, 0x6d,
+	0x65, 0x6e, 0x74, 0x12, 0x1a, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x42,
+	0x0a, 0xba, 0xb9, 0x19, 0x06, 0x0a, 0x04, 0x28, 0x01, 0x30, 0x01, 0x52, 0x02, 0x69, 0x64, 0x12,
+	0x10, 0x0a, 0x03, 0x7a, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x7a, 0x69,
+	0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x5f, 0x64, 0x69, 0x64, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x44, 0x69, 0x64,
+	0x12, 0x23, 0x0a, 0x0d, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x64, 0x69,
+	0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65,
+	0x6e, 0x74, 0x44, 0x69, 0x64, 0x12, 0x32, 0x0a, 0x15, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65,
+	0x6e, 0x74, 0x5f, 0x6e, 0x6f, 0x64, 0x65, 0x5f, 0x70, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x13, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x4e,
+	0x6f, 0x64, 0x65, 0x50, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x12, 0x2e, 0x0a, 0x13, 0x72, 0x65, 0x63,
+	0x69, 0x70, 0x69, 0x65, 0x6e, 0x74, 0x5f, 0x72, 0x65, 0x6c, 0x61, 0x79, 0x5f, 0x75, 0x72, 0x6c,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x72, 0x65, 0x63, 0x69, 0x70, 0x69, 0x65, 0x6e,
+	0x74, 0x52, 0x65, 0x6c, 0x61, 0x79, 0x55, 0x72, 0x6c, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70,
+	0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x12, 0x0a,
+	0x04, 0x6d, 0x65, 0x6d, 0x6f, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6d, 0x65, 0x6d,
+	0x6f, 0x3a, 0x06, 0xba, 0xb9, 0x19, 0x02, 0x08, 0x01, 0x42, 0x26, 0x5a, 0x24, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x65, 0x74, 0x7a, 0x69, 0x6f, 0x6e, 0x2f,
+	0x72, 0x65, 0x6c, 0x61, 0x79, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x7a, 0x69, 0x6f, 0x6e, 0x2f, 0x76,
+	0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -473,34 +196,16 @@ func file_proto_zion_v1_payments_proto_rawDescGZIP() []byte {
 	return file_proto_zion_v1_payments_proto_rawDescData
 }
 
-var file_proto_zion_v1_payments_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_proto_zion_v1_payments_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_proto_zion_v1_payments_proto_goTypes = []interface{}{
-	(*Invoice)(nil),                    // 0: proto.zion.v1.Invoice
-	(*CreateInvoiceRequest)(nil),       // 1: proto.zion.v1.CreateInvoiceRequest
-	(*CreateInvoiceResponse)(nil),      // 2: proto.zion.v1.CreateInvoiceResponse
-	(*GetPaymentsHistoryRequest)(nil),  // 3: proto.zion.v1.GetPaymentsHistoryRequest
-	(*GetPaymentsHistoryResponse)(nil), // 4: proto.zion.v1.GetPaymentsHistoryResponse
-	(*PayInvoiceRequest)(nil),          // 5: proto.zion.v1.PayInvoiceRequest
-	(*PayInvoiceResponse)(nil),         // 6: proto.zion.v1.PayInvoiceResponse
-	(*PayUserRequest)(nil),             // 7: proto.zion.v1.PayUserRequest
-	(*PayUserResponse)(nil),            // 8: proto.zion.v1.PayUserResponse
+	(*Payment)(nil), // 0: proto.zion.v1.Payment
 }
 var file_proto_zion_v1_payments_proto_depIdxs = []int32{
-	0, // 0: proto.zion.v1.CreateInvoiceRequest.payload:type_name -> proto.zion.v1.Invoice
-	0, // 1: proto.zion.v1.CreateInvoiceResponse.result:type_name -> proto.zion.v1.Invoice
-	1, // 2: proto.zion.v1.PaymentsService.CreateInvoice:input_type -> proto.zion.v1.CreateInvoiceRequest
-	3, // 3: proto.zion.v1.PaymentsService.GetPaymentsHistory:input_type -> proto.zion.v1.GetPaymentsHistoryRequest
-	5, // 4: proto.zion.v1.PaymentsService.PayInvoice:input_type -> proto.zion.v1.PayInvoiceRequest
-	7, // 5: proto.zion.v1.PaymentsService.PayUser:input_type -> proto.zion.v1.PayUserRequest
-	2, // 6: proto.zion.v1.PaymentsService.CreateInvoice:output_type -> proto.zion.v1.CreateInvoiceResponse
-	4, // 7: proto.zion.v1.PaymentsService.GetPaymentsHistory:output_type -> proto.zion.v1.GetPaymentsHistoryResponse
-	6, // 8: proto.zion.v1.PaymentsService.PayInvoice:output_type -> proto.zion.v1.PayInvoiceResponse
-	8, // 9: proto.zion.v1.PaymentsService.PayUser:output_type -> proto.zion.v1.PayUserResponse
-	6, // [6:10] is the sub-list for method output_type
-	2, // [2:6] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0, // [0:0] is the sub-list for method output_type
+	0, // [0:0] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_proto_zion_v1_payments_proto_init() }
@@ -510,103 +215,7 @@ func file_proto_zion_v1_payments_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_proto_zion_v1_payments_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Invoice); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_payments_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateInvoiceRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_payments_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateInvoiceResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_payments_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetPaymentsHistoryRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_payments_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetPaymentsHistoryResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_payments_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PayInvoiceRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_payments_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PayInvoiceResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_payments_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PayUserRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_zion_v1_payments_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PayUserResponse); i {
+			switch v := v.(*Payment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -624,9 +233,9 @@ func file_proto_zion_v1_payments_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_zion_v1_payments_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   1,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   0,
 		},
 		GoTypes:           file_proto_zion_v1_payments_proto_goTypes,
 		DependencyIndexes: file_proto_zion_v1_payments_proto_depIdxs,
