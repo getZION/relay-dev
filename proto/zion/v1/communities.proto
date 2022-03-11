@@ -6,24 +6,6 @@ option go_package = "github.com/getzion/relay/gen/zion/v1";
 
 import "proto/protoc-gen-gorm/options/gorm.proto";
 
-service CommunitiesService {
-  option (gorm.server).autogen = true;
-  // Create a community
-  rpc CreateCommunity(CreateCommunityRequest) returns (CreateCommunityResponse) {}
-  // Delete a community you own
-  rpc DeleteCommunity(DeleteCommunityRequest) returns (DeleteCommunityResponse) {
-      // This option is required because the type/table can't be inferred
-      // by the return type
-      option (gorm.method).object_type = "Community";
-  }
-  // Edit a community you own
-  rpc EditCommunity(EditCommunityRequest) returns (EditCommunityResponse) {}
-  // Join a specific community
-  rpc JoinCommunity(JoinCommunityRequest) returns (JoinCommunityResponse) {}
-  // List communities
-  rpc ListCommunity(ListCommunityRequest) returns (ListCommunityResponse) {}
-}
-
 message Community {
   option (gorm.opts).ormable = true;
   // The community's unique ID (primary key)
@@ -61,64 +43,4 @@ message Community {
   int64 created = 15; // Required
   // Updated when?
   int64 updated = 16; // Optional
-}
-
-// Create
-message CreateCommunityRequest {
-  Community payload = 1;
-}
-
-message CreateCommunityResponse {
-  Community result = 1;
-}
-
-// Delete
-message DeleteCommunityRequest {
-  int64 id = 1;
-}
-
-message DeleteCommunityResponse {
-  bool success = 1;
-  string message = 2;
-}
-
-// Edit
-message EditCommunityRequest {
-  int64 id = 1;
-}
-
-message EditCommunityResponse {
-  bool success = 1;
-  string message = 2;
-}
-
-// Hide
-message HideCommunityRequest {
-  int64 id = 1;
-}
-
-message HideCommunityResponse {
-  bool success = 1;
-  string message = 2;
-}
-
-// Join
-message JoinCommunityRequest {
-  int64 id = 1;
-}
-
-message JoinCommunityResponse {
-  bool success = 1;
-  string message = 2;
-}
-
-// List
-message ListCommunityRequest {
-  int64 id = 1;
-}
-
-message ListCommunityResponse {
-  bool success = 1;
-  string message = 2;
-  repeated Community results = 3;
 }

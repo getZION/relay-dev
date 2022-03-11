@@ -6,16 +6,6 @@ option go_package = "github.com/getzion/relay/gen/zion/v1";
 
 import "proto/protoc-gen-gorm/options/gorm.proto";
 
-service UsersService {
-  option (gorm.server).autogen = true;
-  // Sign up as new user
-  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
-  // Update my profile
-  rpc EditUser(EditUserRequest) returns (EditUserResponse) {}
-  // Find user by id
-  rpc FindById(FindByIdRequest) returns (FindByIdResponse) {}
-}
-
 message User {
   option (gorm.opts).ormable = true;
   // User primary ID & key
@@ -37,28 +27,4 @@ message User {
   string picture = 7; // Optional
   // How many sats it costs to direct-message this user
   int64 price_to_message = 8; // Optional - Default to 0
-}
-
-message CreateUserRequest {
-  User payload = 1;
-}
-message CreateUserResponse {
-  User result = 1;
-}
-
-message EditUserRequest {
-  int64 id = 1;
-  string first_name = 2;
-  string last_name = 3;
-  string new_password = 4;
-}
-message EditUserResponse {
-  User user = 1;
-}
-
-message FindByIdRequest {
-  int64 id = 1;
-}
-message FindByIdResponse {
-  User user = 1;
 }

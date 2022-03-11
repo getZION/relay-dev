@@ -6,19 +6,6 @@ option go_package = "github.com/getzion/relay/gen/zion/v1";
 
 import "proto/protoc-gen-gorm/options/gorm.proto";
 
-service MessagesService {
-  // Boost a message
-  rpc BoostMessage(BoostMessageRequest) returns (BoostMessageResponse) {}
-  // Delete a message I sent, or hide it if it was sent to me
-  rpc DeleteMessage(DeleteMessageRequest) returns (DeleteMessageResponse) {
-    option (gorm.method).object_type = "Message";
-  }
-  // Get messages that meet various filters
-  rpc GetMessages(GetMessagesRequest) returns (GetMessagesResponse) {}
-  // Send message
-  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
-}
-
 message Message {
   option (gorm.opts).ormable = true;
   // Message primary ID & key - unique only to this relay
@@ -43,14 +30,3 @@ message Message {
   // URL for associated image
   string img = 9;
 }
-
-message BoostMessageRequest {}
-message BoostMessageResponse {}
-message DeleteMessageRequest {
-  int64 id = 1;
-}
-message DeleteMessageResponse {}
-message GetMessagesRequest {}
-message GetMessagesResponse {}
-message SendMessageRequest {}
-message SendMessageResponse {}

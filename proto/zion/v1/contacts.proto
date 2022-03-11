@@ -6,19 +6,6 @@ option go_package = "github.com/getzion/relay/gen/zion/v1";
 
 import "proto/protoc-gen-gorm/options/gorm.proto";
 
-service ContactsService {
-  // Add a contact, looking up by their pubkey
-  rpc AddByPubkey(AddByPubkeyRequest) returns (AddByPubkeyResponse) {}
-  // Add a contact, looking up by their username
-  rpc AddByUsername(AddByUsernameRequest) returns (AddByUsernameResponse) {}
-  // Delete a contact
-  rpc DeleteContact(DeleteContactRequest) returns (DeleteContactResponse) {
-    option (gorm.method).object_type = "Contact";
-  }
-  // Get list of all my contacts
-  rpc GetMyContacts(GetMyContactsRequest) returns (GetMyContactsResponse) {}
-}
-
 message Contact {
   option (gorm.opts).ormable = true;
   // The community's unique ID (primary key)
@@ -29,14 +16,3 @@ message Contact {
   // The name of the contact
   string name = 2 [(gorm.field).tag = { not_null: true }];
 }
-
-message AddByPubkeyRequest {}
-message AddByPubkeyResponse {}
-message AddByUsernameRequest {}
-message AddByUsernameResponse {}
-message DeleteContactRequest {
-  int64 id = 1;
-}
-message DeleteContactResponse {}
-message GetMyContactsRequest {}
-message GetMyContactsResponse {}
