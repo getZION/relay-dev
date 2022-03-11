@@ -13,34 +13,34 @@ message Community {
     unique: true
     primary_key: true
   }];
-  // Community id unique across Zion
-  string zid = 2; // Required; must be uuid v4
-  // The name of the community
-  string name = 3 [(gorm.field).tag = { not_null: true }]; // Required; unique
-  // Owner DID
-  string owner_did = 4 [(gorm.field).tag = { not_null: true }]; // Required
-  // Owner username
-  string owner_username = 5 [(gorm.field).tag = { not_null: true }]; // Required
-  // The community's description or mission statement
-  string description = 6 [(gorm.field).tag = { not_null: true }]; // Required
-  // Image URL
-  string img = 7; // Optional
-  // User-defined tags
-  repeated string tags = 8; // Optional
-  // How much it costs to join
-  int64 price_to_join = 9 [(gorm.field).tag = { not_null: true }]; // Required
-  // How much each message costs
-  int64 price_per_message = 10 [(gorm.field).tag = { not_null: true }]; // Required
-  // Escrow amount
-  int64 escrow_amount = 11 [(gorm.field).tag = { not_null: true }]; // Required
-  // When last active
-  int64 last_active = 12; // Optional
-  // Is this a public community?
-  bool public = 13; // Required; defaults true
-  // Deleted
-  bool deleted = 14; // Optional, defaults 0
-  // Created when?
-  int64 created = 15; // Required
-  // Updated when?
-  int64 updated = 16; // Optional
+  // Community id unique across Zion - Required; must be uuid v4
+  string zid = 2;
+  // The name of the community - Required; unique
+  string name = 3 [(gorm.field).tag = { not_null: true }];
+  // Owner DID - Required
+  string owner_did = 4 [(gorm.field).tag = { not_null: true }];
+  // Owner username - Required
+  string owner_username = 5 [(gorm.field).tag = { not_null: true }];
+  // The community's description or mission statement - Required
+  string description = 6 [(gorm.field).tag = { not_null: true }];
+  // Image URL - Optional
+  string img = 7;
+  // User-defined tags - Optional
+  repeated string tags = 8;
+  // How much it costs to join - Required
+  int64 price_to_join = 9 [(gorm.field).tag = { not_null: true }];
+  // How much each message costs - Required
+  int64 price_per_message = 10 [(gorm.field).tag = { not_null: true }];
+  // Escrow amount - Required
+  int64 escrow_amount = 11 [(gorm.field).tag = { not_null: true }];
+  // When last active - Optional
+  int64 last_active = 12;
+  // Is this a public community? - Required; defaults true
+  bool public = 13;
+  // Deleted - Optional, defaults 0
+  bool deleted = 14;
+  // Created when? - Required
+  int64 created = 15;
+  // Updated when? - Optional
+  int64 updated = 16;
 }
