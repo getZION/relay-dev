@@ -14,7 +14,7 @@ message Community {
     primary_key: true
   }];
   // Community id unique across Zion
-  string zion_id = 2; // Required; must be uuid v4
+  string zid = 2; // Required; must be uuid v4
   // The name of the community
   string name = 3 [(gorm.field).tag = { not_null: true }]; // Required; unique
   // Owner DID

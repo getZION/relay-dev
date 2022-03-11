@@ -14,15 +14,15 @@ message Message {
     primary_key: true
   }];
   // Message id unique across Zion
-  string zion_id = 2; // Required; must be uuid v4
+  string zid = 2; // Required; must be uuid v4
   // DID of user who sent this message
   int64 user_did = 3; // Required
   // DID of user recipient of this message (if DM)
   int64 receiving_user_did = 4; // Optional if conversation_id is non-null, otherwise required
-  // Primary id of conversation of this message (if community/conversation message)
-  int64 conversation_id = 5; // Optional if receiving_user_id is non-null, otherwise required
-  // Primary id of message this message is a reply to
-  int64 reply_to_message_id = 6; // Optional
+  // Zion ID of conversation of this message (if community/conversation message)
+  int64 conversation_zid = 5; // Optional if receiving_user_id is non-null, otherwise required
+  // Zion ID of message this message is a reply to
+  int64 reply_to_message_zid = 6; // Optional
   // Main message body
   string text = 7; // Optional if link is non-null, otherwise required
   // URL link to external piece of content
