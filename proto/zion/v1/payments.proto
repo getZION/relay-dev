@@ -6,13 +6,29 @@ option go_package = "github.com/getzion/relay/gen/zion/v1";
 
 import "proto/protoc-gen-gorm/options/gorm.proto";
 
-message Invoice {
+message Payment {
   option (gorm.opts).ormable = true;
   // The community's unique ID (primary key)
   int64 id = 1 [(gorm.field).tag = {
     unique: true
     primary_key: true
   }];
-  // Text
-  string text = 2 [(gorm.field).tag = { not_null: true }];
+  // Payment id unique across Zion
+  string zid = 2; // Required; must be uuid v4
+  // DID of payment sender
+  string sender_did = 3; // Required
+  // DID of payment recipient
+  string recipient_did = 4; // Required
+  // Pubkey of recipient LND node
+  string recipient_node_pubkey = 5; // Required
+  // URL of recipient relay
+  string recipient_relay_url = 6; // Required
+  // Status
+  string status = 7; // Required; default "pending"
+  // Amount in sats
+  int64 amount = 8; // Required
+  // Type of payment: boost, P2P send, community join, stake, etc.
+  int64 type = 9;
+  // Memo describing transaction
+  string memo = 10; // Optional
 }
