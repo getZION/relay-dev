@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func CollectionsQuery(store *datastore.Store, m *hub.Message) (string, *errors.MessageLevelError) {
+func CollectionsQuery(store *datastore.Store, m *hub.Message) ([]string, *errors.MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID
@@ -20,24 +20,24 @@ func CollectionsQuery(store *datastore.Store, m *hub.Message) (string, *errors.M
 	var dataFormat *mimetype.MIME
 
 	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
-		return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 	}
 
 	if m.Descriptor_.Schema != "" {
 		if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
-			return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+			return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 		}
 	}
 
 	if m.Descriptor_.DataFormat != "" {
 		if dataFormat = mimetype.Lookup(m.Descriptor_.DataFormat); dataFormat == nil {
-			return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("invalid dataFormat: %s", m.Descriptor_.DataFormat))
+			return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("invalid dataFormat: %s", m.Descriptor_.DataFormat))
 		}
 	}
 
 	if m.Descriptor_.DateSort != "" && (m.Descriptor_.DateSort != "createdAscending" && m.Descriptor_.DateSort != "createdDescending" &&
 		m.Descriptor_.DateSort != "publishedAscending" && m.Descriptor_.DateSort != "publishedDescending") {
-		return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("invalid dateSort: %s", m.Descriptor_.DateSort))
+		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("invalid dateSort: %s", m.Descriptor_.DateSort))
 	}
 
 	//todo: check data & dataFormat only for application/json or do we need provide other formats?
@@ -49,11 +49,15 @@ func CollectionsQuery(store *datastore.Store, m *hub.Message) (string, *errors.M
 	}
 
 	communities := store.CommunityService.GetAll()
-	result, err := json.Marshal(communities)
-	if err != nil {
-		return "", errors.NewMessageLevelError(500, errors.RequestLevelProcessingErrorMessage, err)
+	var entries []string
+	for _, entry := range communities {
+		result, err := json.Marshal(&entry)
+		if err != nil {
+			return nil, errors.NewMessageLevelError(500, errors.RequestLevelProcessingErrorMessage, err)
+		}
+		entries = append(entries, string(result))
 	}
 
 	//todo: return entry as a array
-	return string(result), nil
+	return entries, nil
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func CollectionsWrite(store *datastore.Store, m *hub.Message) (string, *errors.MessageLevelError) {
+func CollectionsWrite(store *datastore.Store, m *hub.Message) ([]string, *errors.MessageLevelError) {
 
 	/*
 
@@ -36,21 +36,21 @@ func CollectionsWrite(store *datastore.Store, m *hub.Message) (string, *errors.M
 	var datePublished int64
 
 	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
-		return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 	} else if m.Descriptor_.DateCreated == "" {
-		return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("dateCreated cannot be null or empty"))
+		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("dateCreated cannot be null or empty"))
 	} else if dateCreated, err = strconv.ParseInt(m.Descriptor_.DateCreated, 10, 64); err != nil {
-		return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 	} else if m.Descriptor_.Schema != "" {
 		if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
-			return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+			return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 		}
 	}
 
 	if m.Descriptor_.DatePublished != "" {
 		datePublished, err = strconv.ParseInt(m.Descriptor_.DatePublished, 10, 64)
 		if err != nil {
-			return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+			return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 		}
 	}
 
@@ -61,12 +61,12 @@ func CollectionsWrite(store *datastore.Store, m *hub.Message) (string, *errors.M
 	}
 
 	if strings.Trim(m.Data, " ") == "" {
-		return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("data cannot be null or empty"))
+		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("data cannot be null or empty"))
 	}
 
 	var community v1.CommunityORM
 	json.Unmarshal([]byte(m.Data), &community)
 	store.CommunityService.Insert(&community)
 
-	return "", nil
+	return nil, nil
 }

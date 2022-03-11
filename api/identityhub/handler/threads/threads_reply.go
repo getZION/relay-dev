@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func ThreadsReply(store *datastore.Store, m *hub.Message) (string, *errors.MessageLevelError) {
+func ThreadsReply(store *datastore.Store, m *hub.Message) ([]string, *errors.MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID
@@ -19,16 +19,15 @@ func ThreadsReply(store *datastore.Store, m *hub.Message) (string, *errors.Messa
 	var schema *url.URL
 
 	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
-		return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 	} else if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
-		return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 	} else if root, err = uuid.Parse(m.Descriptor_.Root); err != nil {
-		return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 	} else if parent, err = uuid.Parse(m.Descriptor_.Parent); err != nil {
-		return "", errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 	}
 
 	fmt.Printf("request -> objectId: %s, schema: %s, root: %s, parent: %s", objectId.String(), schema.String(), root.String(), parent.String())
-
-	return "", nil
+	return nil, nil
 }

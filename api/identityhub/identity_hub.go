@@ -20,7 +20,7 @@ import (
 
 type (
 	//todo: wrap request with a handler?
-	interfaceMethodHandler func(store *datastore.Store, m *hub.Message) (string, *errors.MessageLevelError)
+	interfaceMethodHandler func(store *datastore.Store, m *hub.Message) ([]string, *errors.MessageLevelError)
 
 	IdentityHubService struct {
 		hub.UnimplementedHubRequestServiceServer
@@ -146,8 +146,8 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 			continue
 		}
 
-		if entry != "" {
-			reply.Entries = []string{entry}
+		if entry != nil {
+			reply.Entries = entry
 		}
 		reply.Status.Code = 200
 		reply.Status.Message = errors.MessageSuccessfullyMessage

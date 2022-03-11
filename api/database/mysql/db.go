@@ -22,7 +22,7 @@ func NewMySqlConnection() (*gorm.DB, error) {
 	envconfig.Process("", &params)
 
 	databaseConnectionString := params.User + ":" + params.Pass + "@tcp(" + params.Host + ")/" + params.Name
-	logrus.Info("Connecting to MySQL database: %s", databaseConnectionString)
+	logrus.Infof("Connecting to MySQL database: %s", databaseConnectionString)
 
 	db, err = gorm.Open("mysql", databaseConnectionString)
 	if err != nil {
