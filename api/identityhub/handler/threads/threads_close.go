@@ -3,18 +3,17 @@ package threads
 import (
 	"fmt"
 
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/errors"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/google/uuid"
 )
 
-func ThreadsClose(store *datastore.Store, m *hub.Message) ([]string, *errors.MessageLevelError) {
+func ThreadsClose(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	var err error
 	var root uuid.UUID
 
-	if root, err = uuid.Parse(m.Descriptor_.Root); err != nil {
+	if root, err = uuid.Parse(context.Message.Descriptor_.Root); err != nil {
 		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 	}
 

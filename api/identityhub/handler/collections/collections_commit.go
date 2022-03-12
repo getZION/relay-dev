@@ -5,13 +5,12 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/errors"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/google/uuid"
 )
 
-func CollectionsCommit(store *datastore.Store, m *hub.Message) ([]string, *errors.MessageLevelError) {
+func CollectionsCommit(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID
@@ -19,22 +18,22 @@ func CollectionsCommit(store *datastore.Store, m *hub.Message) ([]string, *error
 	var dateCreated int64
 	var datePublished int64
 
-	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
+	if objectId, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
 		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 	}
 
-	if m.Descriptor_.Schema != "" {
-		if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
+	if context.Message.Descriptor_.Schema != "" {
+		if schema, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
 			return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 		}
 	}
 
-	if m.Descriptor_.DateCreated == "" {
+	if context.Message.Descriptor_.DateCreated == "" {
 		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("dateCreated cannot be null"))
-	} else if dateCreated, err = strconv.ParseInt(m.Descriptor_.DateCreated, 10, 64); err != nil {
+	} else if dateCreated, err = strconv.ParseInt(context.Message.Descriptor_.DateCreated, 10, 64); err != nil {
 		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
-	} else if m.Descriptor_.DatePublished != "" {
-		datePublished, err = strconv.ParseInt(m.Descriptor_.DatePublished, 10, 64)
+	} else if context.Message.Descriptor_.DatePublished != "" {
+		datePublished, err = strconv.ParseInt(context.Message.Descriptor_.DatePublished, 10, 64)
 		if err != nil {
 			return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 		}

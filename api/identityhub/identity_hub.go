@@ -6,11 +6,14 @@ import (
 
 	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/errors"
+	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/getzion/relay/api/identityhub/handler/collections"
 	"github.com/getzion/relay/api/identityhub/handler/permissions"
 	"github.com/getzion/relay/api/identityhub/handler/threads"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	v1 "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 
 	"github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
@@ -20,7 +23,7 @@ import (
 
 type (
 	//todo: wrap request with a handler?
-	interfaceMethodHandler func(store *datastore.Store, m *hub.Message) ([]string, *errors.MessageLevelError)
+	interfaceMethodHandler func(handler *handler.RequestContext) ([]string, *errors.MessageLevelError)
 
 	IdentityHubService struct {
 		hub.UnimplementedHubRequestServiceServer
@@ -60,9 +63,36 @@ var (
 	}
 )
 
+func noTagValidateFunc(sl validator.StructLevel) {
+	s := sl.Current().Interface().(v1.CommunityORM)
+	v := sl.Validator()
+	if err := v.Var(s.Name, "required"); err != nil {
+		sl.ReportValidationErrors("Name", "Name", err.(validator.ValidationErrors))
+	}
+	if err := v.Var(s.Description, "required"); err != nil {
+		sl.ReportValidationErrors("Description", "Description", err.(validator.ValidationErrors))
+	}
+	if err := v.Var(s.EscrowAmount, "required"); err != nil {
+		sl.ReportValidationErrors("EscrowAmount", "EscrowAmount", err.(validator.ValidationErrors))
+	}
+	if err := v.Var(s.OwnerDid, "required"); err != nil {
+		sl.ReportValidationErrors("OwnerDid", "OwnerDid", err.(validator.ValidationErrors))
+	}
+	if err := v.Var(s.OwnerUsername, "required"); err != nil {
+		sl.ReportValidationErrors("OwnerUsername", "OwnerUsername", err.(validator.ValidationErrors))
+	}
+	if err := v.Var(s.PricePerMessage, "required"); err != nil {
+		sl.ReportValidationErrors("PricePerMessage", "PricePerMessage", err.(validator.ValidationErrors))
+	}
+	if err := v.Var(s.PriceToJoin, "required"); err != nil {
+		sl.ReportValidationErrors("PriceToJoin", "PriceToJoin", err.(validator.ValidationErrors))
+	}
+}
+
 func InitIdentityHubService(store *datastore.Store) *IdentityHubService {
 
 	validator := validator.New()
+	validator.RegisterStructValidation(noTagValidateFunc, v1.CommunityORM{})
 
 	identityHubService := &IdentityHubService{
 		validator:                validator,
@@ -138,11 +168,18 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 			continue
 		}
 
-		entry, mErr := method(identityHub.store, message)
+		context := handler.RequestContext{
+			Store:     identityHub.store,
+			Message:   message,
+			Validator: identityHub.validator,
+		}
+
+		entry, mErr := method(&context)
 		if mErr != nil {
 			reply.Status.Code = mErr.Code
 			reply.Status.Message = mErr.Message
 			response.Replies = append(response.Replies, reply)
+			logrus.Error(mErr.Error)
 			continue
 		}
 

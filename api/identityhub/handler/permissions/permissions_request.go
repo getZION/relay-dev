@@ -4,17 +4,16 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/errors"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/getzion/relay/api/identityhub/handler"
 )
 
-func PermissionsRequest(store *datastore.Store, m *hub.Message) ([]string, *errors.MessageLevelError) {
+func PermissionsRequest(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	var err error
 	var schema *url.URL
 
-	if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
+	if schema, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
 		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
 	}
 

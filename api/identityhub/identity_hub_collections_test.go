@@ -49,11 +49,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			logrus.Panic(err)
 		}
 
-		client = &IdentityHubService{
-			prefix:                   prefix,
-			validHubInterfaceMethods: validHubInterfaceMethods,
-			store:                    store,
-		}
+		client = InitIdentityHubService(store)
 	})
 
 	AfterEach(func() {
@@ -62,325 +58,336 @@ var _ = Describe("IdentityHub Collections", func() {
 
 	Context("Message Level", func() {
 
-		Context("Query Tests", func() {
+		Context("Query", func() {
 
-			It("receives an error if a Message Descriptor has missing objectID", func() {
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method: COLLECTIONS_QUERY,
+			Context("Validation Tests", func() {
+
+				It("receives an error if a Message Descriptor has missing objectID", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method: COLLECTIONS_QUERY,
+								},
 							},
 						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
+				It("receives an error if a Message Descriptor has invalid objectID", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:   COLLECTIONS_QUERY,
+									ObjectId: INVALID,
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
+				It("receives an error if a Message Descriptor has invalid schema", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:   COLLECTIONS_QUERY,
+									ObjectId: OBJECT_ID,
+									Schema:   INVALID,
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
+				It("receives an error if a Message Descriptor has invalid dataFormat", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:     COLLECTIONS_QUERY,
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA,
+									DataFormat: INVALID,
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
+				It("receives an error if a Message Descriptor has invalid dateSort", func() {
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:     COLLECTIONS_QUERY,
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA,
+									DataFormat: DATA_FORMAT,
+									DateSort:   INVALID,
+								},
+							},
+						},
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+				})
+
 			})
 
-			It("receives an error if a Message Descriptor has invalid objectID", func() {
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:   COLLECTIONS_QUERY,
-								ObjectId: INVALID,
+			//todo: add more expectation about response & entries
+			Context("Communities Tests", func() {
+
+				It("receives a response if a Message Descriptor has valid objectID", func() {
+
+					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:   COLLECTIONS_QUERY,
+									Schema:   SCHEMA_ORGANIZATION,
+									ObjectId: OBJECT_ID,
+								},
 							},
 						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			})
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
 
-			It("receives a response if a Message Descriptor has valid objectID", func() {
+				It("receives a response if a Message Descriptor has valid schema", func() {
 
-				mock.ExpectQuery("SELECT[a-zA-Z *]*").
-					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
 
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:   COLLECTIONS_QUERY,
-								ObjectId: OBJECT_ID,
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:   COLLECTIONS_QUERY,
+									Schema:   SCHEMA_ORGANIZATION,
+									ObjectId: OBJECT_ID,
+								},
 							},
 						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-			})
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
 
-			It("receives an error if a Message Descriptor has invalid schema", func() {
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:   COLLECTIONS_QUERY,
-								ObjectId: OBJECT_ID,
-								Schema:   INVALID,
+				It("receives a response if a Message Descriptor has valid dataFormat", func() {
+
+					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
+							AddRow(1, "test2", "desc2", 0, "alias2", "pubkey2", 20, 20))
+
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:     COLLECTIONS_QUERY,
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA_ORGANIZATION,
+									DataFormat: DATA_FORMAT,
+								},
 							},
 						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			})
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
 
-			It("receives a response if a Message Descriptor has valid schema", func() {
+				It("receives a response if a Message Descriptor has valid dateSort (createdAscending)", func() {
 
-				mock.ExpectQuery("SELECT[a-zA-Z *]*").
-					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
 
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:   COLLECTIONS_QUERY,
-								ObjectId: OBJECT_ID,
-								Schema:   SCHEMA,
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:     COLLECTIONS_QUERY,
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA_ORGANIZATION,
+									DataFormat: DATA_FORMAT,
+									DateSort:   "createdAscending",
+								},
 							},
 						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-			})
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
 
-			It("receives an error if a Message Descriptor has invalid dataFormat", func() {
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:     COLLECTIONS_QUERY,
-								ObjectId:   OBJECT_ID,
-								Schema:     SCHEMA,
-								DataFormat: INVALID,
+				It("receives a response if a Message Descriptor has valid dateSort (createdDescending)", func() {
+
+					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:     COLLECTIONS_QUERY,
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA_ORGANIZATION,
+									DataFormat: DATA_FORMAT,
+									DateSort:   "createdDescending",
+								},
 							},
 						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			})
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
 
-			It("receives a response if a Message Descriptor has valid dataFormat", func() {
+				It("receives a response if a Message Descriptor has valid dateSort (publishedAscending)", func() {
 
-				mock.ExpectQuery("SELECT[a-zA-Z *]*").
-					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
 
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:     COLLECTIONS_QUERY,
-								ObjectId:   OBJECT_ID,
-								Schema:     SCHEMA,
-								DataFormat: DATA_FORMAT,
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:     COLLECTIONS_QUERY,
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA_ORGANIZATION,
+									DataFormat: DATA_FORMAT,
+									DateSort:   "publishedAscending",
+								},
 							},
 						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-			})
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
 
-			It("receives an error if a Message Descriptor has invalid dateSort", func() {
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:     COLLECTIONS_QUERY,
-								ObjectId:   OBJECT_ID,
-								Schema:     SCHEMA,
-								DataFormat: DATA_FORMAT,
-								DateSort:   INVALID,
+				It("receives a response if a Message Descriptor has valid dateSort (publishedDescending)", func() {
+
+					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
+					request := &Request{
+						RequestId: REQUEST_ID,
+						Target:    TARGET,
+						Messages: []*Message{
+							{
+								Descriptor_: &MessageDescriptor{
+									Method:     COLLECTIONS_QUERY,
+									ObjectId:   OBJECT_ID,
+									Schema:     SCHEMA_ORGANIZATION,
+									DataFormat: DATA_FORMAT,
+									DateSort:   "publishedDescending",
+								},
 							},
 						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-			})
+					}
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
 
-			It("receives a response if a Message Descriptor has valid dateSort (createdAscending)", func() {
-
-				mock.ExpectQuery("SELECT[a-zA-Z *]*").
-					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
-
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:     COLLECTIONS_QUERY,
-								ObjectId:   OBJECT_ID,
-								Schema:     SCHEMA,
-								DataFormat: DATA_FORMAT,
-								DateSort:   "createdAscending",
-							},
-						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-			})
-
-			It("receives a response if a Message Descriptor has valid dateSort (createdDescending)", func() {
-
-				mock.ExpectQuery("SELECT[a-zA-Z *]*").
-					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
-
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:     COLLECTIONS_QUERY,
-								ObjectId:   OBJECT_ID,
-								Schema:     SCHEMA,
-								DataFormat: DATA_FORMAT,
-								DateSort:   "createdDescending",
-							},
-						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-			})
-
-			It("receives a response if a Message Descriptor has valid dateSort (publishedAscending)", func() {
-
-				mock.ExpectQuery("SELECT[a-zA-Z *]*").
-					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
-
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:     COLLECTIONS_QUERY,
-								ObjectId:   OBJECT_ID,
-								Schema:     SCHEMA,
-								DataFormat: DATA_FORMAT,
-								DateSort:   "publishedAscending",
-							},
-						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
-			})
-
-			It("receives a response if a Message Descriptor has valid dateSort (publishedDescending)", func() {
-
-				mock.ExpectQuery("SELECT[a-zA-Z *]*").
-					WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-						AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
-
-				request := &Request{
-					RequestId: REQUEST_ID,
-					Target:    TARGET,
-					Messages: []*Message{
-						{
-							Descriptor_: &MessageDescriptor{
-								Method:     COLLECTIONS_QUERY,
-								ObjectId:   OBJECT_ID,
-								Schema:     SCHEMA,
-								DataFormat: DATA_FORMAT,
-								DateSort:   "publishedDescending",
-							},
-						},
-					},
-				}
-				response, err := client.Process(ctx, request)
-				Expect(err).To(BeNil())
-				Expect(response).To(Not(BeNil()))
-				Expect(response.Replies).To(Not(BeNil()))
-				Expect(response.Replies).To(HaveLen(1))
-				Expect(response.Replies[0].Status).To(Not(BeNil()))
-				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
 			})
 
 		})
@@ -480,14 +487,13 @@ var _ = Describe("IdentityHub Collections", func() {
 				mock.ExpectBegin()
 				mock.ExpectExec("INSERT[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 				mock.ExpectCommit()
-				mock.ExpectClose()
 
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
 					Messages: []*Message{
 						{
-							Data: `{ "Name": "test", "Description": "test", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
+							Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
 							Descriptor_: &MessageDescriptor{
 								Method:      COLLECTIONS_WRITE,
 								ObjectId:    OBJECT_ID,
@@ -503,6 +509,7 @@ var _ = Describe("IdentityHub Collections", func() {
 				Expect(response.Replies).To(HaveLen(1))
 				Expect(response.Replies[0].Status).To(Not(BeNil()))
 				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				Expect(mock.ExpectationsWereMet()).To(BeNil())
 			})
 
 			It("receives an error if a Message Descriptor has invalid schema", func() {
@@ -534,14 +541,13 @@ var _ = Describe("IdentityHub Collections", func() {
 				mock.ExpectBegin()
 				mock.ExpectExec("INSERT[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 				mock.ExpectCommit()
-				mock.ExpectClose()
 
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
 					Messages: []*Message{
 						{
-							Data: `{ "Name": "test", "Description": "test", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
+							Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
 							Descriptor_: &MessageDescriptor{
 								Method:      COLLECTIONS_WRITE,
 								ObjectId:    OBJECT_ID,
@@ -558,6 +564,7 @@ var _ = Describe("IdentityHub Collections", func() {
 				Expect(response.Replies).To(HaveLen(1))
 				Expect(response.Replies[0].Status).To(Not(BeNil()))
 				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				Expect(mock.ExpectationsWereMet()).To(BeNil())
 			})
 
 			It("receives an error if a Message Descriptor has invalid datePublished", func() {
@@ -590,14 +597,13 @@ var _ = Describe("IdentityHub Collections", func() {
 				mock.ExpectBegin()
 				mock.ExpectExec("INSERT[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 				mock.ExpectCommit()
-				mock.ExpectClose()
 
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
 					Messages: []*Message{
 						{
-							Data: `{ "Name": "test", "Description": "test", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
+							Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
 							Descriptor_: &MessageDescriptor{
 								Method:        COLLECTIONS_WRITE,
 								ObjectId:      OBJECT_ID,
@@ -618,6 +624,7 @@ var _ = Describe("IdentityHub Collections", func() {
 				Expect(response.Replies).To(HaveLen(1))
 				Expect(response.Replies[0].Status).To(Not(BeNil()))
 				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				Expect(mock.ExpectationsWereMet()).To(BeNil())
 			})
 
 			It("receives a response if a Message Descriptor has valid data", func() {
@@ -625,14 +632,13 @@ var _ = Describe("IdentityHub Collections", func() {
 				mock.ExpectBegin()
 				mock.ExpectExec("INSERT[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 				mock.ExpectCommit()
-				mock.ExpectClose()
 
 				request := &Request{
 					RequestId: REQUEST_ID,
 					Target:    TARGET,
 					Messages: []*Message{
 						{
-							Data: `{ "Name": "test", "Description": "test", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
+							Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
 							Descriptor_: &MessageDescriptor{
 								Method:        COLLECTIONS_WRITE,
 								ObjectId:      OBJECT_ID,
@@ -653,6 +659,7 @@ var _ = Describe("IdentityHub Collections", func() {
 				Expect(response.Replies).To(HaveLen(1))
 				Expect(response.Replies[0].Status).To(Not(BeNil()))
 				Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				Expect(mock.ExpectationsWereMet()).To(BeNil())
 			})
 
 		})
