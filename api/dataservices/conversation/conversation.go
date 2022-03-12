@@ -1,4 +1,4 @@
-package community
+package conversation
 
 import (
 	"github.com/getzion/relay/api"
@@ -18,19 +18,10 @@ func NewService(connection *api.Connection) (*Service, error) {
 }
 
 func (s *Service) GetAll() (interface{}, error) {
-	var communities []v1.CommunityORM
-	result := s.connection.DB.Find(&communities)
+	var conversations []v1.ConversationORM
+	result := s.connection.DB.Find(&conversations)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return communities, nil
-}
-
-func (s *Service) Insert(value interface{}) error {
-	result := s.connection.DB.Create(value)
-	if result.Error != nil {
-		return result.Error
-	}
-
-	return nil
+	return conversations, nil
 }

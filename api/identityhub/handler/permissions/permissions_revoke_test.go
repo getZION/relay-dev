@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/getzion/relay/api/identityhub/errors"
+	"github.com/getzion/relay/api/identityhub/handler"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/stretchr/testify/require"
 )
@@ -37,7 +38,7 @@ func Test_PermissionsRevoke_ValidationFailed(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entry, err := PermissionsRevoke(nil, tt.message)
+			entry, err := PermissionsRevoke(&handler.RequestContext{Message: tt.message})
 
 			require.Empty(t, entry)
 			require.NotNil(t, err)

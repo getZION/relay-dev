@@ -4,60 +4,72 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"reflect"
 
 	"github.com/gabriel-vasile/mimetype"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/errors"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
-func CollectionsQuery(store *datastore.Store, m *hub.Message) ([]string, *errors.MessageLevelError) {
+func CollectionsQuery(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	var err error
 	var objectId uuid.UUID
-	var schema *url.URL
+	//var schema *url.URL
 	var dataFormat *mimetype.MIME
 
-	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+	if objectId, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
 	}
 
-	if m.Descriptor_.Schema != "" {
-		if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
-			return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+	if context.Message.Descriptor_.Schema != "" {
+		if _, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
+			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor_.Schema), err)
 		}
 	}
 
-	if m.Descriptor_.DataFormat != "" {
-		if dataFormat = mimetype.Lookup(m.Descriptor_.DataFormat); dataFormat == nil {
-			return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("invalid dataFormat: %s", m.Descriptor_.DataFormat))
+	if context.Message.Descriptor_.DataFormat != "" {
+		if dataFormat = mimetype.Lookup(context.Message.Descriptor_.DataFormat); dataFormat == nil {
+			err = fmt.Errorf("invalid dataFormat: %s", context.Message.Descriptor_.DataFormat)
+			return nil, errors.NewMessageLevelError(400, err.Error(), err)
 		}
 	}
 
-	if m.Descriptor_.DateSort != "" && (m.Descriptor_.DateSort != "createdAscending" && m.Descriptor_.DateSort != "createdDescending" &&
-		m.Descriptor_.DateSort != "publishedAscending" && m.Descriptor_.DateSort != "publishedDescending") {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("invalid dateSort: %s", m.Descriptor_.DateSort))
+	if context.Message.Descriptor_.DateSort != "" && (context.Message.Descriptor_.DateSort != "createdAscending" && context.Message.Descriptor_.DateSort != "createdDescending" &&
+		context.Message.Descriptor_.DateSort != "publishedAscending" && context.Message.Descriptor_.DateSort != "publishedDescending") {
+		err = fmt.Errorf("invalid dateSort: %s", context.Message.Descriptor_.DateSort)
+		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
 	//todo: check data & dataFormat only for application/json or do we need provide other formats?
 
 	//todo: process the request
 	fmt.Printf("request -> objectId: %s", objectId.String())
-	if schema != nil {
 
+	var entries []string
+	service, err := context.Store.GetServiceBySchema(context.Message.Descriptor_.Schema)
+	if err != nil {
+		logrus.Error(err)
+		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	communities := store.CommunityService.GetAll()
-	var entries []string
-	for _, entry := range communities {
-		result, err := json.Marshal(&entry)
+	data, err := service.GetAll()
+	if err != nil {
+		logrus.Error(err)
+		return nil, errors.NewMessageLevelError(500, err.Error(), err)
+	}
+
+	v := reflect.ValueOf(data)
+	for i := 0; i < v.Len(); i++ {
+		val := v.Index(i).Interface()
+		result, err := json.Marshal(&val)
 		if err != nil {
-			return nil, errors.NewMessageLevelError(500, errors.RequestLevelProcessingErrorMessage, err)
+			return nil, errors.NewMessageLevelError(500, err.Error(), err)
 		}
 		entries = append(entries, string(result))
 	}
 
-	//todo: return entry as a array
 	return entries, nil
 }

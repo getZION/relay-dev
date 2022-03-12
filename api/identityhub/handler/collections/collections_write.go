@@ -7,14 +7,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/errors"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/getzion/relay/api/identityhub/handler"
 	v1 "github.com/getzion/relay/gen/proto/zion/v1"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
-func CollectionsWrite(store *datastore.Store, m *hub.Message) ([]string, *errors.MessageLevelError) {
+func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	/*
 
@@ -35,22 +35,23 @@ func CollectionsWrite(store *datastore.Store, m *hub.Message) ([]string, *errors
 	var dateCreated int64
 	var datePublished int64
 
-	if objectId, err = uuid.Parse(m.Descriptor_.ObjectId); err != nil {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
-	} else if m.Descriptor_.DateCreated == "" {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("dateCreated cannot be null or empty"))
-	} else if dateCreated, err = strconv.ParseInt(m.Descriptor_.DateCreated, 10, 64); err != nil {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
-	} else if m.Descriptor_.Schema != "" {
-		if schema, err = url.ParseRequestURI(m.Descriptor_.Schema); err != nil {
-			return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+	if objectId, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
+	} else if context.Message.Descriptor_.DateCreated == "" {
+		err = fmt.Errorf("dateCreated cannot be null or empty")
+		return nil, errors.NewMessageLevelError(400, err.Error(), err)
+	} else if dateCreated, err = strconv.ParseInt(context.Message.Descriptor_.DateCreated, 10, 64); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid dateCreated: %s", context.Message.Descriptor_.DateCreated), err)
+	} else if context.Message.Descriptor_.Schema != "" {
+		if schema, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
+			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor_.Schema), err)
 		}
 	}
 
-	if m.Descriptor_.DatePublished != "" {
-		datePublished, err = strconv.ParseInt(m.Descriptor_.DatePublished, 10, 64)
+	if context.Message.Descriptor_.DatePublished != "" {
+		datePublished, err = strconv.ParseInt(context.Message.Descriptor_.DatePublished, 10, 64)
 		if err != nil {
-			return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid datePublished: %s", context.Message.Descriptor_.Schema), err)
 		}
 	}
 
@@ -60,13 +61,18 @@ func CollectionsWrite(store *datastore.Store, m *hub.Message) ([]string, *errors
 
 	}
 
-	if strings.Trim(m.Data, " ") == "" {
+	if strings.Trim(context.Message.Data, " ") == "" {
 		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("data cannot be null or empty"))
 	}
 
 	var community v1.CommunityORM
-	json.Unmarshal([]byte(m.Data), &community)
-	store.CommunityService.Insert(&community)
+	json.Unmarshal([]byte(context.Message.Data), &community)
+	err = context.Validator.Struct(&community)
+	if err != nil {
+		vErr := err.(validator.ValidationErrors)
+		return nil, errors.NewMessageLevelError(400, vErr.Error(), vErr)
+	}
 
+	context.Store.CommunityService.Insert(&community)
 	return nil, nil
 }
