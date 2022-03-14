@@ -43,8 +43,6 @@ var wallet LndWallet
 var params ConnectionParams
 
 func Connect() (*LndWallet, error) {
-	//todo: need to change and must work on development environment
-	return nil, nil
 
 	envconfig.Process("", &params)
 	LoadLNDCredentials()

@@ -12,8 +12,7 @@ generate:
 	buf generate
 
 test:
-	cd did && go test -v
-	cd api && ginkgo -v
+	go test -v ./...
 
 compile-ts:
 	rm -rf ui/proto

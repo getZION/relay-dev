@@ -1,7 +1,6 @@
 package collections
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -9,9 +8,8 @@ import (
 
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
-	v1 "github.com/getzion/relay/gen/proto/zion/v1"
-	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
 
 func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
@@ -58,21 +56,23 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 	//todo: process the request
 	fmt.Printf("request -> objectId: %s, dateCreated: %d", objectId.String(), dateCreated)
 	if schema != nil || datePublished == 0 {
-
 	}
 
 	if strings.Trim(context.Message.Data, " ") == "" {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, fmt.Errorf("data cannot be null or empty"))
+		err = fmt.Errorf("data cannot be null or empty")
+		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	var community v1.CommunityORM
-	json.Unmarshal([]byte(context.Message.Data), &community)
-	err = context.Validator.Struct(&community)
+	service, err := context.Store.GetServiceBySchema(context.Message.Descriptor_.Schema)
 	if err != nil {
-		vErr := err.(validator.ValidationErrors)
-		return nil, errors.NewMessageLevelError(400, vErr.Error(), vErr)
+		logrus.Error(err)
+		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	context.Store.CommunityService.Insert(&community)
+	service.Insert([]byte(context.Message.Data))
+	if err != nil {
+		return nil, errors.NewMessageLevelError(400, err.Error(), err)
+	}
+
 	return nil, nil
 }

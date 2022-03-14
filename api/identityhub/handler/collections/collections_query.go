@@ -16,11 +16,11 @@ import (
 func CollectionsQuery(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	var err error
-	var objectId uuid.UUID
+	//var objectId uuid.UUID
 	//var schema *url.URL
 	var dataFormat *mimetype.MIME
 
-	if objectId, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
+	if _, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
 		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
 	}
 
@@ -45,10 +45,6 @@ func CollectionsQuery(context *handler.RequestContext) ([]string, *errors.Messag
 
 	//todo: check data & dataFormat only for application/json or do we need provide other formats?
 
-	//todo: process the request
-	fmt.Printf("request -> objectId: %s", objectId.String())
-
-	var entries []string
 	service, err := context.Store.GetServiceBySchema(context.Message.Descriptor_.Schema)
 	if err != nil {
 		logrus.Error(err)
@@ -61,6 +57,7 @@ func CollectionsQuery(context *handler.RequestContext) ([]string, *errors.Messag
 		return nil, errors.NewMessageLevelError(500, err.Error(), err)
 	}
 
+	var entries []string
 	v := reflect.ValueOf(data)
 	for i := 0; i < v.Len(); i++ {
 		val := v.Index(i).Interface()

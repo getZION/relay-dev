@@ -1,7 +1,10 @@
 package user
 
 import (
+	"encoding/json"
+
 	"github.com/getzion/relay/api"
+	"github.com/getzion/relay/api/validator"
 	v1 "github.com/getzion/relay/gen/proto/zion/v1"
 )
 
@@ -24,4 +27,21 @@ func (s *Service) GetAll() (interface{}, error) {
 		return nil, result.Error
 	}
 	return users, nil
+}
+
+func (s *Service) Insert(data []byte) error {
+
+	var user v1.UserORM
+	json.Unmarshal(data, &user)
+	err := validator.ValidateStruct(&user)
+	if err != nil {
+		return err
+	}
+
+	result := s.connection.DB.Create(user)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }
