@@ -11,14 +11,11 @@ import (
 	"github.com/getzion/relay/api/identityhub/handler/permissions"
 	"github.com/getzion/relay/api/identityhub/handler/threads"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
-	v1 "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 
 	"github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type (
@@ -28,7 +25,6 @@ type (
 	IdentityHubService struct {
 		hub.UnimplementedHubRequestServiceServer
 
-		validator                *validator.Validate
 		prefix                   cid.Prefix
 		validHubInterfaceMethods map[string]interfaceMethodHandler
 
@@ -63,39 +59,9 @@ var (
 	}
 )
 
-func noTagValidateFunc(sl validator.StructLevel) {
-	s := sl.Current().Interface().(v1.CommunityORM)
-	v := sl.Validator()
-	if err := v.Var(s.Name, "required"); err != nil {
-		sl.ReportValidationErrors("Name", "Name", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.Description, "required"); err != nil {
-		sl.ReportValidationErrors("Description", "Description", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.EscrowAmount, "required"); err != nil {
-		sl.ReportValidationErrors("EscrowAmount", "EscrowAmount", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.OwnerDid, "required"); err != nil {
-		sl.ReportValidationErrors("OwnerDid", "OwnerDid", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.OwnerUsername, "required"); err != nil {
-		sl.ReportValidationErrors("OwnerUsername", "OwnerUsername", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.PricePerMessage, "required"); err != nil {
-		sl.ReportValidationErrors("PricePerMessage", "PricePerMessage", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.PriceToJoin, "required"); err != nil {
-		sl.ReportValidationErrors("PriceToJoin", "PriceToJoin", err.(validator.ValidationErrors))
-	}
-}
-
 func InitIdentityHubService(store *datastore.Store) *IdentityHubService {
 
-	validator := validator.New()
-	validator.RegisterStructValidation(noTagValidateFunc, v1.CommunityORM{})
-
 	identityHubService := &IdentityHubService{
-		validator:                validator,
 		prefix:                   prefix,
 		validHubInterfaceMethods: validHubInterfaceMethods,
 		store:                    store,
@@ -169,9 +135,8 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 		}
 
 		context := handler.RequestContext{
-			Store:     identityHub.store,
-			Message:   message,
-			Validator: identityHub.validator,
+			Store:   identityHub.store,
+			Message: message,
 		}
 
 		entry, mErr := method(&context)
