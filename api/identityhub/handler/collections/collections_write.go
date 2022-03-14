@@ -1,6 +1,7 @@
 package collections
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -69,10 +70,16 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	service.Insert([]byte(context.Message.Data))
+	result, err := service.Insert([]byte(context.Message.Data))
 	if err != nil {
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	return nil, nil
+	var entries []string
+	json, err := json.Marshal(&result)
+	if err != nil {
+		return nil, errors.NewMessageLevelError(500, err.Error(), err)
+	}
+	entries = append(entries, string(json))
+	return entries, nil
 }

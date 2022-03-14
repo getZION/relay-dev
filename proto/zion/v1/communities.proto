@@ -36,7 +36,7 @@ message Community {
   // When last active - Optional
   int64 last_active = 12;
   // Is this a public community? - Required; defaults true
-  bool public = 13;
+  bool public = 13 [(gorm.field).tag = { default: "true" }];
   // Deleted - Optional, defaults 0
   bool deleted = 14;
   // Created when? - Required

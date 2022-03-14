@@ -22,7 +22,7 @@ type CommunityORM struct {
 	OwnerUsername   string `gorm:"not null"`
 	PricePerMessage int64  `gorm:"not null"`
 	PriceToJoin     int64  `gorm:"not null"`
-	Public          bool
+	Public          bool   `gorm:"default:true"`
 	Updated         int64
 	Zid             string
 }

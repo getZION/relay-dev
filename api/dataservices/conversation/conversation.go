@@ -6,6 +6,7 @@ import (
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/validator"
 	v1 "github.com/getzion/relay/gen/proto/zion/v1"
+	"github.com/google/uuid"
 )
 
 // Service represents a service for managing environment(endpoint) data.
@@ -29,19 +30,21 @@ func (s *Service) GetAll() (interface{}, error) {
 	return conversations, nil
 }
 
-func (s *Service) Insert(data []byte) error {
+func (s *Service) Insert(data []byte) (interface{}, error) {
 
 	var conversation v1.ConversationORM
 	json.Unmarshal(data, &conversation)
 	err := validator.ValidateStruct(&conversation)
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	conversation.Zid = uuid.NewString()
 
 	result := s.connection.DB.Create(conversation)
 	if result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
 
-	return nil
+	return &conversation, nil
 }

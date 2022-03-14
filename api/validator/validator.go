@@ -12,7 +12,7 @@ var (
 	usernameRegex   = regexp.MustCompile("^[A-Za-z0-9][A-Za-z0-9_-]*$")
 )
 
-func NewValidator() {
+func InitValidator() {
 	customValidator = validator.New()
 	customValidator.RegisterValidation("username", usernameValidator)
 	customValidator.RegisterStructValidation(communityORMValidatorFunc, v1.CommunityORM{})
@@ -27,7 +27,7 @@ func ValidateStruct(s interface{}) error {
 func communityORMValidatorFunc(sl validator.StructLevel) {
 	s := sl.Current().Interface().(v1.CommunityORM)
 	v := sl.Validator()
-	if err := v.Var(s.Name, "required, max=150"); err != nil {
+	if err := v.Var(s.Name, "required,max=150"); err != nil {
 		sl.ReportValidationErrors("Name", "Name", err.(validator.ValidationErrors))
 	}
 	if err := v.Var(s.Description, "max=250"); err != nil {
@@ -64,10 +64,10 @@ func userORMValidatorFunc(sl validator.StructLevel) {
 	if err := v.Var(s.Name, "required"); err != nil {
 		sl.ReportValidationErrors("Name", "Name", err.(validator.ValidationErrors))
 	}
-	if err := v.Var(s.Email, "required, email"); err != nil {
+	if err := v.Var(s.Email, "required,email"); err != nil {
 		sl.ReportValidationErrors("Email", "Email", err.(validator.ValidationErrors))
 	}
-	if err := v.Var(s.Username, "required, username, min=6, max=16"); err != nil {
+	if err := v.Var(s.Username, "required,username,min=6,max=16"); err != nil {
 		sl.ReportValidationErrors("Username", "Username", err.(validator.ValidationErrors))
 	}
 }
