@@ -29,19 +29,19 @@ func (s *Service) GetAll() (interface{}, error) {
 	return users, nil
 }
 
-func (s *Service) Insert(data []byte) error {
+func (s *Service) Insert(data []byte) (interface{}, error) {
 
 	var user v1.UserORM
 	json.Unmarshal(data, &user)
 	err := validator.ValidateStruct(&user)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	result := s.connection.DB.Create(user)
 	if result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
 
-	return nil
+	return &user, nil
 }

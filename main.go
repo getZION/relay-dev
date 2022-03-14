@@ -11,11 +11,13 @@ import (
 	"github.com/getzion/relay/api/identityhub"
 	"github.com/getzion/relay/api/lightning"
 	"github.com/getzion/relay/api/nodeinfo"
+	"github.com/getzion/relay/api/validator"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	zion "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 type grpcMultiplexer struct {
@@ -41,6 +43,8 @@ func main() {
 		logrus.Panic(err)
 	}
 
+	validator.InitValidator()
+
 	// Initialize gRPC server
 	init_gRPC(store)
 }
@@ -60,6 +64,7 @@ func init_gRPC(store *datastore.Store) {
 	identityHub := identityhub.InitIdentityHubService(store)
 	zion.RegisterNodeInfoServiceServer(apiserver, &nodeinfo.NodeinfoService{})
 	hub.RegisterHubRequestServiceServer(apiserver, identityHub)
+	reflection.Register(apiserver)
 	// Start serving in a goroutine to not block
 	go func() {
 		logrus.Fatal(apiserver.Serve(lis))

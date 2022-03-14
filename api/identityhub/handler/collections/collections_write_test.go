@@ -3,6 +3,7 @@ package collections
 import (
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
@@ -91,4 +92,58 @@ func Test_CollectionWrite_ValidationFailed(t *testing.T) {
 			require.Equal(t, tt.expectedErrorMessage, errors.ImproperlyConstructedErrorMessage)
 		})
 	}
+}
+
+func Test_CommunityCreate(t *testing.T) {
+	store, mock := initTestDataStore()
+
+	mock.ExpectQuery("SELECT[a-zA-Z *]*").
+		WillReturnRows(sqlmock.NewRows([]string{"Count"}).
+			AddRow(0))
+
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	entries, err := CollectionsWrite(&handler.RequestContext{
+		Store: store,
+		Message: &hub.Message{
+			Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
+			Descriptor_: &hub.MessageDescriptor{
+				ObjectId:    OBJECT_ID,
+				Schema:      SCHEMA_ORGANIZATION,
+				DateCreated: DATE_CREATED,
+			},
+		},
+	})
+
+	require.Nil(t, err)
+	require.Len(t, entries, 1)
+	require.Nil(t, mock.ExpectationsWereMet())
+}
+
+func Test_CommunityCreate_AlreadyExist(t *testing.T) {
+	store, mock := initTestDataStore()
+
+	mock.ExpectQuery("SELECT[a-zA-Z *]*").
+		WillReturnRows(sqlmock.NewRows([]string{"Count"}).
+			AddRow(1))
+
+	entries, err := CollectionsWrite(&handler.RequestContext{
+		Store: store,
+		Message: &hub.Message{
+			Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
+			Descriptor_: &hub.MessageDescriptor{
+				ObjectId:    OBJECT_ID,
+				Schema:      SCHEMA_ORGANIZATION,
+				DateCreated: DATE_CREATED,
+			},
+		},
+	})
+
+	require.NotNil(t, err)
+	require.Equal(t, "the specified community already exist: test", err.Message)
+	require.Equal(t, int64(400), err.Code)
+	require.Len(t, entries, 0)
+	require.Nil(t, mock.ExpectationsWereMet())
 }

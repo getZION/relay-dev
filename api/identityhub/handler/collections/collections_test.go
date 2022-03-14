@@ -4,6 +4,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/datastore"
+	"github.com/getzion/relay/api/validator"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
 )
@@ -40,5 +41,7 @@ func initTestDataStore() (*datastore.Store, sqlmock.Sqlmock) {
 		logrus.Panic(err)
 	}
 
+	//todo: move something different
+	validator.InitValidator()
 	return store, mock
 }
