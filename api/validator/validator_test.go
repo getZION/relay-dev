@@ -77,6 +77,17 @@ func Test_ShouldValidate_Community(t *testing.T) {
 			expectedErrorCount: 1,
 		},
 		{
+			name: "EscrowAmount field should be less than 100000",
+			generate: func() interface{} {
+				model := v1.CommunityORM{}
+				faker.FakeData(&model)
+				model.EscrowAmount = 100000
+				return model
+			},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
 			name: "PricePerMessage field should be greater or equal to zero",
 			generate: func() interface{} {
 				model := v1.CommunityORM{}
@@ -88,11 +99,33 @@ func Test_ShouldValidate_Community(t *testing.T) {
 			expectedErrorCount: 1,
 		},
 		{
+			name: "PricePerMessage field should be less than 100000",
+			generate: func() interface{} {
+				model := v1.CommunityORM{}
+				faker.FakeData(&model)
+				model.PricePerMessage = 100000
+				return model
+			},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
 			name: "PriceToJoin field should be greater or equal to zero",
 			generate: func() interface{} {
 				model := v1.CommunityORM{}
 				faker.FakeData(&model)
 				model.PriceToJoin = -1
+				return model
+			},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
+			name: "PriceToJoin field should be less than 100000",
+			generate: func() interface{} {
+				model := v1.CommunityORM{}
+				faker.FakeData(&model)
+				model.PriceToJoin = 100000
 				return model
 			},
 			expectedError:      true,
