@@ -3,7 +3,7 @@ package nodeinfo
 import (
 	context "context"
 
-	"github.com/getzion/relay/api/lightning"
+	"github.com/getzion/relay/api/nodeinfo/lightning"
 	zion "github.com/getzion/relay/gen/proto/zion/v1"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -11,6 +11,14 @@ import (
 
 type NodeinfoService struct {
 	zion.UnimplementedNodeInfoServiceServer
+}
+
+func InitNewNodeInfoService() *NodeinfoService {
+	// Connect to LND
+	lightning.Connect()
+
+	//todo: lightning instance can be store inside the NodeInfoService
+	return &NodeinfoService{}
 }
 
 func (s *NodeinfoService) GetNodeInfo(ctx context.Context, q *zion.GetNodeInfoRequest) (*zion.GetNodeInfoResponse, error) {

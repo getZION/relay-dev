@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -9,7 +8,6 @@ import (
 	"github.com/getzion/relay/api/database"
 	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub"
-	"github.com/getzion/relay/api/lightning"
 	"github.com/getzion/relay/api/nodeinfo"
 	"github.com/getzion/relay/api/validator"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
@@ -24,14 +22,7 @@ type grpcMultiplexer struct {
 	*grpcweb.WrappedGrpcServer
 }
 
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "hello world")
-}
-
 func main() {
-	//todo: move to nodeinfo
-	// Connect to LND
-	lightning.Connect()
 
 	connection, err := database.NewDatabase("mysql")
 	if err != nil {
@@ -62,7 +53,9 @@ func init_gRPC(store *datastore.Store) {
 	// see server.go
 	apiserver := grpc.NewServer()
 	identityHub := identityhub.InitIdentityHubService(store)
-	zion.RegisterNodeInfoServiceServer(apiserver, &nodeinfo.NodeinfoService{})
+	nodeinfo := nodeinfo.InitNewNodeInfoService()
+
+	zion.RegisterNodeInfoServiceServer(apiserver, nodeinfo)
 	hub.RegisterHubRequestServiceServer(apiserver, identityHub)
 	reflection.Register(apiserver)
 	// Start serving in a goroutine to not block
