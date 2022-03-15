@@ -10,15 +10,11 @@ import (
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 )
 
 func CollectionsQuery(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	var err error
-	//var objectId uuid.UUID
-	//var schema *url.URL
-	var dataFormat *mimetype.MIME
 
 	if _, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
 		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
@@ -31,7 +27,7 @@ func CollectionsQuery(context *handler.RequestContext) ([]string, *errors.Messag
 	}
 
 	if context.Message.Descriptor_.DataFormat != "" {
-		if dataFormat = mimetype.Lookup(context.Message.Descriptor_.DataFormat); dataFormat == nil {
+		if dataFormat := mimetype.Lookup(context.Message.Descriptor_.DataFormat); dataFormat == nil {
 			err = fmt.Errorf("invalid dataFormat: %s", context.Message.Descriptor_.DataFormat)
 			return nil, errors.NewMessageLevelError(400, err.Error(), err)
 		}
@@ -47,13 +43,11 @@ func CollectionsQuery(context *handler.RequestContext) ([]string, *errors.Messag
 
 	service, err := context.Store.GetServiceBySchema(context.Message.Descriptor_.Schema)
 	if err != nil {
-		logrus.Error(err)
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
 	data, err := service.GetAll()
 	if err != nil {
-		logrus.Error(err)
 		return nil, errors.NewMessageLevelError(500, err.Error(), err)
 	}
 

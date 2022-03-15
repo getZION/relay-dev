@@ -11,14 +11,11 @@ import (
 func CollectionsDelete(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	var err error
-	var objectId uuid.UUID
 
-	if objectId, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+	if _, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
 	}
 
 	//todo: process the request
-	fmt.Printf("request -> objectId: %s", objectId.String())
-
 	return nil, nil
 }

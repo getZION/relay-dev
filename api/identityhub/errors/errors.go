@@ -1,5 +1,7 @@
 package errors
 
+import "github.com/sirupsen/logrus"
+
 const (
 	RequestLevelProcessingErrorMessage string = "The request could not be processed correctly"
 	TargetDIDNotFoundErrorMessage      string = "Target DID not found within the Identity Hub instance"
@@ -18,6 +20,13 @@ type MessageLevelError struct {
 }
 
 func NewMessageLevelError(code int64, message string, err error) *MessageLevelError {
+
+	if code >= 500 {
+		logrus.Errorf("%s: %v", message, err)
+	} else {
+		logrus.Infof("%s: %v", message, err)
+	}
+
 	return &MessageLevelError{
 		Code:    code,
 		Message: message,

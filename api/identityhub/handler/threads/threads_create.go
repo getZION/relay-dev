@@ -12,15 +12,12 @@ import (
 func ThreadsCreate(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	var err error
-	var objectId uuid.UUID
-	var schema *url.URL
 
-	if objectId, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
-	} else if schema, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+	if _, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
+	} else if _, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor_.Schema), err)
 	}
 
-	fmt.Printf("request -> objectId: %s, schema: %s", objectId.String(), schema.String())
 	return nil, nil
 }

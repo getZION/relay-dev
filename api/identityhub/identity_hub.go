@@ -84,10 +84,12 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 	if r.RequestId == "" || r.Target == "" || len(r.Messages) == 0 {
 		response.Status.Code = 500
 		response.Status.Message = errors.RequestLevelProcessingErrorMessage
+		logrus.Infof("request failed for requestId: %s, target: %s, messages: %d", r.RequestId, r.Target, len(r.Messages))
 		return response, nil
 	} else if _, err := uuid.Parse(r.RequestId); err != nil {
 		response.Status.Code = 500
 		response.Status.Message = errors.RequestLevelProcessingErrorMessage
+		logrus.Infof("requestId must be uuid: %s", r.RequestId)
 		return response, nil
 	}
 
@@ -107,7 +109,7 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 			reply.Status.Code = 500
 			reply.Status.Message = errors.ImproperlyConstructedErrorMessage
 			response.Replies = append(response.Replies, reply)
-			//todo: how we handle internal server error?
+			logrus.Errorf("message serialization failed: %v", err)
 			continue
 		}
 
@@ -116,7 +118,7 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 			reply.Status.Code = 500
 			reply.Status.Message = errors.ImproperlyConstructedErrorMessage
 			response.Replies = append(response.Replies, reply)
-			//todo: how we handle internal server error?
+			logrus.Errorf("generating messageId failed: %v", err)
 			continue
 		}
 
@@ -126,11 +128,13 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 			reply.Status.Code = 400
 			reply.Status.Message = errors.ImproperlyConstructedErrorMessage
 			response.Replies = append(response.Replies, reply)
+			logrus.Info("request message descriptor or method cannot be null or empty")
 			continue
 		} else if method, ok = identityHub.validHubInterfaceMethods[message.Descriptor_.Method]; !ok {
 			reply.Status.Code = 501
 			reply.Status.Message = errors.InterfaceNotImplementedErrorMessage
 			response.Replies = append(response.Replies, reply)
+			logrus.Infof("interface method is not implemented: %s", message.Descriptor_.Method)
 			continue
 		}
 
@@ -144,7 +148,7 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 			reply.Status.Code = mErr.Code
 			reply.Status.Message = mErr.Message
 			response.Replies = append(response.Replies, reply)
-			logrus.Error(mErr.Error)
+			logrus.Infof("identity hub method execution failed: %v", mErr)
 			continue
 		}
 
