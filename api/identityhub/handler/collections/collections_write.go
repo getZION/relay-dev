@@ -10,7 +10,6 @@ import (
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 )
 
 func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
@@ -29,16 +28,13 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 	*/
 
 	var err error
-	var objectId uuid.UUID
-	var dateCreated int64
-	var datePublished int64
 
-	if objectId, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
+	if _, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
 		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
 	} else if context.Message.Descriptor_.DateCreated == "" {
 		err = fmt.Errorf("dateCreated cannot be null or empty")
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
-	} else if dateCreated, err = strconv.ParseInt(context.Message.Descriptor_.DateCreated, 10, 64); err != nil {
+	} else if _, err := strconv.ParseInt(context.Message.Descriptor_.DateCreated, 10, 64); err != nil {
 		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid dateCreated: %s", context.Message.Descriptor_.DateCreated), err)
 	} else if context.Message.Descriptor_.Schema != "" {
 		if _, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
@@ -47,14 +43,10 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 	}
 
 	if context.Message.Descriptor_.DatePublished != "" {
-		datePublished, err = strconv.ParseInt(context.Message.Descriptor_.DatePublished, 10, 64)
+		_, err := strconv.ParseInt(context.Message.Descriptor_.DatePublished, 10, 64)
 		if err != nil {
-			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid datePublished: %s", context.Message.Descriptor_.Schema), err)
+			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid datePublished: %s", context.Message.Descriptor_.DatePublished), err)
 		}
-	}
-
-	fmt.Printf("request -> objectId: %s, dateCreated: %d", objectId.String(), dateCreated)
-	if datePublished == 0 {
 	}
 
 	if strings.Trim(context.Message.Data, " ") == "" {
@@ -64,7 +56,6 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 
 	service, err := context.Store.GetServiceBySchema(context.Message.Descriptor_.Schema)
 	if err != nil {
-		logrus.Error(err)
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 

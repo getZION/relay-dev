@@ -11,12 +11,10 @@ import (
 func ThreadsClose(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	var err error
-	var root uuid.UUID
 
-	if root, err = uuid.Parse(context.Message.Descriptor_.Root); err != nil {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+	if _, err = uuid.Parse(context.Message.Descriptor_.Root); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid root: %s", context.Message.Descriptor_.Root), err)
 	}
 
-	fmt.Printf("request -> root: %s", root.String())
 	return nil, nil
 }

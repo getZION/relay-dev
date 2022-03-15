@@ -11,12 +11,10 @@ import (
 func PermissionsGrant(context *handler.RequestContext) ([]string, *errors.MessageLevelError) {
 
 	var err error
-	var schema *url.URL
 
-	if schema, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
-		return nil, errors.NewMessageLevelError(400, errors.ImproperlyConstructedErrorMessage, err)
+	if _, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor_.Schema), err)
 	}
 
-	fmt.Printf("request -> schema: %s", schema.String())
 	return nil, nil
 }
