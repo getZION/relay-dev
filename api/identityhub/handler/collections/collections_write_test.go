@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
@@ -95,9 +96,9 @@ func Test_CollectionWrite_ValidationFailed(t *testing.T) {
 }
 
 func Test_CommunityCreate(t *testing.T) {
-	store, mock := initTestDataStore()
+	store, mock := datastore.NewTestStore()
 
-	mock.ExpectQuery("SELECT[a-zA-Z *]*").
+	mock.ExpectQuery("SELECT count(.*) FROM `communities`[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"Count"}).
 			AddRow(0))
 
@@ -123,7 +124,7 @@ func Test_CommunityCreate(t *testing.T) {
 }
 
 func Test_CommunityCreate_AlreadyExist(t *testing.T) {
-	store, mock := initTestDataStore()
+	store, mock := datastore.NewTestStore()
 
 	mock.ExpectQuery("SELECT[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"Count"}).

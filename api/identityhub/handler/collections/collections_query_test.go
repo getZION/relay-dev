@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
@@ -84,7 +85,7 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 
 func Test_Communities_Get(t *testing.T) {
 
-	store, mock := initTestDataStore()
+	store, mock := datastore.NewTestStore()
 	mock.ExpectQuery("SELECT[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
 			AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
@@ -124,7 +125,7 @@ func Test_Communities_Get(t *testing.T) {
 
 func Test_Conversation_Get(t *testing.T) {
 
-	store, mock := initTestDataStore()
+	store, mock := datastore.NewTestStore()
 	mock.ExpectQuery("SELECT[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "community_zid", "public", "public_price", "zid"}).
 			AddRow(1, "c_zid1", false, 10, "zid1").
@@ -164,7 +165,7 @@ func Test_Conversation_Get(t *testing.T) {
 
 func Test_User_Get(t *testing.T) {
 
-	store, mock := initTestDataStore()
+	store, mock := datastore.NewTestStore()
 	mock.ExpectQuery("SELECT[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name"}).
 			AddRow(1, "test_user1").
@@ -204,7 +205,7 @@ func Test_User_Get(t *testing.T) {
 
 func Test_Payment_Get(t *testing.T) {
 
-	store, mock := initTestDataStore()
+	store, mock := datastore.NewTestStore()
 	mock.ExpectQuery("SELECT[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "status"}).
 			AddRow(1, "sended").

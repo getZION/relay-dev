@@ -33,7 +33,7 @@ func communityORMValidatorFunc(sl validator.StructLevel) {
 	if err := v.Var(s.Description, "max=250"); err != nil {
 		sl.ReportValidationErrors("Description", "Description", err.(validator.ValidationErrors))
 	}
-	if err := v.Var(s.EscrowAmount, "required"); err != nil {
+	if err := v.Var(s.EscrowAmount, "gte=0"); err != nil {
 		sl.ReportValidationErrors("EscrowAmount", "EscrowAmount", err.(validator.ValidationErrors))
 	}
 	if err := v.Var(s.OwnerDid, "required"); err != nil {
@@ -42,10 +42,10 @@ func communityORMValidatorFunc(sl validator.StructLevel) {
 	if err := v.Var(s.OwnerUsername, "required"); err != nil {
 		sl.ReportValidationErrors("OwnerUsername", "OwnerUsername", err.(validator.ValidationErrors))
 	}
-	if err := v.Var(s.PricePerMessage, "required"); err != nil {
+	if err := v.Var(s.PricePerMessage, "gte=0"); err != nil {
 		sl.ReportValidationErrors("PricePerMessage", "PricePerMessage", err.(validator.ValidationErrors))
 	}
-	if err := v.Var(s.PriceToJoin, "required"); err != nil {
+	if err := v.Var(s.PriceToJoin, "gte=0"); err != nil {
 		sl.ReportValidationErrors("PriceToJoin", "PriceToJoin", err.(validator.ValidationErrors))
 	}
 }

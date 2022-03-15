@@ -159,6 +159,8 @@ github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792 h1:R8vQdOQdZ9Y3
 github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792/go.mod h1:ghJtEyQwv5/p4Mg4C0fgbePVuGr935/5ddU9Z3TmDRY=
 github.com/btcsuite/winsvc v1.0.0/go.mod h1:jsenWakMcC0zFBFurPLEAyrnc/teJEM1O46fmI40EZs=
 github.com/bufbuild/buf v0.37.0/go.mod h1:lQ1m2HkIaGOFba6w/aC3KYBHhKEOESP3gaAEpS3dAFM=
+github.com/bxcodec/faker/v3 v3.8.0 h1:F59Qqnsh0BOtZRC+c4cXoB/VNYDMS3R5mlSpxIap1oU=
+github.com/bxcodec/faker/v3 v3.8.0/go.mod h1:gF31YgnMSMKgkvl+fyEo1xuSMbEuieyqfeslGYFjneM=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=
 github.com/cenkalti/backoff v2.2.1+incompatible h1:tNowT99t7UNflLxfYYSlKYsBpXdEet03Pg2g16Swow4=
 github.com/cenkalti/backoff v2.2.1+incompatible/go.mod h1:90ReRw6GdpyfrHakVjL/QHaoyV4aDUVVkXQJJJ3NXXM=
