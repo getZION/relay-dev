@@ -116,11 +116,8 @@ func Test_Communities_Get(t *testing.T) {
 			require.NotNil(t, entries)
 			require.NotEmpty(t, entries)
 			require.Len(t, entries, 2)
-
-			//todo: check datas
 		})
 	}
-
 }
 
 func Test_Conversation_Get(t *testing.T) {
@@ -156,11 +153,8 @@ func Test_Conversation_Get(t *testing.T) {
 			require.NotNil(t, entries)
 			require.NotEmpty(t, entries)
 			require.Len(t, entries, 2)
-
-			//todo: check datas
 		})
 	}
-
 }
 
 func Test_User_Get(t *testing.T) {
@@ -196,11 +190,8 @@ func Test_User_Get(t *testing.T) {
 			require.NotNil(t, entries)
 			require.NotEmpty(t, entries)
 			require.Len(t, entries, 2)
-
-			//todo: check datas
 		})
 	}
-
 }
 
 func Test_Payment_Get(t *testing.T) {
@@ -236,9 +227,6 @@ func Test_Payment_Get(t *testing.T) {
 			require.NotNil(t, entries)
 			require.NotEmpty(t, entries)
 			require.Len(t, entries, 2)
-
-			//todo: check datas
 		})
 	}
-
 }

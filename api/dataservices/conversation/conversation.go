@@ -33,15 +33,19 @@ func (s *Service) GetAll() (interface{}, error) {
 func (s *Service) Insert(data []byte) (interface{}, error) {
 
 	var conversation v1.ConversationORM
-	json.Unmarshal(data, &conversation)
-	err := validator.ValidateStruct(&conversation)
+	err := json.Unmarshal(data, &conversation)
 	if err != nil {
 		return nil, err
 	}
 
 	conversation.Zid = uuid.NewString()
 
-	result := s.connection.DB.Create(conversation)
+	err = validator.ValidateStruct(&conversation)
+	if err != nil {
+		return nil, err
+	}
+
+	result := s.connection.DB.Create(&conversation)
 	if result.Error != nil {
 		return nil, result.Error
 	}

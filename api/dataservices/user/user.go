@@ -32,13 +32,17 @@ func (s *Service) GetAll() (interface{}, error) {
 func (s *Service) Insert(data []byte) (interface{}, error) {
 
 	var user v1.UserORM
-	json.Unmarshal(data, &user)
-	err := validator.ValidateStruct(&user)
+	err := json.Unmarshal(data, &user)
 	if err != nil {
 		return nil, err
 	}
 
-	result := s.connection.DB.Create(user)
+	err = validator.ValidateStruct(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	result := s.connection.DB.Create(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}

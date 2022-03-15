@@ -33,15 +33,19 @@ func (s *Service) GetAll() (interface{}, error) {
 func (s *Service) Insert(data []byte) (interface{}, error) {
 
 	var payment v1.PaymentORM
-	json.Unmarshal(data, &payment)
-	err := validator.ValidateStruct(&payment)
+	err := json.Unmarshal(data, &payment)
 	if err != nil {
 		return nil, err
 	}
 
 	payment.Zid = uuid.NewString()
 
-	result := s.connection.DB.Create(payment)
+	err = validator.ValidateStruct(&payment)
+	if err != nil {
+		return nil, err
+	}
+
+	result := s.connection.DB.Create(&payment)
 	if result.Error != nil {
 		return nil, result.Error
 	}
