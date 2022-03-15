@@ -30,7 +30,6 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 
 	var err error
 	var objectId uuid.UUID
-	var schema *url.URL
 	var dateCreated int64
 	var datePublished int64
 
@@ -42,7 +41,7 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 	} else if dateCreated, err = strconv.ParseInt(context.Message.Descriptor_.DateCreated, 10, 64); err != nil {
 		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid dateCreated: %s", context.Message.Descriptor_.DateCreated), err)
 	} else if context.Message.Descriptor_.Schema != "" {
-		if schema, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
+		if _, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
 			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor_.Schema), err)
 		}
 	}
@@ -54,9 +53,8 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 		}
 	}
 
-	//todo: process the request
 	fmt.Printf("request -> objectId: %s, dateCreated: %d", objectId.String(), dateCreated)
-	if schema != nil || datePublished == 0 {
+	if datePublished == 0 {
 	}
 
 	if strings.Trim(context.Message.Data, " ") == "" {
@@ -80,6 +78,7 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 	if err != nil {
 		return nil, errors.NewMessageLevelError(500, err.Error(), err)
 	}
+
 	entries = append(entries, string(json))
 	return entries, nil
 }

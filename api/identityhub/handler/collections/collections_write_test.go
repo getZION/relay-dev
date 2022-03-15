@@ -103,7 +103,7 @@ func Test_CommunityCreate(t *testing.T) {
 			AddRow(0))
 
 	mock.ExpectBegin()
-	mock.ExpectExec("INSERT[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
@@ -126,7 +126,7 @@ func Test_CommunityCreate(t *testing.T) {
 func Test_CommunityCreate_AlreadyExist(t *testing.T) {
 	store, mock := datastore.NewTestStore()
 
-	mock.ExpectQuery("SELECT[a-zA-Z *]*").
+	mock.ExpectQuery("SELECT count(.*) FROM `communities`[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"Count"}).
 			AddRow(1))
 
@@ -146,5 +146,53 @@ func Test_CommunityCreate_AlreadyExist(t *testing.T) {
 	require.Equal(t, "the specified community already exist: test", err.Message)
 	require.Equal(t, int64(400), err.Code)
 	require.Len(t, entries, 0)
+	require.Nil(t, mock.ExpectationsWereMet())
+}
+
+func Test_ConversationCreate(t *testing.T) {
+	store, mock := datastore.NewTestStore()
+
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `conversations`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	entries, err := CollectionsWrite(&handler.RequestContext{
+		Store: store,
+		Message: &hub.Message{
+			Data: `{ "CommunityZid": "test_zid" }`,
+			Descriptor_: &hub.MessageDescriptor{
+				ObjectId:    OBJECT_ID,
+				Schema:      SCHEMA_CONVERSATION,
+				DateCreated: DATE_CREATED,
+			},
+		},
+	})
+
+	require.Nil(t, err)
+	require.Len(t, entries, 1)
+	require.Nil(t, mock.ExpectationsWereMet())
+}
+
+func Test_UserCreate(t *testing.T) {
+	store, mock := datastore.NewTestStore()
+
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	entries, err := CollectionsWrite(&handler.RequestContext{
+		Store: store,
+		Message: &hub.Message{
+			Data: `{ "Name": "test_name", "Username": "test_username", "Email": "test@test.org" }`,
+			Descriptor_: &hub.MessageDescriptor{
+				ObjectId:    OBJECT_ID,
+				Schema:      SCHEMA_PERSON,
+				DateCreated: DATE_CREATED,
+			},
+		},
+	})
+
+	require.Nil(t, err)
+	require.Len(t, entries, 1)
 	require.Nil(t, mock.ExpectationsWereMet())
 }

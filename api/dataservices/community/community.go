@@ -36,22 +36,28 @@ func (s *Service) GetAll() (interface{}, error) {
 func (s *Service) Insert(data []byte) (interface{}, error) {
 
 	var community v1.CommunityORM
-	json.Unmarshal(data, &community)
-	err := validator.ValidateStruct(&community)
+	err := json.Unmarshal(data, &community)
 	if err != nil {
 		return nil, err
-	}
-
-	var exists int64
-	err = s.connection.DB.Model(v1.CommunityORM{}).Where("name = ?", strings.ToLower(community.Name)).Count(&exists).Error
-	if err != nil || exists > 0 {
-		return nil, fmt.Errorf("the specified community already exist: %s", community.Name)
 	}
 
 	community.Zid = uuid.NewString()
 	community.Created = time.Now().Unix()
 	community.Updated = community.Created
 	community.LastActive = community.Created
+
+	err = validator.ValidateStruct(&community)
+	if err != nil {
+		return nil, err
+	}
+
+	var exists int64
+	err = s.connection.DB.Model(v1.CommunityORM{}).Where("name = ?", strings.ToLower(community.Name)).Limit(1).Count(&exists).Error
+	if err != nil {
+		return nil, err
+	} else if exists > 0 {
+		return nil, fmt.Errorf("the specified community already exist: %s", community.Name)
+	}
 
 	result := s.connection.DB.Create(&community)
 	if result.Error != nil {
