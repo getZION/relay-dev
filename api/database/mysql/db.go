@@ -1,6 +1,8 @@
 package mysql
 
 import (
+	"fmt"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/kelseyhightower/envconfig"
@@ -21,7 +23,7 @@ func NewMySqlConnection() (*gorm.DB, error) {
 	var params mysqlConnectionParams
 	envconfig.Process("", &params)
 
-	databaseConnectionString := params.User + ":" + params.Pass + "@tcp(" + params.Host + ")/" + params.Name
+	databaseConnectionString := fmt.Sprintf("%s:%s@tcp(%s)/%s", params.User, params.Pass, params.Host, params.Name)
 	logrus.Infof("Connecting to MySQL database: %s", databaseConnectionString)
 
 	db, err = gorm.Open("mysql", databaseConnectionString)
