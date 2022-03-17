@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"github.com/getzion/relay/api/datastore"
+	"github.com/getzion/relay/api/schema"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 )
 
 type RequestContext struct {
-	Store   *datastore.Store
-	Message *hub.Message
+	SchemaManager *schema.SchemaManager
+	Message       *hub.Message
 }

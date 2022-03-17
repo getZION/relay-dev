@@ -54,18 +54,18 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	service, err := context.Store.GetServiceBySchema(context.Message.Descriptor_.Schema)
+	schemaHandler, err := context.SchemaManager.GetSchemaHandler(context.Message.Descriptor_.Schema)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	result, err := service.Insert([]byte(context.Message.Data))
+	data, err := schemaHandler.Execute([]byte(context.Message.Data), context.Message.Descriptor_.Method)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
 	var entries []string
-	json, err := json.Marshal(&result)
+	json, err := json.Marshal(&data)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(500, err.Error(), err)
 	}

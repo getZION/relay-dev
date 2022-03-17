@@ -4,6 +4,7 @@ package proto.zion.v1;
 
 option go_package = "github.com/getzion/relay/gen/zion/v1";
 
+import "proto/zion/v1/users.proto";
 import "proto/protoc-gen-gorm/options/gorm.proto";
 
 message Community {
@@ -43,4 +44,5 @@ message Community {
   int64 created = 15;
   // Updated when? - Optional
   int64 updated = 16;
+  repeated User users = 17 [(gorm.field).many_to_many = {}];
 }

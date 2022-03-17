@@ -9,6 +9,7 @@ import (
 	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub"
 	"github.com/getzion/relay/api/nodeinfo"
+	"github.com/getzion/relay/api/schema"
 	"github.com/getzion/relay/api/validator"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	zion "github.com/getzion/relay/gen/proto/zion/v1"
@@ -24,6 +25,8 @@ type grpcMultiplexer struct {
 
 func main() {
 
+	validator.InitValidator()
+
 	connection, err := database.NewDatabase("mysql")
 	if err != nil {
 		logrus.Panic(err)
@@ -34,13 +37,13 @@ func main() {
 		logrus.Panic(err)
 	}
 
-	validator.InitValidator()
+	schemaManager := schema.NewSchemaManager(store)
 
 	// Initialize gRPC server
-	init_gRPC(store)
+	init_gRPC(schemaManager)
 }
 
-func init_gRPC(store *datastore.Store) {
+func init_gRPC(schemaManager *schema.SchemaManager) {
 	// Start listening on a TCP Port
 	lis, err := net.Listen("tcp", "127.0.0.1:9990")
 	if err != nil {
@@ -52,7 +55,7 @@ func init_gRPC(store *datastore.Store) {
 	// So we need a struct which fulfills the server interface
 	// see server.go
 	apiserver := grpc.NewServer()
-	identityHub := identityhub.InitIdentityHubService(store)
+	identityHub := identityhub.InitIdentityHubService(schemaManager)
 	nodeinfo := nodeinfo.InitNewNodeInfoService()
 
 	zion.RegisterNodeInfoServiceServer(apiserver, nodeinfo)

@@ -41,12 +41,12 @@ func CollectionsQuery(context *handler.RequestContext) ([]string, *errors.Messag
 
 	//todo: check data & dataFormat only for application/json or do we need provide other formats?
 
-	service, err := context.Store.GetServiceBySchema(context.Message.Descriptor_.Schema)
+	schemaHandler, err := context.SchemaManager.GetSchemaHandler(context.Message.Descriptor_.Schema)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	data, err := service.GetAll()
+	data, err := schemaHandler.Execute([]byte(context.Message.Data), context.Message.Descriptor_.Method)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(500, err.Error(), err)
 	}
