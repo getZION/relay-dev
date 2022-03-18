@@ -1,7 +1,6 @@
 package community
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -24,7 +23,17 @@ func NewService(connection *api.Connection) (*Service, error) {
 	}, nil
 }
 
-func (s *Service) GetAll() (interface{}, error) {
+func (s *Service) GetById(id int64) (*v1.CommunityORM, error) {
+	var community v1.CommunityORM
+	result := s.connection.DB.Model(&community).First(&community, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &community, nil
+}
+
+func (s *Service) GetAll() ([]v1.CommunityORM, error) {
 	var communities []v1.CommunityORM
 	result := s.connection.DB.Find(&communities)
 	if result.Error != nil {
@@ -33,20 +42,14 @@ func (s *Service) GetAll() (interface{}, error) {
 	return communities, nil
 }
 
-func (s *Service) Insert(data []byte) (interface{}, error) {
-
-	var community v1.CommunityORM
-	err := json.Unmarshal(data, &community)
-	if err != nil {
-		return nil, err
-	}
+func (s *Service) Insert(community v1.CommunityORM) (*v1.CommunityORM, error) {
 
 	community.Zid = uuid.NewString()
 	community.Created = time.Now().Unix()
 	community.Updated = community.Created
 	community.LastActive = community.Created
 
-	err = validator.ValidateStruct(&community)
+	err := validator.ValidateStruct(&community)
 	if err != nil {
 		return nil, err
 	}
@@ -61,4 +64,9 @@ func (s *Service) Insert(data []byte) (interface{}, error) {
 	}
 
 	return &community, nil
+}
+
+func (s *Service) AddUserToCommunity(community *v1.CommunityORM, userId int64) error {
+	ass := s.connection.DB.Model(community).Association("users").Delete(&v1.UserORM{Id: 1})
+	return ass.Error
 }

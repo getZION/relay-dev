@@ -1,13 +1,13 @@
 package constants
 
 const (
-	SCHEMA_ORGANIZATION       = "https://schema.org/Organization"
-	SCHEMA_CONVERSATION       = "https://schema.org/Conversation"
-	SCHEMA_MESSAGE            = "https://schema.org/SocialMediaPosting"
-	SCHEMA_PAYMENT            = "https://schema.org/Invoice"
-	SCHEMA_PERSON             = "https://schema.org/Person"
-	SCHEMA_JOIN_ORGANIZATION  = "https://schema.org/JoinAction"
-	SCHEMA_LEAVE_ORGANIZATION = "https://schema.org/LeaveAction"
+	SCHEMA_COMMUNITY       = "https://schema.org/Organization"
+	SCHEMA_CONVERSATION    = "https://schema.org/Conversation"
+	SCHEMA_MESSAGE         = "https://schema.org/SocialMediaPosting"
+	SCHEMA_PAYMENT         = "https://schema.org/Invoice"
+	SCHEMA_PERSON          = "https://schema.org/Person"
+	SCHEMA_JOIN_COMMUNITY  = "https://schema.org/JoinAction"
+	SCHEMA_LEAVE_COMMUNITY = "https://schema.org/LeaveAction"
 
 	COLLECTIONS_QUERY  = "CollectionsQuery"
 	COLLECTIONS_WRITE  = "CollectionsWrite"

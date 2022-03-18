@@ -105,7 +105,7 @@ func Test_Communities_Get(t *testing.T) {
 			message: &hub.Message{
 				Descriptor_: &hub.MessageDescriptor{
 					ObjectId: OBJECT_ID,
-					Schema:   constants.SCHEMA_ORGANIZATION,
+					Schema:   constants.SCHEMA_COMMUNITY,
 					Method:   constants.COLLECTIONS_QUERY,
 				},
 			},

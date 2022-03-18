@@ -112,7 +112,7 @@ func Test_CommunityCreate(t *testing.T) {
 			Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
-				Schema:      constants.SCHEMA_ORGANIZATION,
+				Schema:      constants.SCHEMA_COMMUNITY,
 				DateCreated: DATE_CREATED,
 				Method:      constants.COLLECTIONS_WRITE,
 			},
@@ -137,7 +137,7 @@ func Test_CommunityCreate_AlreadyExist(t *testing.T) {
 			Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
-				Schema:      constants.SCHEMA_ORGANIZATION,
+				Schema:      constants.SCHEMA_COMMUNITY,
 				DateCreated: DATE_CREATED,
 				Method:      constants.COLLECTIONS_WRITE,
 			},

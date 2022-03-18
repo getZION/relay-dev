@@ -16,10 +16,15 @@ type SchemaHandler interface {
 	Execute(data []byte, method string) (interface{}, error)
 }
 
+// todo: can we split the method operations via structs? like this, we don't need to worry about return types ...
+// type MethodExecutor interface {
+// 	Execute(data []byte) (interface{}, error)
+// }
+
 func NewSchemaManager(store *datastore.Store) *SchemaManager {
 	schemaHandler := &SchemaManager{
 		handlers: map[string]SchemaHandler{
-			constants.SCHEMA_ORGANIZATION: &handler.OrganizationHandler{
+			constants.SCHEMA_COMMUNITY: &handler.CommunityHandler{
 				DataStore: store,
 			},
 			constants.SCHEMA_CONVERSATION: &handler.ConversationHandler{
@@ -29,6 +34,9 @@ func NewSchemaManager(store *datastore.Store) *SchemaManager {
 				DataStore: store,
 			},
 			constants.SCHEMA_PERSON: &handler.UserHandler{
+				DataStore: store,
+			},
+			constants.SCHEMA_JOIN_COMMUNITY: &handler.CommunityJoinHandler{
 				DataStore: store,
 			},
 		},

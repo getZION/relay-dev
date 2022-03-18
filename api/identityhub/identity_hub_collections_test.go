@@ -115,7 +115,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Communities Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_ORGANIZATION
+					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_COMMUNITY
 				})
 
 				It("receives a response if a Message Descriptor has valid objectID", func() {
@@ -314,7 +314,7 @@ var _ = Describe("IdentityHub Collections", func() {
 				It("receives an error if a Message Descriptor has invalid datePublished", func() {
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
-					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_ORGANIZATION
+					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_COMMUNITY
 					request.Messages[0].Descriptor_.DatePublished = INVALID
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
@@ -331,7 +331,7 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				BeforeEach(func() {
 					request.Messages[0].Data = `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`
-					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_ORGANIZATION
+					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_COMMUNITY
 				})
 
 				It("receives a response if a Message Descriptor has valid dateCreated", func() {
@@ -467,7 +467,7 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				BeforeEach(func() {
 					request.Messages[0].Data = `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`
-					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_ORGANIZATION
+					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_COMMUNITY
 				})
 
 				It("receives a response if a Message Descriptor has valid dateCreated", func() {
@@ -550,7 +550,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Communities Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_ORGANIZATION
+					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_COMMUNITY
 				})
 
 				It("receives a response if a Message Descriptor has valid objectID", func() {

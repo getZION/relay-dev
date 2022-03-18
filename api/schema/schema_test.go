@@ -16,8 +16,8 @@ func Test_ShouldReturnCorrectHandler(t *testing.T) {
 	}{
 		{
 			name:            "should return community service",
-			schema:          constants.SCHEMA_ORGANIZATION,
-			expectedHandler: &handler.OrganizationHandler{},
+			schema:          constants.SCHEMA_COMMUNITY,
+			expectedHandler: &handler.CommunityHandler{},
 		},
 		{
 			name:            "should return conversation service",
@@ -33,6 +33,11 @@ func Test_ShouldReturnCorrectHandler(t *testing.T) {
 			name:            "should return user service",
 			schema:          constants.SCHEMA_PERSON,
 			expectedHandler: &handler.UserHandler{},
+		},
+		{
+			name:            "should return community join schema",
+			schema:          constants.SCHEMA_JOIN_COMMUNITY,
+			expectedHandler: &handler.CommunityJoinHandler{},
 		},
 	}
 
