@@ -39,6 +39,11 @@ func Test_ShouldReturnCorrectHandler(t *testing.T) {
 			schema:          constants.SCHEMA_JOIN_COMMUNITY,
 			expectedHandler: &handler.CommunityJoinHandler{},
 		},
+		{
+			name:            "should return community leave schema",
+			schema:          constants.SCHEMA_LEAVE_COMMUNITY,
+			expectedHandler: &handler.CommunityLeaveHandler{},
+		},
 	}
 
 	schemaManager := NewSchemaManager(nil)

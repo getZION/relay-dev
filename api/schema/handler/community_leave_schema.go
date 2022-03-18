@@ -8,20 +8,20 @@ import (
 	"github.com/getzion/relay/api/datastore"
 )
 
-type CommunityJoinHandler struct {
+type CommunityLeaveHandler struct {
 	DataStore *datastore.Store
 }
 
-type joinCommunityRequestModel struct {
+type leaveCommunityRequestModel struct {
 	UserId      int64 `json:"user_id"`
 	CommunityId int64 `json:"community_id"`
 }
 
-func (h *CommunityJoinHandler) Execute(data []byte, method string) (interface{}, error) {
+func (h *CommunityLeaveHandler) Execute(data []byte, method string) (interface{}, error) {
 	switch method {
 	case constants.COLLECTIONS_WRITE:
 
-		var model joinCommunityRequestModel
+		var model leaveCommunityRequestModel
 		err := json.Unmarshal(data, &model)
 		if err != nil {
 			return nil, err
@@ -37,7 +37,7 @@ func (h *CommunityJoinHandler) Execute(data []byte, method string) (interface{},
 			return nil, fmt.Errorf("user not found: %d", model.UserId)
 		}
 
-		err = h.DataStore.CommunityService.AddUserToCommunity(community, user.Id)
+		err = h.DataStore.CommunityService.RemoveUserToCommunity(community, user.Id)
 		if err != nil {
 			return nil, err
 		}
@@ -45,6 +45,6 @@ func (h *CommunityJoinHandler) Execute(data []byte, method string) (interface{},
 		return nil, nil
 
 	default:
-		return nil, fmt.Errorf("unimplemented join conversation method: %s", method)
+		return nil, fmt.Errorf("unimplemented leave conversation method: %s", method)
 	}
 }

@@ -39,6 +39,9 @@ func NewSchemaManager(store *datastore.Store) *SchemaManager {
 			constants.SCHEMA_JOIN_COMMUNITY: &handler.CommunityJoinHandler{
 				DataStore: store,
 			},
+			constants.SCHEMA_LEAVE_COMMUNITY: &handler.CommunityLeaveHandler{
+				DataStore: store,
+			},
 		},
 	}
 

@@ -67,6 +67,11 @@ func (s *Service) Insert(community v1.CommunityORM) (*v1.CommunityORM, error) {
 }
 
 func (s *Service) AddUserToCommunity(community *v1.CommunityORM, userId int64) error {
-	ass := s.connection.DB.Model(community).Association("users").Delete(&v1.UserORM{Id: 1})
-	return ass.Error
+	association := s.connection.DB.Model(community).Association("users").Append(&v1.UserORM{Id: userId})
+	return association.Error
+}
+
+func (s *Service) RemoveUserToCommunity(community *v1.CommunityORM, userId int64) error {
+	association := s.connection.DB.Model(community).Association("users").Delete(&v1.UserORM{Id: userId})
+	return association.Error
 }

@@ -64,12 +64,16 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	var entries []string
-	json, err := json.Marshal(&data)
-	if err != nil {
-		return nil, errors.NewMessageLevelError(500, err.Error(), err)
+	if data != nil {
+		var entries []string
+		json, err := json.Marshal(&data)
+		if err != nil {
+			return nil, errors.NewMessageLevelError(500, err.Error(), err)
+		}
+
+		entries = append(entries, string(json))
+		return entries, nil
 	}
 
-	entries = append(entries, string(json))
-	return entries, nil
+	return nil, nil
 }
