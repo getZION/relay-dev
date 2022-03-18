@@ -10,6 +10,7 @@ import (
 	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/getzion/relay/api/schema"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	native "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/require"
 )
 
@@ -101,10 +102,6 @@ func Test_CommunityCreate(t *testing.T) {
 	store, mock := datastore.NewTestStore()
 	schemaManager := schema.NewSchemaManager(store)
 
-	mock.ExpectQuery("SELECT count(.*) FROM `communities`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"Count"}).
-			AddRow(0))
-
 	mock.ExpectBegin()
 	mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
@@ -131,9 +128,8 @@ func Test_CommunityCreate_AlreadyExist(t *testing.T) {
 	store, mock := datastore.NewTestStore()
 	schemaManager := schema.NewSchemaManager(store)
 
-	mock.ExpectQuery("SELECT count(.*) FROM `communities`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"Count"}).
-			AddRow(1))
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnError(&native.MySQLError{Number: 1062})
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -204,5 +200,32 @@ func Test_UserCreate(t *testing.T) {
 
 	require.Nil(t, err)
 	require.Len(t, entries, 1)
+	require.Nil(t, mock.ExpectationsWereMet())
+}
+
+func Test_UserCreate_AlreadyExist(t *testing.T) {
+	store, mock := datastore.NewTestStore()
+	schemaManager := schema.NewSchemaManager(store)
+
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `users`[a-zA-Z *]*").WillReturnError(&native.MySQLError{Number: 1062})
+
+	entries, err := CollectionsWrite(&handler.RequestContext{
+		SchemaManager: schemaManager,
+		Message: &hub.Message{
+			Data: `{ "Name": "test_name", "Username": "test_username", "Email": "test@test.org" }`,
+			Descriptor_: &hub.MessageDescriptor{
+				ObjectId:    OBJECT_ID,
+				Schema:      constants.SCHEMA_PERSON,
+				DateCreated: DATE_CREATED,
+				Method:      constants.COLLECTIONS_WRITE,
+			},
+		},
+	})
+
+	require.NotNil(t, err)
+	require.Equal(t, "the specified username already exist: test_username", err.Message)
+	require.Equal(t, int64(400), err.Code)
+	require.Len(t, entries, 0)
 	require.Nil(t, mock.ExpectationsWereMet())
 }

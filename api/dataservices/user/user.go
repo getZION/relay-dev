@@ -2,10 +2,12 @@ package user
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/validator"
 	v1 "github.com/getzion/relay/gen/proto/zion/v1"
+	"github.com/go-sql-driver/mysql"
 )
 
 // Service represents a service for managing environment(endpoint) data.
@@ -44,6 +46,10 @@ func (s *Service) Insert(data []byte) (interface{}, error) {
 
 	result := s.connection.DB.Create(&user)
 	if result.Error != nil {
+		mySqlError := result.Error.(*mysql.MySQLError)
+		if mySqlError != nil && mySqlError.Number == 1062 {
+			return nil, fmt.Errorf("the specified username already exist: %s", user.Username)
+		}
 		return nil, result.Error
 	}
 

@@ -16,7 +16,7 @@ message User {
   // User's decentralized identifier (DID), e.g. did:ion:[fingerprint] - Required; unique
   string did = 2;
   // User's username, unique in Zion - Required; unique
-  string username = 3;
+  string username = 3 [(gorm.field).tag = { unique: true }];
   // User's display name - Optional
   string name = 4;
   // User's email address for opt-in marketing updates - Optional

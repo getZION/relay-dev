@@ -17,7 +17,7 @@ message Community {
   // Community id unique across Zion - Required; must be uuid v4
   string zid = 2;
   // The name of the community - Required; unique
-  string name = 3 [(gorm.field).tag = { not_null: true }];
+  string name = 3 [(gorm.field).tag = { not_null: true, unique: true }];
   // Owner DID - Required
   string owner_did = 4 [(gorm.field).tag = { not_null: true }];
   // Owner username - Required
