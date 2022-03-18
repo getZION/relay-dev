@@ -48,18 +48,5 @@ func NewStore(connection *api.Connection) (*Store, error) {
 	}
 	store.UserService = userService
 
-	//_, err = communityService.Insert([]byte(`{ "id": 1, "Name": "test", "Description": "test", "OwnerDid": "did", "OwnerUsername": "username", "PricePerMessage": 10, "PriceToJoin": 5 }`))
-	//userService.Insert([]byte(`{ "Id": 1, "Name": "test", "Username": "test1234", "Email": "test@test.org" }`))
-
-	// todo: make new for these schemas => `https://schema.org/JoinAction`, `https://schema.org/LeaveAction`
-	// todo: data will contain UserId and CommunityId ... schemas == dataservices is not cover our requirements. Because we need to get Data from Users and also Communities. maybe we can write some SchemaHandlers ???
-	// comm, err := communityService.GetAll()
-	// communities := comm.([]v1.CommunityORM)
-	// fmt.Printf("%d", len(communities))
-
-	// todo: https://gorm.io/docs/associations.html#Association-Mode
-	// ass := connection.DB.Model(&communities[0]).Association("users").Delete(&v1.UserORM{Id: 1})
-	// fmt.Printf("%v", ass.Error)
-
 	return store, nil
 }
