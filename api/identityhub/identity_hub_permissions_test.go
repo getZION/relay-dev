@@ -6,6 +6,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/datastore"
+	"github.com/getzion/relay/api/schema"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/jinzhu/gorm"
 	. "github.com/onsi/ginkgo/v2"
@@ -49,10 +50,12 @@ var _ = Describe("IdentityHub Permissions", func() {
 			logrus.Panic(err)
 		}
 
+		schemaManager := schema.NewSchemaManager(store)
+
 		client = &IdentityHubService{
 			prefix:                   prefix,
 			validHubInterfaceMethods: validHubInterfaceMethods,
-			store:                    store,
+			schemaManager:            schemaManager,
 		}
 	})
 

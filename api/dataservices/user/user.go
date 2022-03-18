@@ -1,7 +1,6 @@
 package user
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/getzion/relay/api"
@@ -22,7 +21,17 @@ func NewService(connection *api.Connection) (*Service, error) {
 	}, nil
 }
 
-func (s *Service) GetAll() (interface{}, error) {
+func (s *Service) GetById(id int64) (*v1.UserORM, error) {
+	var user v1.UserORM
+	result := s.connection.DB.Model(&user).First(&user, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &user, nil
+}
+
+func (s *Service) GetAll() ([]v1.UserORM, error) {
 	var users []v1.UserORM
 	result := s.connection.DB.Find(&users)
 	if result.Error != nil {
@@ -31,15 +40,9 @@ func (s *Service) GetAll() (interface{}, error) {
 	return users, nil
 }
 
-func (s *Service) Insert(data []byte) (interface{}, error) {
+func (s *Service) Insert(user v1.UserORM) (*v1.UserORM, error) {
 
-	var user v1.UserORM
-	err := json.Unmarshal(data, &user)
-	if err != nil {
-		return nil, err
-	}
-
-	err = validator.ValidateStruct(&user)
+	err := validator.ValidateStruct(&user)
 	if err != nil {
 		return nil, err
 	}

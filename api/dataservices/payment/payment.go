@@ -1,8 +1,6 @@
 package payment
 
 import (
-	"encoding/json"
-
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/validator"
 	v1 "github.com/getzion/relay/gen/proto/zion/v1"
@@ -30,17 +28,11 @@ func (s *Service) GetAll() (interface{}, error) {
 	return payments, nil
 }
 
-func (s *Service) Insert(data []byte) (interface{}, error) {
-
-	var payment v1.PaymentORM
-	err := json.Unmarshal(data, &payment)
-	if err != nil {
-		return nil, err
-	}
+func (s *Service) Insert(payment v1.PaymentORM) (*v1.PaymentORM, error) {
 
 	payment.Zid = uuid.NewString()
 
-	err = validator.ValidateStruct(&payment)
+	err := validator.ValidateStruct(&payment)
 	if err != nil {
 		return nil, err
 	}

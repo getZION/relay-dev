@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/getzion/relay/api/datastore"
+	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/getzion/relay/api/identityhub/handler/collections"
 	"github.com/getzion/relay/api/identityhub/handler/permissions"
 	"github.com/getzion/relay/api/identityhub/handler/threads"
+	"github.com/getzion/relay/api/schema"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -28,7 +29,7 @@ type (
 		prefix                   cid.Prefix
 		validHubInterfaceMethods map[string]interfaceMethodHandler
 
-		store *datastore.Store
+		schemaManager *schema.SchemaManager
 	}
 )
 
@@ -43,28 +44,28 @@ var (
 
 	//todo: change request handler implemantation
 	validHubInterfaceMethods = map[string]interfaceMethodHandler{
-		"CollectionsQuery":   collections.CollectionsQuery,
-		"CollectionsWrite":   collections.CollectionsWrite,
-		"CollectionsCommit":  collections.CollectionsCommit,
-		"CollectionsDelete":  collections.CollectionsDelete,
-		"ThreadsQuery":       threads.ThreadsQuery,
-		"ThreadsCreate":      threads.ThreadsCreate,
-		"ThreadsReply":       threads.ThreadsReply,
-		"ThreadsClose":       threads.ThreadsClose,
-		"ThreadsDelete":      threads.ThreadsDelete,
-		"PermissionsRequest": permissions.PermissionsRequest,
-		"PermissionsQuery":   permissions.PermissionsQuery,
-		"PermissionsGrant":   permissions.PermissionsGrant,
-		"PermissionsRevoke":  permissions.PermissionsRevoke,
+		constants.COLLECTIONS_QUERY:   collections.CollectionsQuery,
+		constants.COLLECTIONS_WRITE:   collections.CollectionsWrite,
+		constants.COLLECTIONS_COMMIT:  collections.CollectionsCommit,
+		constants.COLLECTIONS_DELETE:  collections.CollectionsDelete,
+		constants.THREADS_QUERY:       threads.ThreadsQuery,
+		constants.THREADS_CREATE:      threads.ThreadsCreate,
+		constants.THREADS_REPLY:       threads.ThreadsReply,
+		constants.THREADS_CLOSE:       threads.ThreadsClose,
+		constants.THREADS_DELETE:      threads.ThreadsDelete,
+		constants.PERMISSIONS_REQUEST: permissions.PermissionsRequest,
+		constants.PERMISSIONS_QUERY:   permissions.PermissionsQuery,
+		constants.PERMISSIONS_GRANT:   permissions.PermissionsGrant,
+		constants.PERMISSIONS_REVOKE:  permissions.PermissionsRevoke,
 	}
 )
 
-func InitIdentityHubService(store *datastore.Store) *IdentityHubService {
+func InitIdentityHubService(schemaManager *schema.SchemaManager) *IdentityHubService {
 
 	identityHubService := &IdentityHubService{
 		prefix:                   prefix,
 		validHubInterfaceMethods: validHubInterfaceMethods,
-		store:                    store,
+		schemaManager:            schemaManager,
 	}
 
 	return identityHubService
@@ -139,8 +140,8 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 		}
 
 		context := handler.RequestContext{
-			Store:   identityHub.store,
-			Message: message,
+			SchemaManager: identityHub.schemaManager,
+			Message:       message,
 		}
 
 		entry, mErr := method(&context)

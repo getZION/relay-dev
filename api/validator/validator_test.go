@@ -241,7 +241,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 			expectedErrorCount: 1,
 		},
 		{
-			name: "Email field should be valid",
+			name: "Email field should be invalid",
 			generate: func() interface{} {
 				model := v1.UserORM{}
 				faker.FakeData(&model)

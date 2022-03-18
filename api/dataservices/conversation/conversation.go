@@ -1,8 +1,6 @@
 package conversation
 
 import (
-	"encoding/json"
-
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/validator"
 	v1 "github.com/getzion/relay/gen/proto/zion/v1"
@@ -30,17 +28,11 @@ func (s *Service) GetAll() (interface{}, error) {
 	return conversations, nil
 }
 
-func (s *Service) Insert(data []byte) (interface{}, error) {
-
-	var conversation v1.ConversationORM
-	err := json.Unmarshal(data, &conversation)
-	if err != nil {
-		return nil, err
-	}
+func (s *Service) Insert(conversation v1.ConversationORM) (*v1.ConversationORM, error) {
 
 	conversation.Zid = uuid.NewString()
 
-	err = validator.ValidateStruct(&conversation)
+	err := validator.ValidateStruct(&conversation)
 	if err != nil {
 		return nil, err
 	}

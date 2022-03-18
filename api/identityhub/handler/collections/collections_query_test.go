@@ -4,9 +4,11 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
+	"github.com/getzion/relay/api/schema"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/stretchr/testify/require"
 )
@@ -86,6 +88,7 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 func Test_Communities_Get(t *testing.T) {
 
 	store, mock := datastore.NewTestStore()
+	schemaManager := schema.NewSchemaManager(store)
 	mock.ExpectQuery("SELECT[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
 			AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
@@ -102,7 +105,8 @@ func Test_Communities_Get(t *testing.T) {
 			message: &hub.Message{
 				Descriptor_: &hub.MessageDescriptor{
 					ObjectId: OBJECT_ID,
-					Schema:   SCHEMA_ORGANIZATION,
+					Schema:   constants.SCHEMA_COMMUNITY,
+					Method:   constants.COLLECTIONS_QUERY,
 				},
 			},
 		},
@@ -110,7 +114,7 @@ func Test_Communities_Get(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entries, err := CollectionsQuery(&handler.RequestContext{Store: store, Message: tt.message})
+			entries, err := CollectionsQuery(&handler.RequestContext{SchemaManager: schemaManager, Message: tt.message})
 
 			require.Nil(t, err)
 			require.NotNil(t, entries)
@@ -123,6 +127,7 @@ func Test_Communities_Get(t *testing.T) {
 func Test_Conversation_Get(t *testing.T) {
 
 	store, mock := datastore.NewTestStore()
+	schemaManager := schema.NewSchemaManager(store)
 	mock.ExpectQuery("SELECT[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "community_zid", "public", "public_price", "zid"}).
 			AddRow(1, "c_zid1", false, 10, "zid1").
@@ -139,7 +144,8 @@ func Test_Conversation_Get(t *testing.T) {
 			message: &hub.Message{
 				Descriptor_: &hub.MessageDescriptor{
 					ObjectId: OBJECT_ID,
-					Schema:   SCHEMA_CONVERSATION,
+					Schema:   constants.SCHEMA_CONVERSATION,
+					Method:   constants.COLLECTIONS_QUERY,
 				},
 			},
 		},
@@ -147,7 +153,7 @@ func Test_Conversation_Get(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entries, err := CollectionsQuery(&handler.RequestContext{Store: store, Message: tt.message})
+			entries, err := CollectionsQuery(&handler.RequestContext{SchemaManager: schemaManager, Message: tt.message})
 
 			require.Nil(t, err)
 			require.NotNil(t, entries)
@@ -160,6 +166,7 @@ func Test_Conversation_Get(t *testing.T) {
 func Test_User_Get(t *testing.T) {
 
 	store, mock := datastore.NewTestStore()
+	schemaManager := schema.NewSchemaManager(store)
 	mock.ExpectQuery("SELECT[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name"}).
 			AddRow(1, "test_user1").
@@ -176,7 +183,8 @@ func Test_User_Get(t *testing.T) {
 			message: &hub.Message{
 				Descriptor_: &hub.MessageDescriptor{
 					ObjectId: OBJECT_ID,
-					Schema:   SCHEMA_PERSON,
+					Schema:   constants.SCHEMA_PERSON,
+					Method:   constants.COLLECTIONS_QUERY,
 				},
 			},
 		},
@@ -184,7 +192,7 @@ func Test_User_Get(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entries, err := CollectionsQuery(&handler.RequestContext{Store: store, Message: tt.message})
+			entries, err := CollectionsQuery(&handler.RequestContext{SchemaManager: schemaManager, Message: tt.message})
 
 			require.Nil(t, err)
 			require.NotNil(t, entries)
@@ -197,6 +205,7 @@ func Test_User_Get(t *testing.T) {
 func Test_Payment_Get(t *testing.T) {
 
 	store, mock := datastore.NewTestStore()
+	schemaManager := schema.NewSchemaManager(store)
 	mock.ExpectQuery("SELECT[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "status"}).
 			AddRow(1, "sended").
@@ -213,7 +222,8 @@ func Test_Payment_Get(t *testing.T) {
 			message: &hub.Message{
 				Descriptor_: &hub.MessageDescriptor{
 					ObjectId: OBJECT_ID,
-					Schema:   SCHEMA_PAYMENT,
+					Schema:   constants.SCHEMA_PAYMENT,
+					Method:   constants.COLLECTIONS_QUERY,
 				},
 			},
 		},
@@ -221,7 +231,7 @@ func Test_Payment_Get(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entries, err := CollectionsQuery(&handler.RequestContext{Store: store, Message: tt.message})
+			entries, err := CollectionsQuery(&handler.RequestContext{SchemaManager: schemaManager, Message: tt.message})
 
 			require.Nil(t, err)
 			require.NotNil(t, entries)

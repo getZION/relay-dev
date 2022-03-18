@@ -24,6 +24,7 @@ func NewDatabase(storeType string) (connection *api.Connection, err error) {
 	if err != nil {
 		return nil, err
 	}
+	db.LogMode(true)
 
 	db.AutoMigrate(
 		&v1.CommunityORM{},
@@ -34,6 +35,11 @@ func NewDatabase(storeType string) (connection *api.Connection, err error) {
 		//&v1.InvoiceORM{},
 		&v1.UserORM{},
 	)
+
+	db.Table("community_users").RemoveIndex("CommunityId").AddIndex("CommunityId", "CommunityId")
+	db.Table("community_users").RemoveIndex("UserId").AddIndex("UserId", "UserId")
+	db.Table("community_users").AddForeignKey("CommunityId", "communities(Id)", "RESTRICT", "RESTRICT")
+	db.Table("community_users").AddForeignKey("UserId", "users(Id)", "RESTRICT", "RESTRICT")
 
 	logrus.Info("Migrations successful.")
 	return api.InitDatabase(db), nil

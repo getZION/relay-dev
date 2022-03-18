@@ -9,6 +9,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.0
 	github.com/getzion/relampago v0.2.1
 	github.com/go-playground/validator/v10 v10.10.0
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/improbable-eng/grpc-web v0.15.0
@@ -62,7 +63,6 @@ require (
 	github.com/go-errors/errors v1.0.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect

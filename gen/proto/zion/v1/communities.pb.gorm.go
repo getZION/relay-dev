@@ -24,6 +24,7 @@ type CommunityORM struct {
 	PriceToJoin     int64  `gorm:"not null"`
 	Public          bool   `gorm:"default:true"`
 	Updated         int64
+	Users           []*UserORM `gorm:"foreignkey:Id;association_foreignkey:Id;many2many:community_users;jointable_foreignkey:CommunityId;association_jointable_foreignkey:UserId"`
 	Zid             string
 }
 
@@ -58,6 +59,17 @@ func (m *Community) ToORM(ctx context.Context) (CommunityORM, error) {
 	to.Deleted = m.Deleted
 	to.Created = m.Created
 	to.Updated = m.Updated
+	for _, v := range m.Users {
+		if v != nil {
+			if tempUsers, cErr := v.ToORM(ctx); cErr == nil {
+				to.Users = append(to.Users, &tempUsers)
+			} else {
+				return to, cErr
+			}
+		} else {
+			to.Users = append(to.Users, nil)
+		}
+	}
 	if posthook, ok := interface{}(m).(CommunityWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -90,6 +102,17 @@ func (m *CommunityORM) ToPB(ctx context.Context) (Community, error) {
 	to.Deleted = m.Deleted
 	to.Created = m.Created
 	to.Updated = m.Updated
+	for _, v := range m.Users {
+		if v != nil {
+			if tempUsers, cErr := v.ToPB(ctx); cErr == nil {
+				to.Users = append(to.Users, &tempUsers)
+			} else {
+				return to, cErr
+			}
+		} else {
+			to.Users = append(to.Users, nil)
+		}
+	}
 	if posthook, ok := interface{}(m).(CommunityWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -286,6 +309,10 @@ func DefaultStrictUpdateCommunity(ctx context.Context, in *Community, db *gorm.D
 			return nil, err
 		}
 	}
+	if err = db.Model(&ormObj).Association("Users").Replace(ormObj.Users).Error; err != nil {
+		return nil, err
+	}
+	ormObj.Users = nil
 	if hook, ok := interface{}(&ormObj).(CommunityORMWithBeforeStrictUpdateSave); ok {
 		if db, err = hook.BeforeStrictUpdateSave(ctx, db); err != nil {
 			return nil, err
@@ -461,6 +488,10 @@ func DefaultApplyFieldMaskCommunity(ctx context.Context, patchee *Community, pat
 		}
 		if f == prefix+"Updated" {
 			patchee.Updated = patcher.Updated
+			continue
+		}
+		if f == prefix+"Users" {
+			patchee.Users = patcher.Users
 			continue
 		}
 	}
