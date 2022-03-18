@@ -241,12 +241,12 @@ func Test_ShouldValidate_User(t *testing.T) {
 			expectedErrorCount: 1,
 		},
 		{
-			name: "Email field should be required",
+			name: "Email field should be valid",
 			generate: func() interface{} {
 				model := v1.UserORM{}
 				faker.FakeData(&model)
 				model.Username = faker.Username()
-				model.Email = ""
+				model.Email = "test-"
 				return model
 			},
 			expectedError:      true,

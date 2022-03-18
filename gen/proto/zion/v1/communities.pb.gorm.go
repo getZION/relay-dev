@@ -17,7 +17,7 @@ type CommunityORM struct {
 	Id              int64  `gorm:"primary_key;unique"`
 	Img             string
 	LastActive      int64
-	Name            string `gorm:"not null"`
+	Name            string `gorm:"unique;not null"`
 	OwnerDid        string `gorm:"not null"`
 	OwnerUsername   string `gorm:"not null"`
 	PricePerMessage int64  `gorm:"not null"`
