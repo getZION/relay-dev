@@ -3,12 +3,12 @@ package community
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/validator"
 	v1 "github.com/getzion/relay/gen/proto/zion/v1"
+	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 )
 
@@ -51,16 +51,12 @@ func (s *Service) Insert(data []byte) (interface{}, error) {
 		return nil, err
 	}
 
-	var exists int64
-	err = s.connection.DB.Model(v1.CommunityORM{}).Where("name = ?", strings.ToLower(community.Name)).Limit(1).Count(&exists).Error
-	if err != nil {
-		return nil, err
-	} else if exists > 0 {
-		return nil, fmt.Errorf("the specified community already exist: %s", community.Name)
-	}
-
 	result := s.connection.DB.Create(&community)
 	if result.Error != nil {
+		mySqlError := result.Error.(*mysql.MySQLError)
+		if mySqlError != nil && mySqlError.Number == 1062 {
+			return nil, fmt.Errorf("the specified community already exist: %s", community.Name)
+		}
 		return nil, result.Error
 	}
 

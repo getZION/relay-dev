@@ -340,9 +340,6 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				It("receives a response if a Message Descriptor has valid dateCreated", func() {
 
-					mock.ExpectQuery("SELECT count(.*) FROM `communities`[a-zA-Z *]*").
-						WillReturnRows(sqlmock.NewRows([]string{"Count"}).
-							AddRow(0))
 					mock.ExpectBegin()
 					mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 					mock.ExpectCommit()
@@ -362,9 +359,6 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				It("receives a response if a Message Descriptor has valid datePublished", func() {
 
-					mock.ExpectQuery("SELECT count(.*) FROM `communities`[a-zA-Z *]*").
-						WillReturnRows(sqlmock.NewRows([]string{"Count"}).
-							AddRow(0))
 					mock.ExpectBegin()
 					mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 					mock.ExpectCommit()

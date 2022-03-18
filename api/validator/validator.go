@@ -64,7 +64,7 @@ func userORMValidatorFunc(sl validator.StructLevel) {
 	if err := v.Var(s.Name, "required"); err != nil {
 		sl.ReportValidationErrors("Name", "Name", err.(validator.ValidationErrors))
 	}
-	if err := v.Var(s.Email, "required,email"); err != nil {
+	if err := v.Var(s.Email, "email"); err != nil {
 		sl.ReportValidationErrors("Email", "Email", err.(validator.ValidationErrors))
 	}
 	if err := v.Var(s.Username, "required,username,min=6,max=16"); err != nil {
