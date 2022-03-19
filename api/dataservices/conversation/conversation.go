@@ -19,7 +19,7 @@ func NewService(connection *api.Connection) (*Service, error) {
 	}, nil
 }
 
-func (s *Service) GetAll() (interface{}, error) {
+func (s *Service) GetAll() ([]v1.ConversationORM, error) {
 	var conversations []v1.ConversationORM
 	result := s.connection.DB.Find(&conversations)
 	if result.Error != nil {

@@ -229,3 +229,69 @@ func Test_UserCreate_AlreadyExist(t *testing.T) {
 	require.Len(t, entries, 0)
 	require.Nil(t, mock.ExpectationsWereMet())
 }
+
+func Test_JoinCommunity(t *testing.T) {
+	store, mock := datastore.NewTestStore()
+	schemaManager := schema.NewSchemaManager(store)
+
+	mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+			AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
+	mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "username"}).
+			AddRow(1, "test", "test_username"))
+
+	mock.ExpectExec("INSERT INTO `community_users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+
+	entries, err := CollectionsWrite(&handler.RequestContext{
+		SchemaManager: schemaManager,
+		Message: &hub.Message{
+			Data: `{ "community_id": 1, "user_id": 1 }`,
+			Descriptor_: &hub.MessageDescriptor{
+				ObjectId:    OBJECT_ID,
+				Schema:      constants.SCHEMA_JOIN_COMMUNITY,
+				DateCreated: DATE_CREATED,
+				Method:      constants.COLLECTIONS_WRITE,
+			},
+		},
+	})
+
+	require.Nil(t, err)
+	require.Nil(t, entries)
+	require.Nil(t, mock.ExpectationsWereMet())
+}
+
+func Test_LeaveCommunity(t *testing.T) {
+	store, mock := datastore.NewTestStore()
+	schemaManager := schema.NewSchemaManager(store)
+
+	mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+			AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
+	mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "username"}).
+			AddRow(1, "test", "test_username"))
+
+	mock.ExpectBegin()
+	mock.ExpectExec("DELETE FROM `community_users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	entries, err := CollectionsWrite(&handler.RequestContext{
+		SchemaManager: schemaManager,
+		Message: &hub.Message{
+			Data: `{ "community_id": 1, "user_id": 1 }`,
+			Descriptor_: &hub.MessageDescriptor{
+				ObjectId:    OBJECT_ID,
+				Schema:      constants.SCHEMA_LEAVE_COMMUNITY,
+				DateCreated: DATE_CREATED,
+				Method:      constants.COLLECTIONS_WRITE,
+			},
+		},
+	})
+
+	require.Nil(t, err)
+	require.Nil(t, entries)
+	require.Nil(t, mock.ExpectationsWereMet())
+}
