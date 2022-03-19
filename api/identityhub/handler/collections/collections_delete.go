@@ -16,6 +16,5 @@ func CollectionsDelete(context *handler.RequestContext) ([]string, *errors.Messa
 		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
 	}
 
-	//todo: process the request
 	return nil, nil
 }

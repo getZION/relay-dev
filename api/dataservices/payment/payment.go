@@ -19,7 +19,7 @@ func NewService(connection *api.Connection) (*Service, error) {
 	}, nil
 }
 
-func (s *Service) GetAll() (interface{}, error) {
+func (s *Service) GetAll() ([]v1.PaymentORM, error) {
 	var payments []v1.PaymentORM
 	result := s.connection.DB.Find(&payments)
 	if result.Error != nil {

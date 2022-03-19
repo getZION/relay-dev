@@ -1,17 +1,19 @@
-name: Go
+name: CI
 
 on:
   pull_request:
-    branches: [ main ]
-    # paths:
-    #   - '!ui/'
-    #   - '!.vscode/'
-    #   - '!.gitignore'
-    #   - '!Makefile'
 
 jobs:
 
-  build:
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: golangci-lint
+  #       uses: golangci/golangci-lint-action@v2
+
+  test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -33,10 +35,22 @@ jobs:
         npm install
         yarn export
 
-    - name: Build
+    - name: Run tests
       working-directory: ./
-      run: go build -v ./...
+      run: make test COVERAGE_DIR=/tmp/coverage
 
-    - name: Test
-      working-directory: ./
-      run: go test -v ./...
+    - name: Send goveralls coverage
+      uses: shogo82148/actions-goveralls@v1
+      with:
+        path-to-profile: /tmp/coverage/combined.txt
+        flag-name: Go-${{ matrix.go }}
+        parallel: true
+
+  check-coverage:
+    runs-on: ubuntu-latest
+    name: Check coverage
+    needs: [ test ]
+    steps:
+      - uses: shogo82148/actions-goveralls@v1
+        with:
+          parallel-finished: true

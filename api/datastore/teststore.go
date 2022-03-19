@@ -19,6 +19,8 @@ func NewTestStore() (*Store, sqlmock.Sqlmock) {
 		logrus.Panic(err)
 	}
 
+	gormDb.LogMode(true)
+
 	connection := &api.Connection{
 		DB: gormDb,
 	}

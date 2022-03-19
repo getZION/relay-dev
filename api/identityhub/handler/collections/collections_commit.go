@@ -36,6 +36,5 @@ func CollectionsCommit(context *handler.RequestContext) ([]string, *errors.Messa
 		}
 	}
 
-	//todo: process the request
 	return nil, nil
 }

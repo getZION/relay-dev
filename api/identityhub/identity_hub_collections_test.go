@@ -6,6 +6,7 @@ import (
 	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/schema"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	native "github.com/go-sql-driver/mysql"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"golang.org/x/net/context"
@@ -45,7 +46,7 @@ var _ = Describe("IdentityHub Collections", func() {
 
 			Context("Validation Tests", func() {
 
-				It("receives an error if a Message Descriptor has missing objectID", func() {
+				It("receives an error if Message Descriptor has missing objectID", func() {
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))
@@ -55,7 +56,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
 				})
 
-				It("receives an error if a Message Descriptor has invalid objectID", func() {
+				It("receives an error if Message Descriptor has invalid objectID", func() {
 					request.Messages[0].Descriptor_.ObjectId = INVALID
 
 					response, err := client.Process(ctx, request)
@@ -67,7 +68,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
 				})
 
-				It("receives an error if a Message Descriptor has invalid schema", func() {
+				It("receives an error if Message Descriptor has invalid schema", func() {
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.Schema = INVALID
 
@@ -80,7 +81,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
 				})
 
-				It("receives an error if a Message Descriptor has invalid dataFormat", func() {
+				It("receives an error if Message Descriptor has invalid dataFormat", func() {
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.Schema = SCHEMA
 					request.Messages[0].Descriptor_.DataFormat = INVALID
@@ -94,7 +95,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
 				})
 
-				It("receives an error if a Message Descriptor has invalid dateSort", func() {
+				It("receives an error if Message Descriptor has invalid dateSort", func() {
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.Schema = SCHEMA
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT
@@ -118,7 +119,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_COMMUNITY
 				})
 
-				It("receives a response if a Message Descriptor has valid objectID", func() {
+				It("receives a response if Message Descriptor has valid objectID", func() {
 
 					mock.ExpectQuery("SELECT[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
@@ -135,7 +136,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
 				})
 
-				It("receives a response if a Message Descriptor has valid dataFormat", func() {
+				It("receives a response if Message Descriptor has valid dataFormat", func() {
 
 					mock.ExpectQuery("SELECT[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
@@ -154,7 +155,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
 				})
 
-				It("receives a response if a Message Descriptor has valid dateSort (createdAscending)", func() {
+				It("receives a response if Message Descriptor has valid dateSort (createdAscending)", func() {
 
 					mock.ExpectQuery("SELECT[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
@@ -173,7 +174,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
 				})
 
-				It("receives a response if a Message Descriptor has valid dateSort (createdDescending)", func() {
+				It("receives a response if Message Descriptor has valid dateSort (createdDescending)", func() {
 
 					mock.ExpectQuery("SELECT[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
@@ -192,7 +193,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
 				})
 
-				It("receives a response if a Message Descriptor has valid dateSort (publishedAscending)", func() {
+				It("receives a response if Message Descriptor has valid dateSort (publishedAscending)", func() {
 
 					mock.ExpectQuery("SELECT[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
@@ -211,7 +212,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
 				})
 
-				It("receives a response if a Message Descriptor has valid dateSort (publishedDescending)", func() {
+				It("receives a response if Message Descriptor has valid dateSort (publishedDescending)", func() {
 
 					mock.ExpectQuery("SELECT[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
@@ -332,20 +333,22 @@ var _ = Describe("IdentityHub Collections", func() {
 				BeforeEach(func() {
 					request.Messages[0].Data = `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_COMMUNITY
+					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
+					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
 				})
 
-				It("receives a response if a Message Descriptor has valid dateCreated", func() {
+				It("receives a response if Message Descriptor has valid", func() {
 
 					mock.ExpectBegin()
 					mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 					mock.ExpectCommit()
 
-					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
-					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
-
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))
+					Expect(response.RequestId).To(Equal(request.RequestId))
+					Expect(response.Status).To(Not(BeNil()))
+					Expect(response.Status.Code).To(Equal(int64(200)))
 					Expect(response.Replies).To(Not(BeNil()))
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
@@ -353,15 +356,159 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(mock.ExpectationsWereMet()).To(BeNil())
 				})
 
-				It("receives a response if a Message Descriptor has valid datePublished", func() {
+				It("receives an error if Community already exist", func() {
 
 					mock.ExpectBegin()
-					mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
-					mock.ExpectCommit()
+					mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnError(&native.MySQLError{Number: 1062})
 
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.RequestId).To(Equal(request.RequestId))
+					Expect(response.Status).To(Not(BeNil()))
+					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+					Expect(response.Replies[0].Status.Message, "the specified community already exist: test")
+					Expect(mock.ExpectationsWereMet()).To(BeNil())
+				})
+
+			})
+
+			Context("Users Tests", func() {
+
+				BeforeEach(func() {
+					request.Messages[0].Data = `{ "Name": "test_name", "Username": "test_username", "Email": "test@test.org" }`
+					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_PERSON
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
-					request.Messages[0].Descriptor_.DatePublished = DATE_PUBLISHED
+				})
+
+				It("receive a response if Message Descriptor has valid", func() {
+					mock.ExpectBegin()
+					mock.ExpectExec("INSERT INTO `users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+					mock.ExpectCommit()
+
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.RequestId).To(Equal(request.RequestId))
+					Expect(response.Status).To(Not(BeNil()))
+					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+					Expect(mock.ExpectationsWereMet()).To(BeNil())
+				})
+
+				It("receive an error if User already exist", func() {
+					mock.ExpectBegin()
+					mock.ExpectExec("INSERT INTO `users`[a-zA-Z *]*").WillReturnError(&native.MySQLError{Number: 1062})
+
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.RequestId).To(Equal(request.RequestId))
+					Expect(response.Status).To(Not(BeNil()))
+					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+					Expect(response.Replies[0].Status.Message, "the specified username already exist: test_username")
+					Expect(mock.ExpectationsWereMet()).To(BeNil())
+				})
+
+			})
+
+			Context("Conversation Tests", func() {
+
+				BeforeEach(func() {
+					request.Messages[0].Data = `{ "CommunityZid": "test_zid" }`
+					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_CONVERSATION
+					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
+					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
+				})
+
+				It("receive a response If Message Descriptor has valid", func() {
+					mock.ExpectBegin()
+					mock.ExpectExec("INSERT INTO `conversations`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+					mock.ExpectCommit()
+
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.RequestId).To(Equal(request.RequestId))
+					Expect(response.Status).To(Not(BeNil()))
+					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+					Expect(mock.ExpectationsWereMet()).To(BeNil())
+				})
+
+			})
+
+			Context("Join Community Tests", func() {
+
+				BeforeEach(func() {
+					request.Messages[0].Data = `{ "community_id": 1, "user_id": 1 }`
+					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_JOIN_COMMUNITY
+					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
+					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
+				})
+
+				It("receive a response if Message Descriptor has valid", func() {
+					mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
+					mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "username"}).
+							AddRow(1, "test", "test_username"))
+
+					mock.ExpectExec("INSERT INTO `community_users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.RequestId).To(Equal(request.RequestId))
+					Expect(response.Status).To(Not(BeNil()))
+					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+					Expect(mock.ExpectationsWereMet()).To(BeNil())
+				})
+
+			})
+
+			Context("Leave Community Tests", func() {
+
+				BeforeEach(func() {
+					request.Messages[0].Data = `{ "community_id": 1, "user_id": 1 }`
+					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_LEAVE_COMMUNITY
+					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
+					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
+				})
+
+				It("receive a response if Message Descriptor has valid", func() {
+					mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+
+					mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "username"}).
+							AddRow(1, "test", "test_username"))
+
+					mock.ExpectBegin()
+					mock.ExpectExec("DELETE FROM `community_users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+					mock.ExpectCommit()
 
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
@@ -400,7 +547,7 @@ var _ = Describe("IdentityHub Collections", func() {
 
 			Context("Validation Tests", func() {
 
-				It("receives an error if a Message Descriptor has missing objectID", func() {
+				It("receives an error if Message Descriptor has missing objectID", func() {
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))
@@ -410,7 +557,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
 				})
 
-				It("receives an error if a Message Descriptor has invalid objectID", func() {
+				It("receives an error if Message Descriptor has invalid objectID", func() {
 					request.Messages[0].Descriptor_.ObjectId = INVALID
 
 					response, err := client.Process(ctx, request)
@@ -422,7 +569,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
 				})
 
-				It("receives an error if a Message Descriptor has missing dateCreated", func() {
+				It("receives an error if Message Descriptor has missing dateCreated", func() {
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 
 					response, err := client.Process(ctx, request)
@@ -434,7 +581,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
 				})
 
-				It("receives an error if a Message Descriptor has invalid dateCreated", func() {
+				It("receives an error if Message Descriptor has invalid dateCreated", func() {
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = INVALID
 
@@ -447,7 +594,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
 				})
 
-				It("receives an error if a Message Descriptor has invalid datePublished", func() {
+				It("receives an error if Message Descriptor has invalid datePublished", func() {
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
 					request.Messages[0].Descriptor_.DatePublished = INVALID
@@ -470,7 +617,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_COMMUNITY
 				})
 
-				It("receives a response if a Message Descriptor has valid dateCreated", func() {
+				It("receives a response if Message Descriptor has valid dateCreated", func() {
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
 
@@ -483,7 +630,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
 				})
 
-				It("receives a response if a Message Descriptor has valid datePublished", func() {
+				It("receives a response if Message Descriptor has valid datePublished", func() {
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
 					request.Messages[0].Descriptor_.DatePublished = DATE_PUBLISHED
@@ -524,7 +671,7 @@ var _ = Describe("IdentityHub Collections", func() {
 
 			Context("Validation Tests", func() {
 
-				It("receives an error if a Message Descriptor has missing objectID", func() {
+				It("receives an error if Message Descriptor has missing objectID", func() {
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))
@@ -534,7 +681,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
 				})
 
-				It("receives an error if a Message Descriptor has invalid objectID", func() {
+				It("receives an error if Message Descriptor has invalid objectID", func() {
 					request.Messages[0].Descriptor_.ObjectId = INVALID
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
@@ -553,7 +700,7 @@ var _ = Describe("IdentityHub Collections", func() {
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_COMMUNITY
 				})
 
-				It("receives a response if a Message Descriptor has valid objectID", func() {
+				It("receives a response if Message Descriptor has valid objectID", func() {
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 
 					response, err := client.Process(ctx, request)
