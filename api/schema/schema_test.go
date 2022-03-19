@@ -57,3 +57,13 @@ func Test_ShouldReturnCorrectHandler(t *testing.T) {
 		})
 	}
 }
+
+func Test_ShouldReturnError(t *testing.T) {
+
+	schemaManager := NewSchemaManager(nil)
+	handler, err := schemaManager.GetSchemaHandler("<invalid>")
+
+	require.NotNil(t, err)
+	require.EqualError(t, err, "unknown schema: <invalid>")
+	require.Nil(t, handler)
+}

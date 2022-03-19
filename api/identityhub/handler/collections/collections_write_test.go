@@ -84,6 +84,19 @@ func Test_CollectionWrite_ValidationFailed(t *testing.T) {
 			expectedStatusCode:   400,
 			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
 		},
+		{
+			name: "data cannot be empty",
+			message: &hub.Message{
+				Data: "",
+				Descriptor_: &hub.MessageDescriptor{
+					ObjectId:      OBJECT_ID,
+					DateCreated:   DATE_CREATED,
+					DatePublished: DATE_PUBLISHED,
+				},
+			},
+			expectedStatusCode:   400,
+			expectedErrorMessage: "data cannot be empty",
+		},
 	}
 
 	for _, tt := range tests {

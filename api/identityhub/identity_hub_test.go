@@ -79,7 +79,8 @@ var _ = Describe("IdentityHub", func() {
 
 		It("receives an error if RequestID is missing", func() {
 			request := &Request{
-				Target: TARGET,
+				Target:   TARGET,
+				Messages: make([]*Message, 1),
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())
@@ -92,6 +93,7 @@ var _ = Describe("IdentityHub", func() {
 			request := &Request{
 				Target:    TARGET,
 				RequestId: INVALID,
+				Messages:  make([]*Message, 1),
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())
@@ -103,6 +105,7 @@ var _ = Describe("IdentityHub", func() {
 		It("receives an error if Target is missing", func() {
 			request := &Request{
 				RequestId: REQUEST_ID,
+				Messages:  make([]*Message, 1),
 			}
 			response, err := client.Process(ctx, request)
 			Expect(err).To(BeNil())

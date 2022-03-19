@@ -50,7 +50,7 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 	}
 
 	if strings.Trim(context.Message.Data, " ") == "" {
-		err = fmt.Errorf("data cannot be null or empty")
+		err = fmt.Errorf("data cannot be empty")
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
