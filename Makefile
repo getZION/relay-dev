@@ -1,3 +1,5 @@
+COVERAGE_DIR ?= .coverage
+
 deploy:
 	cd ui && yarn export && cd .. && make build-aws && eb deploy
 
@@ -12,7 +14,9 @@ generate:
 	buf generate
 
 test:
-	go test -v ./...
+	@-rm -r $(COVERAGE_DIR)
+	@mkdir $(COVERAGE_DIR)
+	go test -v -race -covermode atomic -coverprofile $$(COVERAGE_DIR)/combined.txt -bench=. -benchmem -timeout 20m ./...
 
 compile-ts:
 	rm -rf ui/proto
