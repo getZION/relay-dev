@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/bxcodec/faker/v3"
+	"github.com/getzion/relay/api"
 	v1 "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/stretchr/testify/require"
 )
@@ -22,7 +23,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "Name field should be required",
 			generate: func() interface{} {
-				model := v1.CommunityORM{}
+				model := api.Community{}
 				faker.FakeData(&model)
 				model.Name = ""
 				return model
@@ -33,7 +34,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "Description field should be maximum 250 character",
 			generate: func() interface{} {
-				model := v1.CommunityORM{}
+				model := api.Community{}
 				faker.FakeData(&model)
 				faker.SetRandomStringLength(300)
 				faker.FakeData(&model.Description)
@@ -46,7 +47,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "OwnerDid field should be required",
 			generate: func() interface{} {
-				model := v1.CommunityORM{}
+				model := api.Community{}
 				faker.FakeData(&model)
 				model.OwnerDid = ""
 				return model
@@ -57,7 +58,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "OwnerUsername field should be required",
 			generate: func() interface{} {
-				model := v1.CommunityORM{}
+				model := api.Community{}
 				faker.FakeData(&model)
 				model.OwnerUsername = ""
 				return model
@@ -68,7 +69,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "EscrowAmount field should be greater or equal to zero",
 			generate: func() interface{} {
-				model := v1.CommunityORM{}
+				model := api.Community{}
 				faker.FakeData(&model)
 				model.EscrowAmount = -1
 				return model
@@ -79,7 +80,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "EscrowAmount field should be less than 100000",
 			generate: func() interface{} {
-				model := v1.CommunityORM{}
+				model := api.Community{}
 				faker.FakeData(&model)
 				model.EscrowAmount = 100000
 				return model
@@ -90,7 +91,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "PricePerMessage field should be greater or equal to zero",
 			generate: func() interface{} {
-				model := v1.CommunityORM{}
+				model := api.Community{}
 				faker.FakeData(&model)
 				model.PricePerMessage = -1
 				return model
@@ -101,7 +102,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "PricePerMessage field should be less than 100000",
 			generate: func() interface{} {
-				model := v1.CommunityORM{}
+				model := api.Community{}
 				faker.FakeData(&model)
 				model.PricePerMessage = 100000
 				return model
@@ -112,7 +113,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "PriceToJoin field should be greater or equal to zero",
 			generate: func() interface{} {
-				model := v1.CommunityORM{}
+				model := api.Community{}
 				faker.FakeData(&model)
 				model.PriceToJoin = -1
 				return model
@@ -123,7 +124,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "PriceToJoin field should be less than 100000",
 			generate: func() interface{} {
-				model := v1.CommunityORM{}
+				model := api.Community{}
 				faker.FakeData(&model)
 				model.PriceToJoin = 100000
 				return model
@@ -134,7 +135,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		{
 			name: "should be valid",
 			generate: func() interface{} {
-				model := v1.CommunityORM{
+				model := api.Community{
 					Name:            "test",
 					Description:     "test",
 					EscrowAmount:    10,
