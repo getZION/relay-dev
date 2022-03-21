@@ -34,12 +34,18 @@ func NewDatabase(storeType string) (connection *api.Connection, err error) {
 		&v1.MessageORM{},
 		//&v1.InvoiceORM{},
 		&v1.UserORM{},
+		&v1.Tag{},
 	)
 
 	db.Table("community_users").RemoveIndex("CommunityId").AddIndex("CommunityId", "CommunityId")
 	db.Table("community_users").RemoveIndex("UserId").AddIndex("UserId", "UserId")
 	db.Table("community_users").AddForeignKey("CommunityId", "communities(Id)", "RESTRICT", "RESTRICT")
 	db.Table("community_users").AddForeignKey("UserId", "users(Id)", "RESTRICT", "RESTRICT")
+
+	db.Table("community_tags").RemoveIndex("CommunityId").AddIndex("CommunityId", "CommunityId")
+	db.Table("community_tags").RemoveIndex("TagId").AddIndex("TagId", "TagId")
+	db.Table("community_tags").AddForeignKey("CommunityId", "communities(Id)", "RESTRICT", "RESTRICT")
+	db.Table("community_tags").AddForeignKey("TagId", "tags(Id)", "RESTRICT", "RESTRICT")
 
 	logrus.Info("Migrations successful.")
 	return api.InitDatabase(db), nil

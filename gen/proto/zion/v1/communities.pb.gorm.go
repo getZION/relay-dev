@@ -17,12 +17,13 @@ type CommunityORM struct {
 	Id              int64  `gorm:"primary_key;unique"`
 	Img             string
 	LastActive      int64
-	Name            string `gorm:"unique;not null"`
-	OwnerDid        string `gorm:"not null"`
-	OwnerUsername   string `gorm:"not null"`
-	PricePerMessage int64  `gorm:"not null"`
-	PriceToJoin     int64  `gorm:"not null"`
-	Public          bool   `gorm:"default:true"`
+	Name            string    `gorm:"unique;not null"`
+	OwnerDid        string    `gorm:"not null"`
+	OwnerUsername   string    `gorm:"not null"`
+	PricePerMessage int64     `gorm:"not null"`
+	PriceToJoin     int64     `gorm:"not null"`
+	Public          bool      `gorm:"default:true"`
+	Tags            []*TagORM `gorm:"foreignkey:Id;association_foreignkey:Id;many2many:community_tags;jointable_foreignkey:CommunityId;association_jointable_foreignkey:TagId"`
 	Updated         int64
 	Users           []*UserORM `gorm:"foreignkey:Id;association_foreignkey:Id;many2many:community_users;jointable_foreignkey:CommunityId;association_jointable_foreignkey:UserId"`
 	Zid             string
@@ -50,7 +51,6 @@ func (m *Community) ToORM(ctx context.Context) (CommunityORM, error) {
 	to.OwnerUsername = m.OwnerUsername
 	to.Description = m.Description
 	to.Img = m.Img
-	// Repeated type string is not an ORMable message type
 	to.PriceToJoin = m.PriceToJoin
 	to.PricePerMessage = m.PricePerMessage
 	to.EscrowAmount = m.EscrowAmount
@@ -68,6 +68,17 @@ func (m *Community) ToORM(ctx context.Context) (CommunityORM, error) {
 			}
 		} else {
 			to.Users = append(to.Users, nil)
+		}
+	}
+	for _, v := range m.Tags {
+		if v != nil {
+			if tempTags, cErr := v.ToORM(ctx); cErr == nil {
+				to.Tags = append(to.Tags, &tempTags)
+			} else {
+				return to, cErr
+			}
+		} else {
+			to.Tags = append(to.Tags, nil)
 		}
 	}
 	if posthook, ok := interface{}(m).(CommunityWithAfterToORM); ok {
@@ -93,7 +104,6 @@ func (m *CommunityORM) ToPB(ctx context.Context) (Community, error) {
 	to.OwnerUsername = m.OwnerUsername
 	to.Description = m.Description
 	to.Img = m.Img
-	// Repeated type string is not an ORMable message type
 	to.PriceToJoin = m.PriceToJoin
 	to.PricePerMessage = m.PricePerMessage
 	to.EscrowAmount = m.EscrowAmount
@@ -111,6 +121,17 @@ func (m *CommunityORM) ToPB(ctx context.Context) (Community, error) {
 			}
 		} else {
 			to.Users = append(to.Users, nil)
+		}
+	}
+	for _, v := range m.Tags {
+		if v != nil {
+			if tempTags, cErr := v.ToPB(ctx); cErr == nil {
+				to.Tags = append(to.Tags, &tempTags)
+			} else {
+				return to, cErr
+			}
+		} else {
+			to.Tags = append(to.Tags, nil)
 		}
 	}
 	if posthook, ok := interface{}(m).(CommunityWithAfterToPB); ok {
@@ -309,6 +330,10 @@ func DefaultStrictUpdateCommunity(ctx context.Context, in *Community, db *gorm.D
 			return nil, err
 		}
 	}
+	if err = db.Model(&ormObj).Association("Tags").Replace(ormObj.Tags).Error; err != nil {
+		return nil, err
+	}
+	ormObj.Tags = nil
 	if err = db.Model(&ormObj).Association("Users").Replace(ormObj.Users).Error; err != nil {
 		return nil, err
 	}
@@ -454,10 +479,6 @@ func DefaultApplyFieldMaskCommunity(ctx context.Context, patchee *Community, pat
 			patchee.Img = patcher.Img
 			continue
 		}
-		if f == prefix+"Tags" {
-			patchee.Tags = patcher.Tags
-			continue
-		}
 		if f == prefix+"PriceToJoin" {
 			patchee.PriceToJoin = patcher.PriceToJoin
 			continue
@@ -492,6 +513,10 @@ func DefaultApplyFieldMaskCommunity(ctx context.Context, patchee *Community, pat
 		}
 		if f == prefix+"Users" {
 			patchee.Users = patcher.Users
+			continue
+		}
+		if f == prefix+"Tags" {
+			patchee.Tags = patcher.Tags
 			continue
 		}
 	}

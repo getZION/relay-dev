@@ -121,9 +121,13 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				It("receives a response if Message Descriptor has valid objectID", func() {
 
-					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
+							AddRow(2, "test2", "desc2", 0, "alias2", "pubkey2", 20, 20))
+
+					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 
@@ -138,10 +142,13 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				It("receives a response if Message Descriptor has valid dataFormat", func() {
 
-					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
 							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
-							AddRow(1, "test2", "desc2", 0, "alias2", "pubkey2", 20, 20))
+							AddRow(2, "test2", "desc2", 0, "alias2", "pubkey2", 20, 20))
+
+					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT
@@ -157,9 +164,13 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				It("receives a response if Message Descriptor has valid dateSort (createdAscending)", func() {
 
-					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
+							AddRow(2, "test2", "desc2", 0, "alias2", "pubkey2", 20, 20))
+
+					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT
@@ -176,9 +187,13 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				It("receives a response if Message Descriptor has valid dateSort (createdDescending)", func() {
 
-					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
+							AddRow(2, "test2", "desc2", 0, "alias2", "pubkey2", 20, 20))
+
+					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT
@@ -195,9 +210,13 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				It("receives a response if Message Descriptor has valid dateSort (publishedAscending)", func() {
 
-					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
+							AddRow(2, "test2", "desc2", 0, "alias2", "pubkey2", 20, 20))
+
+					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT
@@ -214,9 +233,13 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				It("receives a response if Message Descriptor has valid dateSort (publishedDescending)", func() {
 
-					mock.ExpectQuery("SELECT[a-zA-Z *]*").
+					mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+							AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
+							AddRow(2, "test2", "desc2", 0, "alias2", "pubkey2", 20, 20))
+
+					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT

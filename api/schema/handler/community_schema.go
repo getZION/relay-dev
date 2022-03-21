@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/datastore"
-	v1 "github.com/getzion/relay/gen/proto/zion/v1"
+	"github.com/getzion/relay/api/validator"
 )
 
 type CommunityHandler struct {
@@ -22,8 +23,13 @@ func (h *CommunityHandler) Execute(data []byte, method string) (interface{}, err
 
 	case constants.COLLECTIONS_WRITE:
 
-		var community v1.CommunityORM
+		var community api.Community
 		err := json.Unmarshal(data, &community)
+		if err != nil {
+			return nil, err
+		}
+
+		err = validator.Struct(&community)
 		if err != nil {
 			return nil, err
 		}

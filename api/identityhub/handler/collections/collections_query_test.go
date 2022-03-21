@@ -89,10 +89,13 @@ func Test_Communities_Get(t *testing.T) {
 
 	store, mock := datastore.NewTestStore()
 	schemaManager := schema.NewSchemaManager(store)
-	mock.ExpectQuery("SELECT[a-zA-Z *]*").
+	mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
 			AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
 			AddRow(2, "test2", "desc2", 0, "alias2", "pubkey2", 20, 20))
+
+	mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
+		WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
 	tests := []struct {
 		name                 string
