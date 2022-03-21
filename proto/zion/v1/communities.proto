@@ -5,6 +5,7 @@ package proto.zion.v1;
 option go_package = "github.com/getzion/relay/gen/zion/v1";
 
 import "proto/zion/v1/users.proto";
+import "proto/zion/v1/tags.proto";
 import "proto/protoc-gen-gorm/options/gorm.proto";
 
 message Community {
@@ -26,23 +27,22 @@ message Community {
   string description = 6 [(gorm.field).tag = { not_null: true }];
   // Image URL - Optional
   string img = 7;
-  // User-defined tags - Optional
-  repeated string tags = 8;
   // How much it costs to join - Required
-  int64 price_to_join = 9 [(gorm.field).tag = { not_null: true }];
+  int64 price_to_join = 8 [(gorm.field).tag = { not_null: true }];
   // How much each message costs - Required
-  int64 price_per_message = 10 [(gorm.field).tag = { not_null: true }];
+  int64 price_per_message = 9 [(gorm.field).tag = { not_null: true }];
   // Escrow amount - Required
-  int64 escrow_amount = 11 [(gorm.field).tag = { not_null: true }];
+  int64 escrow_amount = 10 [(gorm.field).tag = { not_null: true }];
   // When last active - Optional
-  int64 last_active = 12;
+  int64 last_active = 11;
   // Is this a public community? - Required; defaults true
-  bool public = 13 [(gorm.field).tag = { default: "true" }];
+  bool public = 12 [(gorm.field).tag = { default: "true" }];
   // Deleted - Optional, defaults 0
-  bool deleted = 14;
+  bool deleted = 13;
   // Created when? - Required
-  int64 created = 15;
+  int64 created = 14;
   // Updated when? - Optional
-  int64 updated = 16;
-  repeated User users = 17 [(gorm.field).many_to_many = {}];
+  int64 updated = 15;
+  repeated User users = 16 [(gorm.field).many_to_many = {}];
+  repeated Tag tags = 17 [(gorm.field).many_to_many = {}];
 }

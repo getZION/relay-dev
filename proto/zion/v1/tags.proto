@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package proto.zion.v1;
+
+option go_package = "github.com/getzion/relay/gen/zion/v1";
+
+import "proto/protoc-gen-gorm/options/gorm.proto";
+
+message Tag {
+	option (gorm.opts).ormable = true;
+	// The tag's unique ID (primary key)
+	int64 id = 1 [(gorm.field).tag = {
+		unique: true
+		primary_key: true
+	}];
+	// User-defined tag
+	string tag = 2 [(gorm.field).tag = { not_null: true, unique: true }];
+}

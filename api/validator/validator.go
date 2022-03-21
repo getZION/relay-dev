@@ -15,39 +15,16 @@ var (
 func InitValidator() {
 	customValidator = validator.New()
 	customValidator.RegisterValidation("username", usernameValidator)
-	customValidator.RegisterStructValidation(communityORMValidatorFunc, v1.CommunityORM{})
 	customValidator.RegisterStructValidation(conversationORMValidatorFunc, v1.ConversationORM{})
 	customValidator.RegisterStructValidation(userORMValidatorFunc, v1.UserORM{})
 }
 
-func ValidateStruct(s interface{}) error {
+func Struct(s interface{}) error {
 	return customValidator.Struct(s)
 }
 
-func communityORMValidatorFunc(sl validator.StructLevel) {
-	s := sl.Current().Interface().(v1.CommunityORM)
-	v := sl.Validator()
-	if err := v.Var(s.Name, "required,max=150"); err != nil {
-		sl.ReportValidationErrors("Name", "Name", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.Description, "max=250"); err != nil {
-		sl.ReportValidationErrors("Description", "Description", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.EscrowAmount, "gte=0,lt=100000"); err != nil {
-		sl.ReportValidationErrors("EscrowAmount", "EscrowAmount", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.OwnerDid, "required"); err != nil {
-		sl.ReportValidationErrors("OwnerDid", "OwnerDid", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.OwnerUsername, "required"); err != nil {
-		sl.ReportValidationErrors("OwnerUsername", "OwnerUsername", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.PricePerMessage, "gte=0,lt=100000"); err != nil {
-		sl.ReportValidationErrors("PricePerMessage", "PricePerMessage", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.PriceToJoin, "gte=0,lt=100000"); err != nil {
-		sl.ReportValidationErrors("PriceToJoin", "PriceToJoin", err.(validator.ValidationErrors))
-	}
+func ValidateStruct(s interface{}) error {
+	return customValidator.Struct(s)
 }
 
 func conversationORMValidatorFunc(sl validator.StructLevel) {
