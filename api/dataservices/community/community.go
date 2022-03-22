@@ -22,9 +22,9 @@ func NewService(connection *api.Connection) (*Service, error) {
 	}, nil
 }
 
-func (s *Service) GetById(id int64) (*v1.CommunityORM, error) {
+func (s *Service) GetByZid(zid string) (*v1.CommunityORM, error) {
 	var community v1.CommunityORM
-	result := s.connection.DB.Model(&community).First(&community, id)
+	result := s.connection.DB.Model(&community).First(&community, "zid = ?", zid)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -71,7 +71,11 @@ func (s *Service) Insert(model api.Community) (*v1.CommunityORM, error) {
 
 	result := s.connection.DB.Create(&community)
 	if result.Error != nil {
-		mySqlError := result.Error.(*mysql.MySQLError)
+		mySqlError, ok := result.Error.(*mysql.MySQLError)
+		if !ok {
+			return nil, result.Error
+		}
+
 		if mySqlError != nil && mySqlError.Number == 1062 {
 			return nil, fmt.Errorf("the specified community already exist: %s", community.Name)
 		}

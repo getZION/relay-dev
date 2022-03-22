@@ -16,7 +16,7 @@ message Community {
     primary_key: true
   }];
   // Community id unique across Zion - Required; must be uuid v4
-  string zid = 2;
+  string zid = 2 [(gorm.field).tag = { not_null: true, unique: true }];
   // The name of the community - Required; unique
   string name = 3 [(gorm.field).tag = { not_null: true, unique: true }];
   // Owner DID - Required
@@ -43,6 +43,12 @@ message Community {
   int64 created = 14;
   // Updated when? - Optional
   int64 updated = 15;
-  repeated User users = 16 [(gorm.field).many_to_many = {}];
+  repeated User users = 16 [(gorm.field).many_to_many = {
+    jointable: "community_users",
+    foreignkey: "zid",
+    association_foreignkey: "did",
+    jointable_foreignkey: "CommunityZid",
+    association_jointable_foreignkey: "UserDid"
+  }];
   repeated Tag tags = 17 [(gorm.field).many_to_many = {}];
 }

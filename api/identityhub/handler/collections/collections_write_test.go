@@ -1,6 +1,7 @@
 package collections
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"testing"
 
@@ -123,6 +124,51 @@ func Test_CommunityCreate(t *testing.T) {
 		SchemaManager: schemaManager,
 		Message: &hub.Message{
 			Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
+			Descriptor_: &hub.MessageDescriptor{
+				ObjectId:    OBJECT_ID,
+				Schema:      constants.SCHEMA_COMMUNITY,
+				DateCreated: DATE_CREATED,
+				Method:      constants.COLLECTIONS_WRITE,
+			},
+		},
+	})
+
+	require.Nil(t, err)
+	require.Len(t, entries, 1)
+	require.Nil(t, mock.ExpectationsWereMet())
+}
+
+func Test_CommunityCreateWithTags(t *testing.T) {
+	store, mock := datastore.NewTestStore()
+	schemaManager := schema.NewSchemaManager(store)
+
+	mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").WillReturnRows(sqlmock.NewRows([]string{"id", "tag"}).AddRow(1, "test1"))
+	mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").WillReturnRows(sqlmock.NewRows([]string{"id", "tag"}))
+
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+
+	actions := []driver.Value{"test1", 1}
+	mock.ExpectExec("UPDATE `tags` SET `tag` = (.*)  WHERE `tags`.`id` = (.*)").WithArgs(actions...).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	actions = []driver.Value{1, 1, 1, 1}
+	mock.ExpectExec("INSERT INTO `community_tags`[a-zA-Z *]*").
+		WithArgs(actions...).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	actions = []driver.Value{"test2"}
+	mock.ExpectExec("INSERT INTO `tags`[a-zA-Z *]*").
+		WithArgs(actions...).WillReturnResult(sqlmock.NewResult(2, 1))
+
+	actions = []driver.Value{1, 2, 1, 2}
+	mock.ExpectExec("INSERT INTO `community_tags`[a-zA-Z *]*").
+		WithArgs(actions...).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	mock.ExpectCommit()
+
+	entries, err := CollectionsWrite(&handler.RequestContext{
+		SchemaManager: schemaManager,
+		Message: &hub.Message{
+			Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10, "Tags": [ "test1", "test2" ] }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_COMMUNITY,
@@ -260,7 +306,7 @@ func Test_JoinCommunity(t *testing.T) {
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &hub.Message{
-			Data: `{ "community_id": 1, "user_id": 1 }`,
+			Data: `{ "community_zid": "test_zid", "user_did": "test_did" }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_JOIN_COMMUNITY,
@@ -294,7 +340,7 @@ func Test_LeaveCommunity(t *testing.T) {
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &hub.Message{
-			Data: `{ "community_id": 1, "user_id": 1 }`,
+			Data: `{ "community_zid": "test_zid", "user_did": "test_did" }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_LEAVE_COMMUNITY,

@@ -21,9 +21,9 @@ func NewService(connection *api.Connection) (*Service, error) {
 	}, nil
 }
 
-func (s *Service) GetById(id int64) (*v1.UserORM, error) {
+func (s *Service) GetByDid(did string) (*v1.UserORM, error) {
 	var user v1.UserORM
-	result := s.connection.DB.Model(&user).First(&user, id)
+	result := s.connection.DB.Model(&user).First(&user, "did = ?", did)
 	if result.Error != nil {
 		return nil, result.Error
 	}

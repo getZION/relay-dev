@@ -479,7 +479,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Join Community Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "community_id": 1, "user_id": 1 }`
+					request.Messages[0].Data = `{ "community_zid": "test_zid", "user_did": "test_did" }`
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_JOIN_COMMUNITY
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
@@ -514,7 +514,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Leave Community Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "community_id": 1, "user_id": 1 }`
+					request.Messages[0].Data = `{ "community_zid": "test_zid", "user_did": "test_did" }`
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_LEAVE_COMMUNITY
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
