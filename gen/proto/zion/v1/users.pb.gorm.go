@@ -11,7 +11,7 @@ import (
 
 type UserORM struct {
 	Bio            string
-	Did            string
+	Did            string `gorm:"unique;not null"`
 	Email          string
 	Id             int64  `gorm:"primary_key;unique"`
 	Name           string `gorm:"not null"`

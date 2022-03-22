@@ -11,4 +11,14 @@ type (
 		EscrowAmount    int64    `json:"EscrowAmount" validate:"gte=0,lt=100000"`
 		Tags            []string `json:"Tags"`
 	}
+
+	JoinCommunity struct {
+		UserDid      string `json:"user_did" validate:"required"`
+		CommunityZid string `json:"community_zid" validate:"required"`
+	}
+
+	LeaveCommunity struct {
+		UserDid      string `json:"user_did" validate:"required"`
+		CommunityZid string `json:"community_zid" validate:"required"`
+	}
 )

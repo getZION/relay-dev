@@ -37,10 +37,10 @@ func NewDatabase(storeType string) (connection *api.Connection, err error) {
 		&v1.Tag{},
 	)
 
-	db.Table("community_users").RemoveIndex("CommunityId").AddIndex("CommunityId", "CommunityId")
-	db.Table("community_users").RemoveIndex("UserId").AddIndex("UserId", "UserId")
-	db.Table("community_users").AddForeignKey("CommunityId", "communities(Id)", "RESTRICT", "RESTRICT")
-	db.Table("community_users").AddForeignKey("UserId", "users(Id)", "RESTRICT", "RESTRICT")
+	db.Table("community_users").RemoveIndex("CommunityZid").AddIndex("CommunityZid", "CommunityZid")
+	db.Table("community_users").RemoveIndex("UserDid").AddIndex("UserDid", "UserDid")
+	db.Table("community_users").AddForeignKey("CommunityZid", "communities(Zid)", "RESTRICT", "RESTRICT")
+	db.Table("community_users").AddForeignKey("UserDid", "users(Did)", "RESTRICT", "RESTRICT")
 
 	db.Table("community_tags").RemoveIndex("CommunityId").AddIndex("CommunityId", "CommunityId")
 	db.Table("community_tags").RemoveIndex("TagId").AddIndex("TagId", "TagId")
