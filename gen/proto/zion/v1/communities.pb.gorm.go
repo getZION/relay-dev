@@ -12,12 +12,12 @@ import (
 type CommunityORM struct {
 	Created         int64
 	Deleted         bool
-	Description     string `gorm:"not null"`
+	Description     string `gorm:"size:250;not null"`
 	EscrowAmount    int64  `gorm:"not null"`
 	Id              int64  `gorm:"primary_key;unique"`
 	Img             string
 	LastActive      int64
-	Name            string    `gorm:"unique;not null"`
+	Name            string    `gorm:"size:150;unique;not null"`
 	OwnerDid        string    `gorm:"not null"`
 	OwnerUsername   string    `gorm:"not null"`
 	PricePerMessage int64     `gorm:"not null"`

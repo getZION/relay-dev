@@ -18,13 +18,13 @@ message Community {
   // Community id unique across Zion - Required; must be uuid v4
   string zid = 2 [(gorm.field).tag = { not_null: true, unique: true }];
   // The name of the community - Required; unique
-  string name = 3 [(gorm.field).tag = { not_null: true, unique: true }];
+  string name = 3 [(gorm.field).tag = { not_null: true, unique: true, size: 150 }];
   // Owner DID - Required
   string owner_did = 4 [(gorm.field).tag = { not_null: true }];
   // Owner username - Required
   string owner_username = 5 [(gorm.field).tag = { not_null: true }];
   // The community's description or mission statement - Required
-  string description = 6 [(gorm.field).tag = { not_null: true }];
+  string description = 6 [(gorm.field).tag = { not_null: true, size: 250 }];
   // Image URL - Optional
   string img = 7;
   // How much it costs to join - Required
