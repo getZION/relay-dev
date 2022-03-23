@@ -26,6 +26,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 				model := api.Community{}
 				faker.FakeData(&model)
 				model.Name = ""
+				model.Tags = []string{}
 				return model
 			},
 			expectedError:      true,
@@ -39,6 +40,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 				faker.SetRandomStringLength(300)
 				faker.FakeData(&model.Description)
 				faker.SetRandomStringLength(25)
+				model.Tags = []string{}
 				return model
 			},
 			expectedError:      true,
@@ -50,6 +52,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 				model := api.Community{}
 				faker.FakeData(&model)
 				model.OwnerDid = ""
+				model.Tags = []string{}
 				return model
 			},
 			expectedError:      true,
@@ -61,6 +64,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 				model := api.Community{}
 				faker.FakeData(&model)
 				model.OwnerUsername = ""
+				model.Tags = []string{}
 				return model
 			},
 			expectedError:      true,
@@ -72,6 +76,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 				model := api.Community{}
 				faker.FakeData(&model)
 				model.EscrowAmount = -1
+				model.Tags = []string{}
 				return model
 			},
 			expectedError:      true,
@@ -83,6 +88,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 				model := api.Community{}
 				faker.FakeData(&model)
 				model.EscrowAmount = 100000
+				model.Tags = []string{}
 				return model
 			},
 			expectedError:      true,
@@ -94,6 +100,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 				model := api.Community{}
 				faker.FakeData(&model)
 				model.PricePerMessage = -1
+				model.Tags = []string{}
 				return model
 			},
 			expectedError:      true,
@@ -105,6 +112,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 				model := api.Community{}
 				faker.FakeData(&model)
 				model.PricePerMessage = 100000
+				model.Tags = []string{}
 				return model
 			},
 			expectedError:      true,
@@ -116,6 +124,7 @@ func Test_ShouldValidate_Community(t *testing.T) {
 				model := api.Community{}
 				faker.FakeData(&model)
 				model.PriceToJoin = -1
+				model.Tags = []string{}
 				return model
 			},
 			expectedError:      true,
@@ -127,6 +136,18 @@ func Test_ShouldValidate_Community(t *testing.T) {
 				model := api.Community{}
 				faker.FakeData(&model)
 				model.PriceToJoin = 100000
+				model.Tags = []string{}
+				return model
+			},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
+			name: "Tags field should be less than 5",
+			generate: func() interface{} {
+				model := api.Community{}
+				faker.FakeData(&model)
+				model.Tags = []string{"tag1", "tag2", "tag3", "tag4", "tag5", "tag6"}
 				return model
 			},
 			expectedError:      true,
