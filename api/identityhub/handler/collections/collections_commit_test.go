@@ -1,9 +1,9 @@
 package collections
 
 import (
+	"fmt"
 	"testing"
 
-	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/stretchr/testify/require"
@@ -22,7 +22,7 @@ func Test_CollectionCommit_ValidationFailed(t *testing.T) {
 				Descriptor_: &hub.MessageDescriptor{},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: "invalid objectId: ",
 		},
 		{
 			name: "invalid objectId",
@@ -32,7 +32,7 @@ func Test_CollectionCommit_ValidationFailed(t *testing.T) {
 				},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: fmt.Sprintf("invalid objectId: %s", INVALID),
 		},
 		{
 			name: "invalid schema",
@@ -43,7 +43,7 @@ func Test_CollectionCommit_ValidationFailed(t *testing.T) {
 				},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: fmt.Sprintf("invalid schema: %s", INVALID),
 		},
 		{
 			name: "missing dateCreated",
@@ -53,7 +53,7 @@ func Test_CollectionCommit_ValidationFailed(t *testing.T) {
 				},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: fmt.Sprintf("dateCreated cannot be null or empty"),
 		},
 		{
 			name: "invalid dateCreated",
@@ -64,7 +64,7 @@ func Test_CollectionCommit_ValidationFailed(t *testing.T) {
 				},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: fmt.Sprintf("invalid dateCreated: %s", INVALID),
 		},
 		{
 			name: "invalid datePublished",
@@ -76,7 +76,7 @@ func Test_CollectionCommit_ValidationFailed(t *testing.T) {
 				},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: fmt.Sprintf("invalid datePublished: %s", INVALID),
 		},
 	}
 
@@ -87,7 +87,7 @@ func Test_CollectionCommit_ValidationFailed(t *testing.T) {
 			require.Empty(t, entry)
 			require.NotNil(t, err)
 			require.Equal(t, tt.expectedStatusCode, err.Code)
-			require.Equal(t, tt.expectedErrorMessage, errors.ImproperlyConstructedErrorMessage)
+			require.Equal(t, tt.expectedErrorMessage, err.Message)
 		})
 	}
 }

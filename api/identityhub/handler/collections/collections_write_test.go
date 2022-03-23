@@ -98,11 +98,27 @@ func Test_CollectionWrite_ValidationFailed(t *testing.T) {
 			expectedStatusCode:   400,
 			expectedErrorMessage: "data cannot be empty",
 		},
+		{
+			name: "unknown schema",
+			message: &hub.Message{
+				Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10 }`,
+				Descriptor_: &hub.MessageDescriptor{
+					ObjectId:    OBJECT_ID,
+					DateCreated: DATE_CREATED,
+					Schema:      SCHEMA_UNKNOWN,
+				},
+			},
+			expectedStatusCode:   400,
+			expectedErrorMessage: fmt.Sprintf("unknown schema: %s", SCHEMA_UNKNOWN),
+		},
 	}
+
+	store, _ := datastore.NewTestStore()
+	schemaManager := schema.NewSchemaManager(store)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entry, err := CollectionsWrite(&handler.RequestContext{Message: tt.message})
+			entry, err := CollectionsWrite(&handler.RequestContext{Message: tt.message, SchemaManager: schemaManager})
 
 			require.Empty(t, entry)
 			require.NotNil(t, err)
@@ -354,3 +370,5 @@ func Test_LeaveCommunity(t *testing.T) {
 	require.Nil(t, entries)
 	require.Nil(t, mock.ExpectationsWereMet())
 }
+
+// todo: user already joined test

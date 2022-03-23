@@ -1,12 +1,12 @@
 package collections
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/datastore"
-	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/getzion/relay/api/schema"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
@@ -26,7 +26,7 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 				Descriptor_: &hub.MessageDescriptor{},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: "invalid objectId: ",
 		},
 		{
 			name: "invalid objectId",
@@ -36,7 +36,7 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 				},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: fmt.Sprintf("invalid objectId: %s", INVALID),
 		},
 		{
 			name: "invalid schema",
@@ -47,7 +47,18 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 				},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: fmt.Sprintf("invalid schema: %s", INVALID),
+		},
+		{
+			name: "unknown schema",
+			message: &hub.Message{
+				Descriptor_: &hub.MessageDescriptor{
+					ObjectId: OBJECT_ID,
+					Schema:   SCHEMA_UNKNOWN,
+				},
+			},
+			expectedStatusCode:   400,
+			expectedErrorMessage: fmt.Sprintf("unknown schema: %s", SCHEMA_UNKNOWN),
 		},
 		{
 			name: "invalid dataFormat",
@@ -58,7 +69,7 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 				},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: fmt.Sprintf("invalid dataFormat: %s", INVALID),
 		},
 		{
 			name: "invalid dateSort",
@@ -69,18 +80,21 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 				},
 			},
 			expectedStatusCode:   400,
-			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
+			expectedErrorMessage: fmt.Sprintf("invalid dateSort: %s", INVALID),
 		},
 	}
 
+	store, _ := datastore.NewTestStore()
+	schemaManager := schema.NewSchemaManager(store)
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entry, err := CollectionsQuery(&handler.RequestContext{Message: tt.message})
+			entry, err := CollectionsQuery(&handler.RequestContext{Message: tt.message, SchemaManager: schemaManager})
 
 			require.Empty(t, entry)
 			require.NotNil(t, err)
 			require.Equal(t, tt.expectedStatusCode, err.Code)
-			require.Equal(t, tt.expectedErrorMessage, errors.ImproperlyConstructedErrorMessage)
+			require.Equal(t, tt.expectedErrorMessage, err.Message)
 		})
 	}
 }
