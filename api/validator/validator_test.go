@@ -155,7 +155,105 @@ func Test_ShouldValidate_Community(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			model := tt.generate()
-			err := ValidateStruct(model)
+			err := Struct(model)
+
+			if tt.expectedError {
+				require.NotNil(t, err)
+				require.Len(t, err, tt.expectedErrorCount)
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}
+
+func Test_ShouldValidate_JoinCommunity(t *testing.T) {
+	InitValidator()
+
+	tests := []struct {
+		name               string
+		generate           func() interface{}
+		expectedError      bool
+		expectedErrorCount int
+	}{
+		{
+			name: "userdid and community zid cannot be empty",
+			generate: func() interface{} {
+				return api.JoinCommunity{
+					UserDid:      "",
+					CommunityZid: "",
+				}
+			},
+			expectedError:      true,
+			expectedErrorCount: 2,
+		},
+		{
+			name: "should be valid",
+			generate: func() interface{} {
+				return api.JoinCommunity{
+					UserDid:      "test_did",
+					CommunityZid: "test_zid",
+				}
+			},
+			expectedError:      false,
+			expectedErrorCount: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			model := tt.generate()
+			err := Struct(model)
+
+			if tt.expectedError {
+				require.NotNil(t, err)
+				require.Len(t, err, tt.expectedErrorCount)
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}
+
+func Test_ShouldValidate_LeaveCommunity(t *testing.T) {
+	InitValidator()
+
+	tests := []struct {
+		name               string
+		generate           func() interface{}
+		expectedError      bool
+		expectedErrorCount int
+	}{
+		{
+			name: "userdid and community zid cannot be empty",
+			generate: func() interface{} {
+				return api.LeaveCommunity{
+					UserDid:      "",
+					CommunityZid: "",
+				}
+			},
+			expectedError:      true,
+			expectedErrorCount: 2,
+		},
+		{
+			name: "should be valid",
+			generate: func() interface{} {
+				return api.LeaveCommunity{
+					UserDid:      "test_did",
+					CommunityZid: "test_zid",
+				}
+			},
+			expectedError:      false,
+			expectedErrorCount: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			model := tt.generate()
+			err := Struct(model)
 
 			if tt.expectedError {
 				require.NotNil(t, err)
