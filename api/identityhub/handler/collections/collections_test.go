@@ -5,4 +5,5 @@ const (
 	INVALID        = "<invalid>"
 	DATE_CREATED   = "1645917431"
 	DATE_PUBLISHED = "1645917431"
+	SCHEMA_UNKNOWN = "https://schema.org/Unknown"
 )
