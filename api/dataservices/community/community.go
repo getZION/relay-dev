@@ -55,6 +55,10 @@ func (s *Service) GetAll() ([]api.Community, error) {
 			PricePerMessage: community.PricePerMessage,
 			PriceToJoin:     community.PriceToJoin,
 			EscrowAmount:    community.EscrowAmount,
+			Img:             community.Img,
+			Created:         community.Created,
+			LastActive:      community.LastActive,
+			Public:          community.Public,
 		}
 
 		for _, tag := range community.Tags {
