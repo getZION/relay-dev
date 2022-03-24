@@ -10,12 +10,12 @@ import (
 )
 
 type CommunityORM struct {
-	Conversations   []*ConversationORM `gorm:"foreignkey:Zid;association_foreignkey:Zid;many2many:community_conversations;jointable_foreignkey:CommunityZid;association_jointable_foreignkey:ConversationZid"`
-	Created         int64
-	Deleted         bool
-	Description     string `gorm:"size:250;not null"`
-	EscrowAmount    int64  `gorm:"not null"`
-	Id              int64  `gorm:"primary_key;unique"`
+	Conversations   []*ConversationORM `gorm:"foreignkey:community_zid;association_foreignkey:Zid"`
+	Created         int64              `gorm:"not null"`
+	Deleted         bool               `gorm:"default:false"`
+	Description     string             `gorm:"size:250;not null"`
+	EscrowAmount    int64              `gorm:"not null"`
+	Id              int64              `gorm:"primary_key;unique"`
 	Img             string
 	LastActive      int64
 	Name            string    `gorm:"size:150;unique;not null"`
@@ -353,10 +353,15 @@ func DefaultStrictUpdateCommunity(ctx context.Context, in *Community, db *gorm.D
 			return nil, err
 		}
 	}
-	if err = db.Model(&ormObj).Association("Conversations").Replace(ormObj.Conversations).Error; err != nil {
+	filterConversations := ConversationORM{}
+	if ormObj.Zid == "" {
+		return nil, errors.EmptyIdError
+	}
+	filterConversations.community_zid = new(string)
+	*filterConversations.community_zid = ormObj.Zid
+	if err = db.Where(filterConversations).Delete(ConversationORM{}).Error; err != nil {
 		return nil, err
 	}
-	ormObj.Conversations = nil
 	if err = db.Model(&ormObj).Association("Tags").Replace(ormObj.Tags).Error; err != nil {
 		return nil, err
 	}

@@ -19,3 +19,12 @@ INSERT INTO `relay3`.`community_users`
 VALUES
 (`zid1`, `did1`)
 (`zid1`, `did2`)
+
+
+INSERT INTO `relay3`.`conversations` 
+(`community_zid`, `created`, `deleted`, `id`, `img`, `link`, `public`, `public_price`, `text`, `updated`, `video`, `zid`) 
+VALUES 
+('zid1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', 'conversation_zid1');
+
+
+

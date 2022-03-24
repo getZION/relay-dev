@@ -8,6 +8,7 @@ const (
 	SCHEMA_PERSON          = "https://schema.org/Person"
 	SCHEMA_JOIN_COMMUNITY  = "https://schema.org/JoinAction"
 	SCHEMA_LEAVE_COMMUNITY = "https://schema.org/LeaveAction"
+	SCHEMA_COMMENT         = "https://schema.org/Comment"
 
 	COLLECTIONS_QUERY  = "CollectionsQuery"
 	COLLECTIONS_WRITE  = "CollectionsWrite"

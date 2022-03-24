@@ -5,7 +5,6 @@ package proto.zion.v1;
 option go_package = "github.com/getzion/relay/gen/zion/v1";
 
 import "proto/protoc-gen-gorm/options/gorm.proto";
-import "proto/zion/v1/messages.proto";
 import "proto/zion/v1/comments.proto";
 
 message Conversation {
@@ -17,30 +16,37 @@ message Conversation {
   }];
   // Conversation ID unique across Zion - Required; must be uuid v4
   string zid = 2 [(gorm.field).tag = { unique: true }];
+  // Zion ID of the community this conversation belongs to - Required; must be uuid v4
+  string community_zid = 3 [(gorm.field).tag = { not_null: true }];
   // Main message body - Optional if link is non-null, otherwise required
-  string text = 3;
+  string text = 4;
   // URL link to external piece of content - Optional if text is non-null, otherwise required
-  string link = 4;
+  string link = 5;
   // URL for associated image - Optional
-  string img = 5;
+  string img = 6;
   // URL for associated video - Optional
-  string video = 6;
+  string video = 7;
   // Is this conversation publicly visible? - Optional; defaults to false
-  bool public = 7;
+  bool public = 8 [(gorm.field).tag = { default: "false" }];
   // Price in sats for non-community members to read, if public = true - Optional; defaults to 0
-  int64 public_price = 8;
+  int64 public_price = 9 [(gorm.field).tag = { default: "0" }];
   // Deleted - Optional, defaults 0
-  bool deleted = 9;
+  bool deleted = 10 [(gorm.field).tag = { default: "false" }];
   // Created when? - Required
-  int64 created = 10;
+  int64 created = 11 [(gorm.field).tag = { not_null: true }];
   // Updated when? - Optional
-  int64 updated = 11;
+  int64 updated = 12;
   
-  repeated Comment comments = 12 [(gorm.field).many_to_many = {
+  repeated Comment comments = 13 [(gorm.field).many_to_many = {
     jointable: "conversation_comments",
     foreignkey: "zid",
     association_foreignkey: "zid",
     jointable_foreignkey: "ConversationZid",
     association_jointable_foreignkey: "CommentZid"
   }];
+
+  // todo: cycle import error but we need foreign key !
+  // Community community = 14 [(gorm.field).has_one = {
+  //   foreignkey: "zid"
+  // }];
 }

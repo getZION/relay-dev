@@ -27,4 +27,8 @@ message User {
   string picture = 7;
   // How many sats it costs to direct-message this user - Optional - Default to 0
   int64 price_to_message = 8;
+  // Created when? - Required
+  int64 created = 9;
+  // Updated when? - Optional
+  int64 updated = 10;
 }

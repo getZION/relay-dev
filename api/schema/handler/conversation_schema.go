@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/datastore"
-	v1 "github.com/getzion/relay/gen/proto/zion/v1"
 )
 
 type ConversationHandler struct {
@@ -21,7 +21,7 @@ func (h *ConversationHandler) Execute(data []byte, method string) (interface{}, 
 
 	case constants.COLLECTIONS_WRITE:
 
-		var conversation v1.ConversationORM
+		var conversation api.Conversation
 		err := json.Unmarshal(data, &conversation)
 		if err != nil {
 			return nil, err
