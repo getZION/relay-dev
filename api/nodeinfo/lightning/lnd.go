@@ -102,7 +102,6 @@ func GetNodeInfo() (balance uint64, pubkey string) {
 	res, err := wallet.Lightning.ChannelBalance(context.Background(), &lnrpc.ChannelBalanceRequest{})
 	if err != nil {
 		logrus.Panicf("Error calling ChannelBalance: %v", err)
-		panic(err)
 	}
 	balance = uint64(res.LocalBalance.Sat)
 
@@ -127,6 +126,7 @@ func LoadLNDCredentials() {
 	if err != nil {
 		logrus.Panic(err)
 	}
+
 	downloader := s3manager.NewDownloader(sess)
 	_, err = downloader.Download(macaroonFile, &s3.GetObjectInput{
 		Bucket: aws.String(params.KeyBucketName),
@@ -142,6 +142,7 @@ func LoadLNDCredentials() {
 	if err != nil {
 		logrus.Panic(err)
 	}
+
 	defer file.Close()
 	_, err = downloader.Download(file, &s3.GetObjectInput{
 		Bucket: aws.String(params.KeyBucketName),

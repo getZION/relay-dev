@@ -24,7 +24,7 @@ message User {
   // User's personal biography that shows on their profile - Optional
   string bio = 6;
   // URL for user's profile picture - Optional
-  string picture = 7;
+  string img = 7;
   // How many sats it costs to direct-message this user - Optional - Default to 0
   int64 price_to_message = 8;
 }
