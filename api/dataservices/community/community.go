@@ -33,11 +33,16 @@ func (s *Service) GetByZid(zid string) (*v1.CommunityORM, error) {
 }
 
 func (s *Service) GetAll() ([]v1.CommunityORM, error) {
+
 	var communities []v1.CommunityORM
-	result := s.connection.DB.Preload("Tags").Find(&communities)
+	result := s.connection.DB.
+		Preload("Tags").
+		Preload("Users").
+		Find(&communities)
 	if result.Error != nil {
 		return nil, result.Error
 	}
+
 	return communities, nil
 }
 
