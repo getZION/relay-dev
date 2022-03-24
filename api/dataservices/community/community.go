@@ -48,6 +48,7 @@ func (s *Service) GetAll() ([]api.Community, error) {
 
 		comm := api.Community{
 			Id:              community.Id,
+			Zid:             community.Zid,
 			Name:            community.Name,
 			Description:     community.Description,
 			OwnerDid:        community.OwnerDid,
@@ -57,8 +58,10 @@ func (s *Service) GetAll() ([]api.Community, error) {
 			EscrowAmount:    community.EscrowAmount,
 			Img:             community.Img,
 			Created:         community.Created,
+			Updated:         community.Updated,
 			LastActive:      community.LastActive,
 			Public:          community.Public,
+			Deleted:         community.Deleted,
 		}
 
 		for _, tag := range community.Tags {
