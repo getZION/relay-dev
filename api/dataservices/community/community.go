@@ -32,7 +32,7 @@ func (s *Service) GetByZid(zid string) (*v1.CommunityORM, error) {
 	return &community, nil
 }
 
-func (s *Service) GetAll() ([]v1.CommunityORM, error) {
+func (s *Service) GetAll() ([]api.Community, error) {
 
 	var communities []v1.CommunityORM
 	result := s.connection.DB.
@@ -43,7 +43,32 @@ func (s *Service) GetAll() ([]v1.CommunityORM, error) {
 		return nil, result.Error
 	}
 
-	return communities, nil
+	var response []api.Community
+	for _, community := range communities {
+
+		comm := api.Community{
+			Id:              community.Id,
+			Name:            community.Name,
+			Description:     community.Description,
+			OwnerDid:        community.OwnerDid,
+			OwnerUsername:   community.OwnerUsername,
+			PricePerMessage: community.PricePerMessage,
+			PriceToJoin:     community.PriceToJoin,
+			EscrowAmount:    community.EscrowAmount,
+		}
+
+		for _, tag := range community.Tags {
+			comm.Tags = append(comm.Tags, tag.Tag)
+		}
+
+		for _, user := range community.Users {
+			comm.Users = append(comm.Users, user.Did)
+		}
+
+		response = append(response, comm)
+	}
+
+	return response, nil
 }
 
 func (s *Service) Insert(model api.Community) (*v1.CommunityORM, error) {
