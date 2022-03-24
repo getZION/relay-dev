@@ -30,7 +30,7 @@ func NewDatabase(storeType string) (connection *api.Connection, err error) {
 		&v1.CommunityORM{},
 		//&v1.ContactORM{},
 		&v1.ConversationORM{},
-		//&v1.CommentORM{},
+		&v1.CommentORM{},
 		&v1.MessageORM{},
 		//&v1.InvoiceORM{},
 		&v1.UserORM{},

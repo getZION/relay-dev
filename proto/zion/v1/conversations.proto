@@ -16,29 +16,27 @@ message Conversation {
     primary_key: true
   }];
   // Conversation ID unique across Zion - Required; must be uuid v4
-  string zid = 2;
-  // Zion ID of the conversation belongs to - Required; must be uuid v4
-  string conversation_zid = 3;
+  string zid = 2 [(gorm.field).tag = { unique: true }];
   // Main message body - Optional if link is non-null, otherwise required
-  string text = 4;
+  string text = 3;
   // URL link to external piece of content - Optional if text is non-null, otherwise required
-  string link = 5;
+  string link = 4;
   // URL for associated image - Optional
-  string img = 6;
+  string img = 5;
   // URL for associated video - Optional
-  string video = 7;
+  string video = 6;
   // Is this conversation publicly visible? - Optional; defaults to false
-  bool public = 8;
+  bool public = 7;
   // Price in sats for non-community members to read, if public = true - Optional; defaults to 0
-  int64 public_price = 9;
+  int64 public_price = 8;
   // Deleted - Optional, defaults 0
-  bool deleted = 10;
+  bool deleted = 9;
   // Created when? - Required
-  int64 created = 11;
+  int64 created = 10;
   // Updated when? - Optional
-  int64 updated = 12;
+  int64 updated = 11;
   
-  repeated Comment comments = 13 [(gorm.field).many_to_many = {
+  repeated Comment comments = 12 [(gorm.field).many_to_many = {
     jointable: "conversation_comments",
     foreignkey: "zid",
     association_foreignkey: "zid",

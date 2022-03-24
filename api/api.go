@@ -3,6 +3,7 @@ package api
 type (
 	Community struct {
 		Id              int64
+		Zid             string
 		Name            string   `json:"Name" validate:"required,max=150"`
 		Description     string   `json:"Description" validate:"max=250"`
 		OwnerDid        string   `json:"OwnerDid" validate:"required"`
@@ -16,6 +17,20 @@ type (
 		Public          bool     `json:"Public"`
 		Tags            []string `json:"Tags" validate:"max=5"`
 		Users           []string
+	}
+
+	Conversation struct {
+		Id          int64
+		Zid         string
+		Text        string
+		Link        string
+		Img         string
+		Video       string
+		Public      bool
+		PublicPrice int64
+		Created     int64
+		Updated     int64
+		Deleted     bool
 	}
 
 	JoinCommunity struct {
