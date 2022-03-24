@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package proto.zion.v1;
+
+option go_package = "github.com/getzion/relay/gen/zion/v1";
+
+import "proto/protoc-gen-gorm/options/gorm.proto";
+import "proto/zion/v1/messages.proto";
+
+message Comment {
+  option (gorm.opts).ormable = true;
+  // The community's unique ID (primary key)
+  int64 id = 1 [(gorm.field).tag = {
+    unique: true
+    primary_key: true
+  }];
+  // Comment ID unique across Zion - Required; must be uuid v4
+  string zid = 2;
+  // Main message body - Optional if link is non-null, otherwise required
+  string text = 3;
+  // Deleted - Optional, defaults 0
+  bool deleted = 4;
+  // Created when? - Required
+  int64 created = 5;
+  // Updated when? - Optional
+  int64 updated = 6;
+}

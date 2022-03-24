@@ -4,9 +4,10 @@ package proto.zion.v1;
 
 option go_package = "github.com/getzion/relay/gen/zion/v1";
 
+import "proto/protoc-gen-gorm/options/gorm.proto";
 import "proto/zion/v1/users.proto";
 import "proto/zion/v1/tags.proto";
-import "proto/protoc-gen-gorm/options/gorm.proto";
+import "proto/zion/v1/conversations.proto";
 
 message Community {
   option (gorm.opts).ormable = true;
@@ -51,4 +52,12 @@ message Community {
     association_jointable_foreignkey: "UserDid"
   }];
   repeated Tag tags = 17 [(gorm.field).many_to_many = {}];
+  
+  repeated Conversation conversations = 18 [(gorm.field).many_to_many = {
+    jointable: "community_conversations",
+    foreignkey: "zid",
+    association_foreignkey: "zid",
+    jointable_foreignkey: "CommunityZid",
+    association_jointable_foreignkey: "ConversationZid"
+  }];
 }
