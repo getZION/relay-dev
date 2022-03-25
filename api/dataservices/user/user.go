@@ -50,7 +50,7 @@ func (s *Service) Insert(model api.User) (*v1.UserORM, error) {
 		Username:       model.Username,
 		Created:        currentTime,
 		Updated:        currentTime,
-		Picture:        model.Picture,
+		Img:            model.Img,
 		Bio:            model.Bio,
 		PriceToMessage: model.PriceToMessage,
 	}

@@ -66,9 +66,16 @@ type (
 		Email          string `json:"Email" validate:"omitempty,email"`
 		Id             int64  `json:"Id"`
 		Name           string `json:"Name" validate:"required"`
-		Picture        string `json:"Price"`
+		Img            string `json:"Img"`
 		PriceToMessage int64  `json:"PriceToMessage"`
 		Updated        int64  `json:"Updated"`
 		Username       string `json:"Username" validate:"required,username,min=6,max=16"`
+		Image          Image  `json:"Image"`
+	}
+
+	Image struct {
+		FileName string `json:"filename"`
+		Type     string `json:"type"`
+		Data     string `json:"data"`
 	}
 )
