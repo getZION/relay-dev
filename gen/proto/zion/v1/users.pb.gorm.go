@@ -14,9 +14,9 @@ type UserORM struct {
 	Created        int64
 	Did            string `gorm:"unique;not null"`
 	Email          string
-	Id             int64  `gorm:"primary_key;unique"`
+	Id             int64 `gorm:"primary_key;unique"`
+	Img            string
 	Name           string `gorm:"not null"`
-	Picture        string
 	PriceToMessage int64
 	Updated        int64
 	Username       string `gorm:"unique;not null"`
@@ -43,7 +43,7 @@ func (m *User) ToORM(ctx context.Context) (UserORM, error) {
 	to.Name = m.Name
 	to.Email = m.Email
 	to.Bio = m.Bio
-	to.Picture = m.Picture
+	to.Img = m.Img
 	to.PriceToMessage = m.PriceToMessage
 	to.Created = m.Created
 	to.Updated = m.Updated
@@ -69,7 +69,7 @@ func (m *UserORM) ToPB(ctx context.Context) (User, error) {
 	to.Name = m.Name
 	to.Email = m.Email
 	to.Bio = m.Bio
-	to.Picture = m.Picture
+	to.Img = m.Img
 	to.PriceToMessage = m.PriceToMessage
 	to.Created = m.Created
 	to.Updated = m.Updated
@@ -406,8 +406,8 @@ func DefaultApplyFieldMaskUser(ctx context.Context, patchee *User, patcher *User
 			patchee.Bio = patcher.Bio
 			continue
 		}
-		if f == prefix+"Picture" {
-			patchee.Picture = patcher.Picture
+		if f == prefix+"Img" {
+			patchee.Img = patcher.Img
 			continue
 		}
 		if f == prefix+"PriceToMessage" {

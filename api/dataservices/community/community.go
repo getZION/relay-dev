@@ -80,15 +80,23 @@ func (s *Service) GetAll() ([]api.Community, error) {
 
 func (s *Service) Insert(model api.Community) (*v1.CommunityORM, error) {
 
-	var community v1.CommunityORM
-	community.Name = model.Name
-	community.Description = model.Description
-	community.OwnerDid = model.OwnerDid
-	community.OwnerUsername = model.OwnerUsername
-	community.PricePerMessage = model.PricePerMessage
-	community.PriceToJoin = model.PriceToJoin
-	community.EscrowAmount = model.EscrowAmount
-	community.Tags = make([]*v1.TagORM, 0)
+	currentTime := time.Now().Unix()
+	community := v1.CommunityORM{
+		Zid:             uuid.NewString(),
+		Name:            model.Name,
+		Description:     model.Description,
+		OwnerDid:        model.OwnerDid,
+		OwnerUsername:   model.OwnerUsername,
+		PricePerMessage: model.PricePerMessage,
+		PriceToJoin:     model.PriceToJoin,
+		EscrowAmount:    model.EscrowAmount,
+		Img:             model.Img,
+		Tags:            make([]*v1.TagORM, 0),
+		Created:         currentTime,
+		Updated:         currentTime,
+		LastActive:      currentTime,
+		Public:          model.Public,
+	}
 
 	for _, tagString := range model.Tags {
 
@@ -100,11 +108,6 @@ func (s *Service) Insert(model api.Community) (*v1.CommunityORM, error) {
 
 		community.Tags = append(community.Tags, &tag)
 	}
-
-	community.Zid = uuid.NewString()
-	community.Created = time.Now().Unix()
-	community.Updated = community.Created
-	community.LastActive = community.Created
 
 	result := s.connection.DB.Create(&community)
 	if result.Error != nil {
