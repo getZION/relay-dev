@@ -21,7 +21,6 @@ type (
 		Users           []string `json:"Users"`
 	}
 
-	//todo: write validation tests
 	Conversation struct {
 		Id           int64     `json:"Id"`
 		Zid          string    `json:"Zid"`
@@ -38,7 +37,6 @@ type (
 		Comments     []Comment `json:"Comments"`
 	}
 
-	//todo: write validation tests
 	Comment struct {
 		Id              int64  `json:"Id"`
 		Zid             string `json:"Zid"`
