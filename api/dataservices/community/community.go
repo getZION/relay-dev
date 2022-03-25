@@ -122,12 +122,12 @@ func (s *Service) Insert(model api.Community) (*v1.CommunityORM, error) {
 	return &community, nil
 }
 
-func (s *Service) AddUserToCommunity(community *v1.CommunityORM, userId int64) error {
-	association := s.connection.DB.Model(community).Association("users").Append(&v1.UserORM{Id: userId})
+func (s *Service) AddUserToCommunity(community *v1.CommunityORM, user *v1.UserORM) error {
+	association := s.connection.DB.Model(community).Association("users").Append(user)
 	return association.Error
 }
 
-func (s *Service) RemoveUserToCommunity(community *v1.CommunityORM, userId int64) error {
-	association := s.connection.DB.Model(community).Association("users").Delete(&v1.UserORM{Id: userId})
+func (s *Service) RemoveUserToCommunity(community *v1.CommunityORM, user *v1.UserORM) error {
+	association := s.connection.DB.Model(community).Association("users").Delete(user)
 	return association.Error
 }
