@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"github.com/getzion/relay/api"
+	"github.com/getzion/relay/api/dataservices/comment"
 	"github.com/getzion/relay/api/dataservices/community"
 	"github.com/getzion/relay/api/dataservices/conversation"
 	"github.com/getzion/relay/api/dataservices/payment"
@@ -16,6 +17,7 @@ type Store struct {
 	ConversationService *conversation.Service
 	PaymentService      *payment.Service
 	UserService         *user.Service
+	CommentService      *comment.Service
 }
 
 // NewStore initializes a new Store and the associated services
@@ -47,6 +49,12 @@ func NewStore(connection *api.Connection) (*Store, error) {
 		return nil, err
 	}
 	store.UserService = userService
+
+	commentService, err := comment.NewService(connection)
+	if err != nil {
+		return nil, err
+	}
+	store.CommentService = commentService
 
 	return store, nil
 }

@@ -39,7 +39,7 @@ func (h *CommunityLeaveHandler) Execute(data []byte, method string) (interface{}
 			return nil, fmt.Errorf("user not found: %s", model.UserDid)
 		}
 
-		err = h.DataStore.CommunityService.RemoveUserToCommunity(community, user.Id)
+		err = h.DataStore.CommunityService.RemoveUserToCommunity(community, user.Did)
 		if err != nil {
 			return nil, err
 		}

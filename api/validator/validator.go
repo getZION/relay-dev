@@ -3,7 +3,6 @@ package validator
 import (
 	"regexp"
 
-	v1 "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -15,38 +14,10 @@ var (
 func InitValidator() {
 	customValidator = validator.New()
 	customValidator.RegisterValidation("username", usernameValidator)
-	customValidator.RegisterStructValidation(conversationORMValidatorFunc, v1.ConversationORM{})
-	customValidator.RegisterStructValidation(userORMValidatorFunc, v1.UserORM{})
 }
 
 func Struct(s interface{}) error {
 	return customValidator.Struct(s)
-}
-
-func ValidateStruct(s interface{}) error {
-	return customValidator.Struct(s)
-}
-
-func conversationORMValidatorFunc(sl validator.StructLevel) {
-	s := sl.Current().Interface().(v1.ConversationORM)
-	v := sl.Validator()
-	if err := v.Var(s.Zid, "required"); err != nil {
-		sl.ReportValidationErrors("Zid", "Zid", err.(validator.ValidationErrors))
-	}
-}
-
-func userORMValidatorFunc(sl validator.StructLevel) {
-	s := sl.Current().Interface().(v1.UserORM)
-	v := sl.Validator()
-	if err := v.Var(s.Name, "required"); err != nil {
-		sl.ReportValidationErrors("Name", "Name", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.Email, "email"); err != nil {
-		sl.ReportValidationErrors("Email", "Email", err.(validator.ValidationErrors))
-	}
-	if err := v.Var(s.Username, "required,username,min=6,max=16"); err != nil {
-		sl.ReportValidationErrors("Username", "Username", err.(validator.ValidationErrors))
-	}
 }
 
 func usernameValidator(fl validator.FieldLevel) bool {

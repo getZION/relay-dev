@@ -11,12 +11,14 @@ import (
 
 type UserORM struct {
 	Bio            string
+	Created        int64
 	Did            string `gorm:"unique;not null"`
 	Email          string
 	Id             int64  `gorm:"primary_key;unique"`
 	Name           string `gorm:"not null"`
 	Picture        string
 	PriceToMessage int64
+	Updated        int64
 	Username       string `gorm:"unique;not null"`
 }
 
@@ -43,6 +45,8 @@ func (m *User) ToORM(ctx context.Context) (UserORM, error) {
 	to.Bio = m.Bio
 	to.Picture = m.Picture
 	to.PriceToMessage = m.PriceToMessage
+	to.Created = m.Created
+	to.Updated = m.Updated
 	if posthook, ok := interface{}(m).(UserWithAfterToORM); ok {
 		err = posthook.AfterToORM(ctx, &to)
 	}
@@ -67,6 +71,8 @@ func (m *UserORM) ToPB(ctx context.Context) (User, error) {
 	to.Bio = m.Bio
 	to.Picture = m.Picture
 	to.PriceToMessage = m.PriceToMessage
+	to.Created = m.Created
+	to.Updated = m.Updated
 	if posthook, ok := interface{}(m).(UserWithAfterToPB); ok {
 		err = posthook.AfterToPB(ctx, &to)
 	}
@@ -406,6 +412,14 @@ func DefaultApplyFieldMaskUser(ctx context.Context, patchee *User, patcher *User
 		}
 		if f == prefix+"PriceToMessage" {
 			patchee.PriceToMessage = patcher.PriceToMessage
+			continue
+		}
+		if f == prefix+"Created" {
+			patchee.Created = patcher.Created
+			continue
+		}
+		if f == prefix+"Updated" {
+			patchee.Updated = patcher.Updated
 			continue
 		}
 	}

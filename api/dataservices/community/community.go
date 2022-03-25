@@ -48,6 +48,7 @@ func (s *Service) GetAll() ([]api.Community, error) {
 
 		comm := api.Community{
 			Id:              community.Id,
+			Zid:             community.Zid,
 			Name:            community.Name,
 			Description:     community.Description,
 			OwnerDid:        community.OwnerDid,
@@ -55,6 +56,12 @@ func (s *Service) GetAll() ([]api.Community, error) {
 			PricePerMessage: community.PricePerMessage,
 			PriceToJoin:     community.PriceToJoin,
 			EscrowAmount:    community.EscrowAmount,
+			Img:             community.Img,
+			Created:         community.Created,
+			Updated:         community.Updated,
+			LastActive:      community.LastActive,
+			Public:          community.Public,
+			Deleted:         community.Deleted,
 		}
 
 		for _, tag := range community.Tags {
@@ -115,12 +122,12 @@ func (s *Service) Insert(model api.Community) (*v1.CommunityORM, error) {
 	return &community, nil
 }
 
-func (s *Service) AddUserToCommunity(community *v1.CommunityORM, userId int64) error {
-	association := s.connection.DB.Model(community).Association("users").Append(&v1.UserORM{Id: userId})
+func (s *Service) AddUserToCommunity(community *v1.CommunityORM, did string) error {
+	association := s.connection.DB.Model(community).Omit("users").Association("users").Append(&v1.UserORM{Did: did})
 	return association.Error
 }
 
-func (s *Service) RemoveUserToCommunity(community *v1.CommunityORM, userId int64) error {
-	association := s.connection.DB.Model(community).Association("users").Delete(&v1.UserORM{Id: userId})
+func (s *Service) RemoveUserToCommunity(community *v1.CommunityORM, did string) error {
+	association := s.connection.DB.Model(community).Omit("users").Association("users").Delete(&v1.UserORM{Did: did})
 	return association.Error
 }

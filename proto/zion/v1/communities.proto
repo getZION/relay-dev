@@ -4,9 +4,10 @@ package proto.zion.v1;
 
 option go_package = "github.com/getzion/relay/gen/zion/v1";
 
+import "proto/protoc-gen-gorm/options/gorm.proto";
 import "proto/zion/v1/users.proto";
 import "proto/zion/v1/tags.proto";
-import "proto/protoc-gen-gorm/options/gorm.proto";
+import "proto/zion/v1/conversations.proto";
 
 message Community {
   option (gorm.opts).ormable = true;
@@ -38,9 +39,9 @@ message Community {
   // Is this a public community? - Required; defaults true
   bool public = 12 [(gorm.field).tag = { default: "true" }];
   // Deleted - Optional, defaults 0
-  bool deleted = 13;
+  bool deleted = 13 [(gorm.field).tag = { default: "false" }];
   // Created when? - Required
-  int64 created = 14;
+  int64 created = 14 [(gorm.field).tag = { not_null: true }];
   // Updated when? - Optional
   int64 updated = 15;
   repeated User users = 16 [(gorm.field).many_to_many = {
@@ -51,4 +52,9 @@ message Community {
     association_jointable_foreignkey: "UserDid"
   }];
   repeated Tag tags = 17 [(gorm.field).many_to_many = {}];
+  
+  repeated Conversation conversations = 18 [(gorm.field).has_many = {
+    foreignkey: "community_zid",
+    association_foreignkey: "zid",
+  }];
 }
