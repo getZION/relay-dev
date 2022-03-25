@@ -350,7 +350,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "Name field should be required",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Email = faker.Email()
 				model.Username = faker.Username()
@@ -363,7 +363,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "Email field should be invalid",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Username = faker.Username()
 				model.Email = "test-"
@@ -375,7 +375,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "Username field should be at least 6 character",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Username = "usern"
 				model.Email = faker.Email()
@@ -387,7 +387,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "Username field should be maximum 16 character",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Username = "maximumsixteencharacter"
 				model.Email = faker.Email()
@@ -399,7 +399,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "Username field should be alphanumeric and underscore",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Username = "test*user!"
 				model.Email = faker.Email()
@@ -411,10 +411,22 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "should be valid",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Username = "test_user"
 				model.Email = faker.Email()
+				return model
+			},
+			expectedError:      false,
+			expectedErrorCount: 0,
+		},
+		{
+			name: "Email can be empty",
+			generate: func() interface{} {
+				model := api.User{}
+				faker.FakeData(&model)
+				model.Username = faker.Username()
+				model.Email = ""
 				return model
 			},
 			expectedError:      false,

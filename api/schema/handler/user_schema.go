@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/datastore"
-	v1 "github.com/getzion/relay/gen/proto/zion/v1"
+	"github.com/getzion/relay/api/validator"
 )
 
 type UserHandler struct {
@@ -21,8 +22,13 @@ func (h *UserHandler) Execute(data []byte, method string) (interface{}, error) {
 
 	case constants.COLLECTIONS_WRITE:
 
-		var user v1.UserORM
+		var user api.User
 		err := json.Unmarshal(data, &user)
+		if err != nil {
+			return nil, err
+		}
+
+		err = validator.Struct(&user)
 		if err != nil {
 			return nil, err
 		}

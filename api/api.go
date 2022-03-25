@@ -43,8 +43,8 @@ type (
 		Id      int64  `json:"Id"`
 		Zid     string `json:"Zid"`
 		UserDid string `json:"UserDid" validate:"required"`
-		Text    string `json:"Text" validate:"required_if=Link nil"`
-		Link    string `json:"Link" validate:"required_if=Text nil"`
+		Text    string `json:"Text" validate:"omitempty,required_if=Link nil"`
+		Link    string `json:"Link" validate:"omitempty,required_if=Text nil"`
 		Created int64  `json:"Created"`
 		Updated int64  `json:"Updated"`
 		Deleted bool   `json:"Deletd"`
@@ -58,5 +58,18 @@ type (
 	LeaveCommunity struct {
 		UserDid      string `json:"user_did" validate:"required"`
 		CommunityZid string `json:"community_zid" validate:"required"`
+	}
+
+	User struct {
+		Bio            string `json:"Bio"`
+		Created        int64  `json:"Created"`
+		Did            string `json:"Did" validate:"required"`
+		Email          string `json:"Email" validate:"omitempty,email"`
+		Id             int64  `json:"Id"`
+		Name           string `json:"Name" validate:"required"`
+		Picture        string `json:"Price"`
+		PriceToMessage int64  `json:"PriceToMessage"`
+		Updated        int64  `json:"Updated"`
+		Username       string `json:"Username" validate:"required,username,min=6,max=16"`
 	}
 )
