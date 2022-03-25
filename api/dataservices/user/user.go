@@ -2,9 +2,9 @@ package user
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/getzion/relay/api"
-	"github.com/getzion/relay/api/validator"
 	v1 "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/go-sql-driver/mysql"
 )
@@ -40,11 +40,19 @@ func (s *Service) GetAll() ([]v1.UserORM, error) {
 	return users, nil
 }
 
-func (s *Service) Insert(user v1.UserORM) (*v1.UserORM, error) {
+func (s *Service) Insert(model api.User) (*v1.UserORM, error) {
 
-	err := validator.ValidateStruct(&user)
-	if err != nil {
-		return nil, err
+	currentTime := time.Now().Unix()
+	user := v1.UserORM{
+		Name:           model.Name,
+		Did:            model.Did,
+		Email:          model.Email,
+		Username:       model.Username,
+		Created:        currentTime,
+		Updated:        currentTime,
+		Picture:        model.Picture,
+		Bio:            model.Bio,
+		PriceToMessage: model.PriceToMessage,
 	}
 
 	result := s.connection.DB.Create(&user)

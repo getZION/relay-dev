@@ -5,7 +5,7 @@ import (
 
 	"github.com/bxcodec/faker/v3"
 	"github.com/getzion/relay/api"
-	v1 "github.com/getzion/relay/gen/proto/zion/v1"
+	"github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/require"
 )
 
@@ -180,7 +180,8 @@ func Test_ShouldValidate_Community(t *testing.T) {
 
 			if tt.expectedError {
 				require.NotNil(t, err)
-				require.Len(t, err, tt.expectedErrorCount)
+				validationError := err.(validator.ValidationErrors)
+				require.Len(t, validationError, tt.expectedErrorCount)
 			} else {
 				require.Nil(t, err)
 			}
@@ -229,7 +230,8 @@ func Test_ShouldValidate_JoinCommunity(t *testing.T) {
 
 			if tt.expectedError {
 				require.NotNil(t, err)
-				require.Len(t, err, tt.expectedErrorCount)
+				validationError := err.(validator.ValidationErrors)
+				require.Len(t, validationError, tt.expectedErrorCount)
 			} else {
 				require.Nil(t, err)
 			}
@@ -278,7 +280,8 @@ func Test_ShouldValidate_LeaveCommunity(t *testing.T) {
 
 			if tt.expectedError {
 				require.NotNil(t, err)
-				require.Len(t, err, tt.expectedErrorCount)
+				validationError := err.(validator.ValidationErrors)
+				require.Len(t, validationError, tt.expectedErrorCount)
 			} else {
 				require.Nil(t, err)
 			}
@@ -298,20 +301,54 @@ func Test_ShouldValidate_Conversation(t *testing.T) {
 		expectedErrorCount int
 	}{
 		{
-			name: "Zid field should be required",
+			name: "CommunityZid field should be required",
 			generate: func() interface{} {
-				model := v1.ConversationORM{}
+				model := api.Conversation{}
 				faker.FakeData(&model)
-				model.Zid = ""
+				model.CommunityZid = ""
 				return model
 			},
 			expectedError:      true,
 			expectedErrorCount: 1,
 		},
 		{
+			name: "Text or Link fields should be required",
+			generate: func() interface{} {
+				model := api.Conversation{}
+				faker.FakeData(&model)
+				model.Text = ""
+				model.Link = ""
+				return model
+			},
+			expectedError:      true,
+			expectedErrorCount: 2,
+		},
+		{
+			name: "should be valid with only text",
+			generate: func() interface{} {
+				model := api.Conversation{}
+				faker.FakeData(&model)
+				model.Link = ""
+				return model
+			},
+			expectedError:      false,
+			expectedErrorCount: 0,
+		},
+		{
+			name: "should be valid with only link",
+			generate: func() interface{} {
+				model := api.Conversation{}
+				faker.FakeData(&model)
+				model.Text = ""
+				return model
+			},
+			expectedError:      false,
+			expectedErrorCount: 0,
+		},
+		{
 			name: "should be valid",
 			generate: func() interface{} {
-				model := v1.ConversationORM{}
+				model := api.Conversation{}
 				faker.FakeData(&model)
 				return model
 			},
@@ -324,11 +361,12 @@ func Test_ShouldValidate_Conversation(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			model := tt.generate()
-			err := ValidateStruct(model)
+			err := Struct(model)
 
 			if tt.expectedError {
 				require.NotNil(t, err)
-				require.Len(t, err, tt.expectedErrorCount)
+				validationError := err.(validator.ValidationErrors)
+				require.Len(t, validationError, tt.expectedErrorCount)
 			} else {
 				require.Nil(t, err)
 			}
@@ -350,7 +388,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "Name field should be required",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Email = faker.Email()
 				model.Username = faker.Username()
@@ -363,7 +401,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "Email field should be invalid",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Username = faker.Username()
 				model.Email = "test-"
@@ -375,7 +413,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "Username field should be at least 6 character",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Username = "usern"
 				model.Email = faker.Email()
@@ -387,7 +425,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "Username field should be maximum 16 character",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Username = "maximumsixteencharacter"
 				model.Email = faker.Email()
@@ -399,7 +437,7 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "Username field should be alphanumeric and underscore",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Username = "test*user!"
 				model.Email = faker.Email()
@@ -411,10 +449,22 @@ func Test_ShouldValidate_User(t *testing.T) {
 		{
 			name: "should be valid",
 			generate: func() interface{} {
-				model := v1.UserORM{}
+				model := api.User{}
 				faker.FakeData(&model)
 				model.Username = "test_user"
 				model.Email = faker.Email()
+				return model
+			},
+			expectedError:      false,
+			expectedErrorCount: 0,
+		},
+		{
+			name: "Email can be empty",
+			generate: func() interface{} {
+				model := api.User{}
+				faker.FakeData(&model)
+				model.Username = faker.Username()
+				model.Email = ""
 				return model
 			},
 			expectedError:      false,
@@ -426,11 +476,69 @@ func Test_ShouldValidate_User(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 
 			model := tt.generate()
-			err := ValidateStruct(model)
+			err := Struct(model)
 
 			if tt.expectedError {
 				require.NotNil(t, err)
-				require.Len(t, err, tt.expectedErrorCount)
+				validationError := err.(validator.ValidationErrors)
+				require.Len(t, validationError, tt.expectedErrorCount)
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}
+
+func Test_ShouldValidate_Comment(t *testing.T) {
+	InitValidator()
+
+	tests := []struct {
+		name               string
+		model              api.Comment
+		expectedError      bool
+		expectedErrorCount int
+	}{
+		{
+			name:               "conversation should be required",
+			model:              api.Comment{UserDid: "did1", Text: "test"},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
+			name:               "userdid should be required",
+			model:              api.Comment{ConversationZid: "zid1", Text: "test"},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
+			name:               "text or link should be required",
+			model:              api.Comment{ConversationZid: "zid1", UserDid: "did1"},
+			expectedError:      true,
+			expectedErrorCount: 2,
+		},
+		{
+			name:               "should be valid with only text",
+			model:              api.Comment{ConversationZid: "zid1", UserDid: "did1", Text: "test"},
+			expectedError:      false,
+			expectedErrorCount: 0,
+		},
+		{
+			name:               "should be valid with only link",
+			model:              api.Comment{ConversationZid: "zid1", UserDid: "did1", Link: "test"},
+			expectedError:      false,
+			expectedErrorCount: 0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			err := Struct(tt.model)
+
+			if tt.expectedError {
+				require.NotNil(t, err)
+				validationError := err.(validator.ValidationErrors)
+				require.Len(t, validationError, tt.expectedErrorCount)
 			} else {
 				require.Nil(t, err)
 			}

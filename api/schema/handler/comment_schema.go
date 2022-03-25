@@ -10,32 +10,32 @@ import (
 	"github.com/getzion/relay/api/validator"
 )
 
-type UserHandler struct {
+type CommentHandler struct {
 	DataStore *datastore.Store
 }
 
-func (h *UserHandler) Execute(data []byte, method string) (interface{}, error) {
+func (h *CommentHandler) Execute(data []byte, method string) (interface{}, error) {
 	switch method {
 	case constants.COLLECTIONS_QUERY:
 
-		return h.DataStore.UserService.GetAll()
+		return h.DataStore.CommentService.GetAll()
 
 	case constants.COLLECTIONS_WRITE:
 
-		var user api.User
-		err := json.Unmarshal(data, &user)
+		var comment api.Comment
+		err := json.Unmarshal(data, &comment)
 		if err != nil {
 			return nil, err
 		}
 
-		err = validator.Struct(&user)
+		err = validator.Struct(&comment)
 		if err != nil {
 			return nil, err
 		}
 
-		return h.DataStore.UserService.Insert(user)
+		return h.DataStore.CommentService.Insert(comment)
 
 	default:
-		return nil, fmt.Errorf("unimplemented user method: %s", method)
+		return nil, fmt.Errorf("unimplemented comment method: %s", method)
 	}
 }

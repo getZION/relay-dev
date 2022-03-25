@@ -10,7 +10,6 @@ import (
 )
 
 type MessageORM struct {
-	ConversationId    *int64
 	ConversationZid   int64
 	Id                int64 `gorm:"primary_key;unique"`
 	Img               string
