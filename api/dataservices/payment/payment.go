@@ -32,7 +32,7 @@ func (s *Service) Insert(payment v1.PaymentORM) (*v1.PaymentORM, error) {
 
 	payment.Zid = uuid.NewString()
 
-	err := validator.ValidateStruct(&payment)
+	err := validator.Struct(&payment)
 	if err != nil {
 		return nil, err
 	}

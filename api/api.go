@@ -26,8 +26,8 @@ type (
 		Id           int64     `json:"Id"`
 		Zid          string    `json:"Zid"`
 		CommunityZid string    `json:"CommunityZid" validate:"required"`
-		Text         string    `json:"Text" validate:"required_if=Link nil"`
-		Link         string    `json:"Link" validate:"required_if=Text nil"`
+		Text         string    `json:"Text" validate:"required_without=Link"`
+		Link         string    `json:"Link" validate:"required_without=Text"`
 		Img          string    `json:"Img"`
 		Video        string    `json:"Video"`
 		Public       bool      `json:"Public"`
@@ -40,14 +40,15 @@ type (
 
 	//todo: write validation tests
 	Comment struct {
-		Id      int64  `json:"Id"`
-		Zid     string `json:"Zid"`
-		UserDid string `json:"UserDid" validate:"required"`
-		Text    string `json:"Text" validate:"omitempty,required_if=Link nil"`
-		Link    string `json:"Link" validate:"omitempty,required_if=Text nil"`
-		Created int64  `json:"Created"`
-		Updated int64  `json:"Updated"`
-		Deleted bool   `json:"Deletd"`
+		Id              int64  `json:"Id"`
+		Zid             string `json:"Zid"`
+		UserDid         string `json:"UserDid" validate:"required"`
+		ConversationZid string `json:"Conversationzid" validate:"required"`
+		Text            string `json:"Text" validate:"required_without=Link"`
+		Link            string `json:"Link" validate:"required_without=Text"`
+		Created         int64  `json:"Created"`
+		Updated         int64  `json:"Updated"`
+		Deleted         bool   `json:"Deleted"`
 	}
 
 	JoinCommunity struct {

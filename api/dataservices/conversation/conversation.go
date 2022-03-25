@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/getzion/relay/api"
-	"github.com/getzion/relay/api/validator"
 	v1 "github.com/getzion/relay/gen/proto/zion/v1"
 	"github.com/google/uuid"
 )
@@ -79,11 +78,6 @@ func (s *Service) Insert(model api.Conversation) (*v1.ConversationORM, error) {
 		PublicPrice:  model.PublicPrice,
 		Created:      currentTime,
 		Updated:      currentTime,
-	}
-
-	err := validator.ValidateStruct(&conversation)
-	if err != nil {
-		return nil, err
 	}
 
 	result := s.connection.DB.Create(&conversation)

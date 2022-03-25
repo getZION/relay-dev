@@ -10,7 +10,7 @@ import (
 )
 
 type ConversationORM struct {
-	Comments      []*CommentORM `gorm:"foreignkey:Zid;association_foreignkey:Zid;many2many:conversation_comments;jointable_foreignkey:ConversationZid;association_jointable_foreignkey:CommentZid"`
+	Comments      []*CommentORM `gorm:"foreignkey:conversation_zid;association_foreignkey:Zid"`
 	CommunityZid  string        `gorm:"not null"`
 	Created       int64         `gorm:"not null"`
 	Deleted       bool          `gorm:"default:false"`
@@ -299,10 +299,15 @@ func DefaultStrictUpdateConversation(ctx context.Context, in *Conversation, db *
 			return nil, err
 		}
 	}
-	if err = db.Model(&ormObj).Association("Comments").Replace(ormObj.Comments).Error; err != nil {
+	filterComments := CommentORM{}
+	if ormObj.Zid == "" {
+		return nil, errors.EmptyIdError
+	}
+	filterComments.conversation_zid = new(string)
+	*filterComments.conversation_zid = ormObj.Zid
+	if err = db.Where(filterComments).Delete(CommentORM{}).Error; err != nil {
 		return nil, err
 	}
-	ormObj.Comments = nil
 	if hook, ok := interface{}(&ormObj).(ConversationORMWithBeforeStrictUpdateSave); ok {
 		if db, err = hook.BeforeStrictUpdateSave(ctx, db); err != nil {
 			return nil, err

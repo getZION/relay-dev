@@ -37,12 +37,9 @@ message Conversation {
   // Updated when? - Optional
   int64 updated = 12;
   
-  repeated Comment comments = 13 [(gorm.field).many_to_many = {
-    jointable: "conversation_comments",
-    foreignkey: "zid",
+  repeated Comment comments = 13 [(gorm.field).has_many = {
+    foreignkey: "conversation_zid",
     association_foreignkey: "zid",
-    jointable_foreignkey: "ConversationZid",
-    association_jointable_foreignkey: "CommentZid"
   }];
 
   // todo: cycle import error but we need foreign key !

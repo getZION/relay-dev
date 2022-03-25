@@ -35,11 +35,13 @@ func (s *Service) Insert(model api.Comment) (*v1.CommentORM, error) {
 
 	currentTime := time.Now().Unix()
 	comment := v1.CommentORM{
-		Zid:     uuid.NewString(),
-		UserDid: model.UserDid,
-		Text:    model.Text,
-		Created: currentTime,
-		Updated: currentTime,
+		Zid:             uuid.NewString(),
+		ConversationZid: model.ConversationZid,
+		UserDid:         model.UserDid,
+		Text:            model.Text,
+		Link:            model.Link,
+		Created:         currentTime,
+		Updated:         currentTime,
 	}
 
 	result := s.connection.DB.Create(&comment)

@@ -47,6 +47,14 @@ func NewDatabase(storeType string) (connection *api.Connection, err error) {
 	db.Table("community_tags").AddForeignKey("CommunityId", "communities(Id)", "RESTRICT", "RESTRICT")
 	db.Table("community_tags").AddForeignKey("TagId", "tags(Id)", "RESTRICT", "RESTRICT")
 
+	db.Table("conversations").AddIndex("community_zid", "community_zid")
+	db.Table("conversations").AddForeignKey("community_zid", "communities(Zid)", "RESTRICT", "RESTRICT")
+
+	db.Table("comments").AddIndex("conversation_zid", "conversation_zid")
+	db.Table("comments").AddIndex("user_did", "user_did")
+	db.Table("comments").AddForeignKey("conversation_zid", "conversations(Zid)", "RESTRICT", "RESTRICT")
+	db.Table("comments").AddForeignKey("user_did", "users(Did)", "RESTRICT", "RESTRICT")
+
 	logrus.Info("Migrations successful.")
 	return api.InitDatabase(db), nil
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/datastore"
+	"github.com/getzion/relay/api/validator"
 )
 
 type ConversationHandler struct {
@@ -23,6 +24,11 @@ func (h *ConversationHandler) Execute(data []byte, method string) (interface{}, 
 
 		var conversation api.Conversation
 		err := json.Unmarshal(data, &conversation)
+		if err != nil {
+			return nil, err
+		}
+
+		err = validator.Struct(&conversation)
 		if err != nil {
 			return nil, err
 		}
