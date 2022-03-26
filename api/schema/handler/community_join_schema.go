@@ -40,7 +40,7 @@ func (h *CommunityJoinHandler) Execute(data []byte, method string) (interface{},
 			return nil, fmt.Errorf("user not found: %s", model.UserDid)
 		}
 
-		err = h.DataStore.CommunityService.AddUserToCommunity(community, user.Did)
+		err = h.DataStore.CommunityService.AddUserToCommunity(community, user)
 		if err != nil {
 			return nil, err
 		}

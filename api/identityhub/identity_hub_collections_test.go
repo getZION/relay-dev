@@ -129,6 +129,9 @@ var _ = Describe("IdentityHub Collections", func() {
 					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
+					mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "did"}))
+
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 
 					response, err := client.Process(ctx, request)
@@ -149,6 +152,9 @@ var _ = Describe("IdentityHub Collections", func() {
 
 					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
+
+					mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "did"}))
 
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT
@@ -171,6 +177,9 @@ var _ = Describe("IdentityHub Collections", func() {
 
 					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
+
+					mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "did"}))
 
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT
@@ -195,6 +204,9 @@ var _ = Describe("IdentityHub Collections", func() {
 					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
+					mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "did"}))
+
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT
 					request.Messages[0].Descriptor_.DateSort = "createdDescending"
@@ -218,6 +230,9 @@ var _ = Describe("IdentityHub Collections", func() {
 					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
+					mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "did"}))
+
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT
 					request.Messages[0].Descriptor_.DateSort = "publishedAscending"
@@ -240,6 +255,9 @@ var _ = Describe("IdentityHub Collections", func() {
 
 					mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
 						WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
+
+					mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+						WillReturnRows(sqlmock.NewRows([]string{"id", "did"}))
 
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DataFormat = DATA_FORMAT
@@ -403,7 +421,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Users Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "Name": "test_name", "Username": "test_username", "Email": "test@test.org" }`
+					request.Messages[0].Data = `{ "Did": "did", "Name": "test_name", "Username": "test_username", "Email": "test@test.org" }`
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_PERSON
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
@@ -450,7 +468,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Conversation Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "CommunityZid": "test_zid" }`
+					request.Messages[0].Data = `{ "CommunityZid": "test_zid", "Text": "test"  }`
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_CONVERSATION
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
@@ -473,6 +491,10 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
 					Expect(mock.ExpectationsWereMet()).To(BeNil())
 				})
+
+				//todo: test without Text and Link
+				//todo: test with Text, without Link
+				//todo: test without Text, without Link
 
 			})
 
