@@ -468,13 +468,31 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Conversation Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "CommunityZid": "test_zid", "Text": "test"  }`
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_CONVERSATION
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
 				})
 
-				It("receive a response If Message Descriptor has valid", func() {
+				It("receive a response If Message Descriptor has invalid", func() {
+
+					request.Messages[0].Data = `{ "CommunityZid": "test_zid" }`
+
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.RequestId).To(Equal(request.RequestId))
+					Expect(response.Status).To(Not(BeNil()))
+					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+					Expect(mock.ExpectationsWereMet()).To(BeNil())
+				})
+
+				It("receive a response If Message Descriptor has valid with Text", func() {
+					request.Messages[0].Data = `{ "CommunityZid": "test_zid", "Text": "test" }`
+
 					mock.ExpectBegin()
 					mock.ExpectExec("INSERT INTO `conversations`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 					mock.ExpectCommit()
@@ -492,10 +510,25 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(mock.ExpectationsWereMet()).To(BeNil())
 				})
 
-				//todo: test without Text and Link
-				//todo: test with Text, without Link
-				//todo: test without Text, without Link
+				It("receive a response If Message Descriptor has valid with Link", func() {
+					request.Messages[0].Data = `{ "CommunityZid": "test_zid", "Link": "test" }`
 
+					mock.ExpectBegin()
+					mock.ExpectExec("INSERT INTO `conversations`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
+					mock.ExpectCommit()
+
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.RequestId).To(Equal(request.RequestId))
+					Expect(response.Status).To(Not(BeNil()))
+					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+					Expect(mock.ExpectationsWereMet()).To(BeNil())
+				})
 			})
 
 			Context("Join Community Tests", func() {

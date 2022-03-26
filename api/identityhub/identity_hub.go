@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"strings"
 
 	"github.com/decred/dcrd/dcrec/secp256k1/v4/schnorr"
 	"github.com/getzion/relay/api/constants"
@@ -12,6 +13,7 @@ import (
 	"github.com/getzion/relay/api/identityhub/handler/collections"
 	"github.com/getzion/relay/api/identityhub/handler/permissions"
 	"github.com/getzion/relay/api/identityhub/handler/threads"
+	"github.com/getzion/relay/api/nodeinfo/lightning"
 	"github.com/getzion/relay/api/schema"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/google/uuid"
@@ -107,50 +109,6 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 			Status: &hub.Status{},
 		}
 
-		//todo: auth processes
-		if message.Descriptor_.Encryption != "JWE" {
-			pubKeyBytes, err := hex.DecodeString("02a673638cb9587cb68ea08dbef685c6f2d" + "2a751a8b3c6f2a7e9a4999e6e4bfaf5")
-			if err != nil {
-				reply.Status.Code = 500
-				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
-				response.Replies = append(response.Replies, reply)
-				logrus.Errorf("publicKeyBytes decoding failed: %v", err)
-				continue
-			}
-
-			pubKey, err := schnorr.ParsePubKey(pubKeyBytes)
-			if err != nil {
-				reply.Status.Code = 500
-				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
-				response.Replies = append(response.Replies, reply)
-				logrus.Errorf("publicKey parse failed: %v", err)
-				continue
-			}
-
-			logrus.Info(pubKey)
-
-			sigBytes, err := hex.DecodeString("970603d8ccd2475b1ff66cfb3ce7e622c59383" +
-				"48304c5a7bc2e6015fb98e3b457d4e912fcca6ca87c04390aa5e6e0e613bbbba7ffd" + "6f15bc59f95bbd92ba50f0")
-			if err != nil {
-				reply.Status.Code = 500
-				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
-				response.Replies = append(response.Replies, reply)
-				logrus.Errorf("signature decoding failed: %v", err)
-				continue
-			}
-
-			signature, err := schnorr.ParseSignature(sigBytes)
-			if err != nil {
-				reply.Status.Code = 500
-				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
-				response.Replies = append(response.Replies, reply)
-				logrus.Errorf("signature parse failed: %v", err)
-				continue
-			}
-
-			logrus.Info(signature)
-		}
-
 		messageByte, err := json.Marshal(message)
 		if err != nil {
 			reply.Status.Code = 500
@@ -170,6 +128,81 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 		}
 
 		reply.MessageId = messageId.String()
+
+		//todo: auth processes
+		if message.Attestation != nil {
+
+			if strings.Trim(message.Attestation.Payload, " ") == "" {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("attestation paylod cannot be empty")
+				continue
+			} else if message.Attestation.Protected == nil ||
+				strings.Trim(message.Attestation.Protected.Alg, " ") == "" ||
+				strings.Trim(message.Attestation.Protected.Kid, " ") == "" {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("invalid attestation protected")
+				continue
+			} else if strings.Trim(message.Attestation.Signature, " ") == "" {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("invalid attestation signature")
+				continue
+			}
+
+			_, publicKeyString := lightning.GetNodeInfo()
+
+			pubKeyBytes, err := hex.DecodeString(publicKeyString)
+			if err != nil {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("publicKeyBytes decoding failed: %v", err)
+				continue
+			}
+
+			pubKey, err := schnorr.ParsePubKey(pubKeyBytes)
+			if err != nil {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("publicKey parse failed: %v", err)
+				continue
+			}
+
+			logrus.Info(pubKey)
+
+			sigBytes, err := hex.DecodeString(message.Attestation.Signature)
+			if err != nil {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("signature decoding failed: %v", err)
+				continue
+			}
+
+			signature, err := schnorr.ParseSignature(sigBytes)
+			if err != nil {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("signature parse failed: %v", err)
+				continue
+			}
+
+			logrus.Info(signature)
+			verified := signature.Verify(messageId.Bytes(), pubKey)
+			if !verified {
+				reply.Status.Code = 400
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("message is not verified")
+			}
+		}
 
 		if message.Descriptor_ == nil || message.Descriptor_.Method == "" {
 			reply.Status.Code = 400

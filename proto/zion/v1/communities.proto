@@ -49,7 +49,10 @@ message Community {
     foreignkey: "zid",
     association_foreignkey: "did",
     jointable_foreignkey: "CommunityZid",
-    association_jointable_foreignkey: "UserDid"
+    association_jointable_foreignkey: "UserDid",
+    association_autoupdate: false,
+    association_autocreate: false,
+    association_save_reference: false
   }];
   repeated Tag tags = 17 [(gorm.field).many_to_many = {}];
   

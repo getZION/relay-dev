@@ -47,6 +47,10 @@ message MessageDescriptor {
   string parent = 9;
   string cid = 10;
   string encryption = 11;
+  // DID URI of the party requesting the permission.
+  string requester = 12;
+  // The requesting party uses to communicate what the permission is being used for.
+  string description = 13;
 }
 
 message Attestation {
