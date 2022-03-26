@@ -111,6 +111,9 @@ func Test_Communities_Get(t *testing.T) {
 	mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
 		WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
 
+	mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "did"}))
+
 	tests := []struct {
 		name                 string
 		message              *hub.Message
@@ -149,6 +152,9 @@ func Test_Conversation_Get(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows([]string{"id", "community_zid", "public", "public_price", "zid"}).
 			AddRow(1, "c_zid1", false, 10, "zid1").
 			AddRow(2, "c_zid2", true, 20, "zid2"))
+
+	mock.ExpectQuery("SELECT (.*) FROM `comments`[a-zA-Z *]*").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "zid"}))
 
 	tests := []struct {
 		name                 string

@@ -237,7 +237,7 @@ func Test_ConversationCreate(t *testing.T) {
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &hub.Message{
-			Data: `{ "CommunityZid": "test_zid" }`,
+			Data: `{ "CommunityZid": "test_zid", "Text": "test" }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_CONVERSATION,
@@ -263,7 +263,7 @@ func Test_UserCreate(t *testing.T) {
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &hub.Message{
-			Data: `{ "Name": "test_name", "Username": "test_username", "Email": "test@test.org" }`,
+			Data: `{ "Name": "test_name", "Username": "test_username", "Email": "test@test.org", "Did": "did" }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_PERSON,
@@ -288,7 +288,7 @@ func Test_UserCreate_AlreadyExist(t *testing.T) {
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &hub.Message{
-			Data: `{ "Name": "test_name", "Username": "test_username", "Email": "test@test.org" }`,
+			Data: `{ "Name": "test_name", "Username": "test_username", "Email": "test@test.org", "Did": "did" }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_PERSON,
@@ -310,19 +310,19 @@ func Test_JoinCommunity(t *testing.T) {
 	schemaManager := schema.NewSchemaManager(store)
 
 	mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-			AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "zid", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+			AddRow(1, "zid", "test", "desc", 0, "alias", "pubkey", 10, 10))
 
 	mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "username"}).
-			AddRow(1, "test", "test_username"))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "did", "name", "username"}).
+			AddRow(1, "did", "test", "test_username"))
 
 	mock.ExpectExec("INSERT INTO `community_users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &hub.Message{
-			Data: `{ "community_zid": "test_zid", "user_did": "test_did" }`,
+			Data: `{ "community_zid": "zid", "user_did": "did" }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_JOIN_COMMUNITY,
@@ -342,12 +342,12 @@ func Test_LeaveCommunity(t *testing.T) {
 	schemaManager := schema.NewSchemaManager(store)
 
 	mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-			AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "zid", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
+			AddRow(1, "zid", "test", "desc", 0, "alias", "pubkey", 10, 10))
 
 	mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "username"}).
-			AddRow(1, "test", "test_username"))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "did", "name", "username"}).
+			AddRow(1, "did", "test", "test_username"))
 
 	mock.ExpectBegin()
 	mock.ExpectExec("DELETE FROM `community_users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
@@ -356,7 +356,7 @@ func Test_LeaveCommunity(t *testing.T) {
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &hub.Message{
-			Data: `{ "community_zid": "test_zid", "user_did": "test_did" }`,
+			Data: `{ "community_zid": "zid", "user_did": "did" }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_LEAVE_COMMUNITY,
