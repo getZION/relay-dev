@@ -125,12 +125,12 @@ func (s *Service) Insert(model api.Community) (*v1.CommunityORM, error) {
 	return &community, nil
 }
 
-func (s *Service) AddUserToCommunity(community *v1.CommunityORM, did string) error {
-	association := s.connection.DB.Model(community).Omit("users").Association("users").Append(&v1.UserORM{Did: did})
+func (s *Service) AddUserToCommunity(community *v1.CommunityORM, user *v1.UserORM) error {
+	association := s.connection.DB.Model(community).Omit("users").Association("users").Append(user)
 	return association.Error
 }
 
-func (s *Service) RemoveUserToCommunity(community *v1.CommunityORM, did string) error {
-	association := s.connection.DB.Model(community).Omit("users").Association("users").Delete(&v1.UserORM{Did: did})
+func (s *Service) RemoveUserToCommunity(community *v1.CommunityORM, user *v1.UserORM) error {
+	association := s.connection.DB.Model(community).Omit("users").Association("users").Delete(user)
 	return association.Error
 }
