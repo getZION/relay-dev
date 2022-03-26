@@ -2,8 +2,10 @@ package identityhub
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 
+	"github.com/decred/dcrd/dcrec/secp256k1/v4/schnorr"
 	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
@@ -103,6 +105,50 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 
 		reply := &hub.Reply{
 			Status: &hub.Status{},
+		}
+
+		//todo: auth processes
+		if message.Descriptor_.Encryption != "JWE" {
+			pubKeyBytes, err := hex.DecodeString("02a673638cb9587cb68ea08dbef685c6f2d" + "2a751a8b3c6f2a7e9a4999e6e4bfaf5")
+			if err != nil {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("publicKeyBytes decoding failed: %v", err)
+				continue
+			}
+
+			pubKey, err := schnorr.ParsePubKey(pubKeyBytes)
+			if err != nil {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("publicKey parse failed: %v", err)
+				continue
+			}
+
+			logrus.Info(pubKey)
+
+			sigBytes, err := hex.DecodeString("970603d8ccd2475b1ff66cfb3ce7e622c59383" +
+				"48304c5a7bc2e6015fb98e3b457d4e912fcca6ca87c04390aa5e6e0e613bbbba7ffd" + "6f15bc59f95bbd92ba50f0")
+			if err != nil {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("signature decoding failed: %v", err)
+				continue
+			}
+
+			signature, err := schnorr.ParseSignature(sigBytes)
+			if err != nil {
+				reply.Status.Code = 500
+				reply.Status.Message = errors.ImproperlyConstructedErrorMessage
+				response.Replies = append(response.Replies, reply)
+				logrus.Errorf("signature parse failed: %v", err)
+				continue
+			}
+
+			logrus.Info(signature)
 		}
 
 		messageByte, err := json.Marshal(message)

@@ -6,6 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/aws/aws-sdk-go v1.43.12
 	github.com/bxcodec/faker/v3 v3.8.0
+	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1
 	github.com/gabriel-vasile/mimetype v1.4.0
 	github.com/getzion/relampago v0.2.1
 	github.com/go-playground/validator/v10 v10.10.0
@@ -53,6 +54,7 @@ require (
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/decred/dcrd/crypto/blake256 v1.0.0 // indirect
 	github.com/decred/dcrd/lru v1.0.0 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/dsnet/compress v0.0.1 // indirect

@@ -46,6 +46,7 @@ message MessageDescriptor {
   string root = 8;
   string parent = 9;
   string cid = 10;
+  string encryption = 11;
 }
 
 message Attestation {
