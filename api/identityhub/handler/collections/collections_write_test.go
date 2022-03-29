@@ -1,17 +1,14 @@
 package collections
 
 import (
-	"database/sql/driver"
 	"fmt"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/getzion/relay/api/constants"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/getzion/relay/api/schema"
+	"github.com/getzion/relay/api/storage"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
-	native "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/require"
 )
 
@@ -113,7 +110,7 @@ func Test_CollectionWrite_ValidationFailed(t *testing.T) {
 		},
 	}
 
-	store, _ := datastore.NewTestStore()
+	store, _ := storage.NewStorage("cache")
 	schemaManager := schema.NewSchemaManager(store)
 
 	for _, tt := range tests {
@@ -129,12 +126,8 @@ func Test_CollectionWrite_ValidationFailed(t *testing.T) {
 }
 
 func Test_CommunityCreate(t *testing.T) {
-	store, mock := datastore.NewTestStore()
+	store, _ := storage.NewStorage("cache")
 	schemaManager := schema.NewSchemaManager(store)
-
-	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
-	mock.ExpectCommit()
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -151,35 +144,11 @@ func Test_CommunityCreate(t *testing.T) {
 
 	require.Nil(t, err)
 	require.Len(t, entries, 1)
-	require.Nil(t, mock.ExpectationsWereMet())
 }
 
 func Test_CommunityCreateWithTags(t *testing.T) {
-	store, mock := datastore.NewTestStore()
+	store, _ := storage.NewStorage("cache")
 	schemaManager := schema.NewSchemaManager(store)
-
-	mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").WillReturnRows(sqlmock.NewRows([]string{"id", "tag"}).AddRow(1, "test1"))
-	mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").WillReturnRows(sqlmock.NewRows([]string{"id", "tag"}))
-
-	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
-
-	actions := []driver.Value{"test1", 1}
-	mock.ExpectExec("UPDATE `tags` SET `tag` = (.*)  WHERE `tags`.`id` = (.*)").WithArgs(actions...).WillReturnResult(sqlmock.NewResult(1, 1))
-
-	actions = []driver.Value{1, 1, 1, 1}
-	mock.ExpectExec("INSERT INTO `community_tags`[a-zA-Z *]*").
-		WithArgs(actions...).WillReturnResult(sqlmock.NewResult(1, 1))
-
-	actions = []driver.Value{"test2"}
-	mock.ExpectExec("INSERT INTO `tags`[a-zA-Z *]*").
-		WithArgs(actions...).WillReturnResult(sqlmock.NewResult(2, 1))
-
-	actions = []driver.Value{1, 2, 1, 2}
-	mock.ExpectExec("INSERT INTO `community_tags`[a-zA-Z *]*").
-		WithArgs(actions...).WillReturnResult(sqlmock.NewResult(1, 1))
-
-	mock.ExpectCommit()
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -196,15 +165,11 @@ func Test_CommunityCreateWithTags(t *testing.T) {
 
 	require.Nil(t, err)
 	require.Len(t, entries, 1)
-	require.Nil(t, mock.ExpectationsWereMet())
 }
 
 func Test_CommunityCreate_AlreadyExist(t *testing.T) {
-	store, mock := datastore.NewTestStore()
+	store, _ := storage.NewStorage("cache")
 	schemaManager := schema.NewSchemaManager(store)
-
-	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO `communities`[a-zA-Z *]*").WillReturnError(&native.MySQLError{Number: 1062})
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -223,16 +188,11 @@ func Test_CommunityCreate_AlreadyExist(t *testing.T) {
 	require.Equal(t, "the specified community already exist: test", err.Message)
 	require.Equal(t, int64(400), err.Code)
 	require.Len(t, entries, 0)
-	require.Nil(t, mock.ExpectationsWereMet())
 }
 
 func Test_ConversationCreate(t *testing.T) {
-	store, mock := datastore.NewTestStore()
+	store, _ := storage.NewStorage("cache")
 	schemaManager := schema.NewSchemaManager(store)
-
-	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO `conversations`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
-	mock.ExpectCommit()
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -249,16 +209,11 @@ func Test_ConversationCreate(t *testing.T) {
 
 	require.Nil(t, err)
 	require.Len(t, entries, 1)
-	require.Nil(t, mock.ExpectationsWereMet())
 }
 
 func Test_UserCreate(t *testing.T) {
-	store, mock := datastore.NewTestStore()
+	store, _ := storage.NewStorage("cache")
 	schemaManager := schema.NewSchemaManager(store)
-
-	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO `users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
-	mock.ExpectCommit()
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -275,15 +230,11 @@ func Test_UserCreate(t *testing.T) {
 
 	require.Nil(t, err)
 	require.Len(t, entries, 1)
-	require.Nil(t, mock.ExpectationsWereMet())
 }
 
 func Test_UserCreate_AlreadyExist(t *testing.T) {
-	store, mock := datastore.NewTestStore()
+	store, _ := storage.NewStorage("cache")
 	schemaManager := schema.NewSchemaManager(store)
-
-	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO `users`[a-zA-Z *]*").WillReturnError(&native.MySQLError{Number: 1062})
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -302,22 +253,11 @@ func Test_UserCreate_AlreadyExist(t *testing.T) {
 	require.Equal(t, "the specified username already exist: test_username", err.Message)
 	require.Equal(t, int64(400), err.Code)
 	require.Len(t, entries, 0)
-	require.Nil(t, mock.ExpectationsWereMet())
 }
 
 func Test_JoinCommunity(t *testing.T) {
-	store, mock := datastore.NewTestStore()
+	store, _ := storage.NewStorage("cache")
 	schemaManager := schema.NewSchemaManager(store)
-
-	mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "zid", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-			AddRow(1, "zid", "test", "desc", 0, "alias", "pubkey", 10, 10))
-
-	mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "did", "name", "username"}).
-			AddRow(1, "did", "test", "test_username"))
-
-	mock.ExpectExec("INSERT INTO `community_users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -334,24 +274,11 @@ func Test_JoinCommunity(t *testing.T) {
 
 	require.Nil(t, err)
 	require.Nil(t, entries)
-	require.Nil(t, mock.ExpectationsWereMet())
 }
 
 func Test_LeaveCommunity(t *testing.T) {
-	store, mock := datastore.NewTestStore()
+	store, _ := storage.NewStorage("cache")
 	schemaManager := schema.NewSchemaManager(store)
-
-	mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "zid", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-			AddRow(1, "zid", "test", "desc", 0, "alias", "pubkey", 10, 10))
-
-	mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "did", "name", "username"}).
-			AddRow(1, "did", "test", "test_username"))
-
-	mock.ExpectBegin()
-	mock.ExpectExec("DELETE FROM `community_users`[a-zA-Z *]*").WillReturnResult(sqlmock.NewResult(1, 1))
-	mock.ExpectCommit()
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -368,7 +295,6 @@ func Test_LeaveCommunity(t *testing.T) {
 
 	require.Nil(t, err)
 	require.Nil(t, entries)
-	require.Nil(t, mock.ExpectationsWereMet())
 }
 
 // todo: user already joined test

@@ -6,19 +6,24 @@ import (
 
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/validator"
 )
 
 type ConversationHandler struct {
-	DataStore *datastore.Store
+	storage api.Storage
+}
+
+func InitConversationHandler(storage api.Storage) *ConversationHandler {
+	return &ConversationHandler{
+		storage: storage,
+	}
 }
 
 func (h *ConversationHandler) Execute(data []byte, method string) (interface{}, error) {
 	switch method {
 	case constants.COLLECTIONS_QUERY:
 
-		return h.DataStore.ConversationService.GetAll()
+		return h.storage.GetConversations()
 
 	case constants.COLLECTIONS_WRITE:
 
@@ -33,7 +38,12 @@ func (h *ConversationHandler) Execute(data []byte, method string) (interface{}, 
 			return nil, err
 		}
 
-		return h.DataStore.ConversationService.Insert(conversation)
+		err = h.storage.InsertConversation(&conversation)
+		if err != nil {
+			return nil, err
+		}
+
+		return conversation, nil
 
 	default:
 		return nil, fmt.Errorf("unimplemented payment method: %s", method)

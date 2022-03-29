@@ -6,12 +6,17 @@ import (
 
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/validator"
 )
 
 type CommunityJoinHandler struct {
-	DataStore *datastore.Store
+	storage api.Storage
+}
+
+func InitCommunityJoinHandler(storage api.Storage) *CommunityJoinHandler {
+	return &CommunityJoinHandler{
+		storage: storage,
+	}
 }
 
 func (h *CommunityJoinHandler) Execute(data []byte, method string) (interface{}, error) {
@@ -30,17 +35,17 @@ func (h *CommunityJoinHandler) Execute(data []byte, method string) (interface{},
 		}
 
 		// todo: community can be stored inside other relay?
-		community, err := h.DataStore.CommunityService.GetByZid(model.CommunityZid)
+		community, err := h.storage.GetCommunityByZid(model.CommunityZid)
 		if err != nil {
 			return nil, fmt.Errorf("community not found: %s", model.CommunityZid)
 		}
 
-		user, err := h.DataStore.UserService.GetByDid(model.UserDid)
+		user, err := h.storage.GetUserByDid(model.UserDid)
 		if err != nil {
 			return nil, fmt.Errorf("user not found: %s", model.UserDid)
 		}
 
-		err = h.DataStore.CommunityService.AddUserToCommunity(community, user)
+		err = h.storage.AddUserToCommunity(community.Zid, user.Did)
 		if err != nil {
 			return nil, err
 		}

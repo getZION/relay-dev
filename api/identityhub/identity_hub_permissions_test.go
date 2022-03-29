@@ -1,14 +1,9 @@
 package identityhub
 
 import (
-	"database/sql"
-
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/getzion/relay/api"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/schema"
+	"github.com/getzion/relay/api/storage"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
-	"github.com/jinzhu/gorm"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
@@ -25,27 +20,10 @@ const (
 var _ = Describe("IdentityHub Permissions", func() {
 	var client *IdentityHubService
 	var ctx context.Context
-	//var mock sqlmock.Sqlmock
 
 	BeforeEach(func() {
-		var err error
-		var db *sql.DB
 
-		db, _, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
-		if err != nil {
-			logrus.Panic(err)
-		}
-
-		gormDb, err := gorm.Open("mysql", db)
-		if err != nil {
-			logrus.Panic(err)
-		}
-
-		connection := &api.Connection{
-			DB: gormDb,
-		}
-
-		store, err := datastore.NewStore(connection)
+		store, err := storage.NewStorage("cache")
 		if err != nil {
 			logrus.Panic(err)
 		}

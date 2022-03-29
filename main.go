@@ -5,11 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/getzion/relay/api/database"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub"
 	"github.com/getzion/relay/api/nodeinfo"
 	"github.com/getzion/relay/api/schema"
+	"github.com/getzion/relay/api/storage"
 	"github.com/getzion/relay/api/validator"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	zion "github.com/getzion/relay/gen/proto/zion/v1"
@@ -27,17 +26,12 @@ func main() {
 
 	validator.InitValidator()
 
-	connection, err := database.NewDatabase("mysql")
+	connection, err := storage.NewStorage("mysql")
 	if err != nil {
 		logrus.Panic(err)
 	}
 
-	store, err := datastore.NewStore(connection)
-	if err != nil {
-		logrus.Panic(err)
-	}
-
-	schemaManager := schema.NewSchemaManager(store)
+	schemaManager := schema.NewSchemaManager(connection)
 
 	// Initialize gRPC server
 	init_gRPC(schemaManager)
@@ -88,6 +82,8 @@ func init_gRPC(schemaManager *schema.SchemaManager) {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
+
+	logrus.Infof("identityhub server started: %s", lis.Addr().String())
 	// Serve the webapp over TLS
 	logrus.Error(srv.ListenAndServe())
 }
