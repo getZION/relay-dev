@@ -6,19 +6,24 @@ import (
 
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/validator"
 )
 
 type UserHandler struct {
-	DataStore *datastore.Store
+	storage api.Storage
+}
+
+func InitUserHandler(storage api.Storage) *UserHandler {
+	return &UserHandler{
+		storage: storage,
+	}
 }
 
 func (h *UserHandler) Execute(data []byte, method string) (interface{}, error) {
 	switch method {
 	case constants.COLLECTIONS_QUERY:
 
-		return h.DataStore.UserService.GetAll()
+		return h.storage.GetUsers()
 
 	case constants.COLLECTIONS_WRITE:
 
@@ -33,7 +38,12 @@ func (h *UserHandler) Execute(data []byte, method string) (interface{}, error) {
 			return nil, err
 		}
 
-		return h.DataStore.UserService.Insert(user)
+		err = h.storage.InsertUser(&user)
+		if err != nil {
+			return nil, err
+		}
+
+		return user, nil
 
 	default:
 		return nil, fmt.Errorf("unimplemented user method: %s", method)

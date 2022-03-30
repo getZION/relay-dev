@@ -110,6 +110,44 @@
 
 
 
+<a name="proto/zion/v1/comment.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## proto/zion/v1/comment.proto
+
+
+
+<a name="proto.zion.v1.comment"></a>
+
+### Comment
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| Id | [int64](#int64) |  | Comment primary ID &amp; key - unique only to this relay |
+| Zid | [string](#string) |  | Comment id unique across Zion - Required; must be uuid v4 |
+| UserDid | [int64](#int64) |  | DID of user who sent this comment - Required |
+| conversation_zid | [int64](#int64) |  | Zion ID of conversation of this comment |
+| text | [string](#string) |  | Main message body - Optional if link is non-null, otherwise required |
+| link | [string](#string) |  | URL link to external piece of content - Optional if text is non-null, otherwise required |
+| created | [int64](#int64) |  | Created when? - Required |
+| updated | [int64](#int64) |  | Updated when? - Optional |
+| deleted | [bool](#bool) |  | Deleted - Optional, defaults 0 |
+
+
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
 <a name="proto/zion/v1/messages.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -119,7 +157,7 @@
 
 <a name="proto.zion.v1.Message"></a>
 
-### Message
+### Message (Disable)
 
 
 

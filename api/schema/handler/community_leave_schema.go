@@ -6,12 +6,17 @@ import (
 
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/validator"
 )
 
 type CommunityLeaveHandler struct {
-	DataStore *datastore.Store
+	storage api.Storage
+}
+
+func InitCommunityLeaveHandler(storage api.Storage) *CommunityLeaveHandler {
+	return &CommunityLeaveHandler{
+		storage: storage,
+	}
 }
 
 func (h *CommunityLeaveHandler) Execute(data []byte, method string) (interface{}, error) {
@@ -29,17 +34,17 @@ func (h *CommunityLeaveHandler) Execute(data []byte, method string) (interface{}
 			return nil, err
 		}
 
-		community, err := h.DataStore.CommunityService.GetByZid(model.CommunityZid)
+		community, err := h.storage.GetCommunityByZid(model.CommunityZid)
 		if err != nil {
 			return nil, fmt.Errorf("community not found: %s", model.CommunityZid)
 		}
 
-		user, err := h.DataStore.UserService.GetByDid(model.UserDid)
+		user, err := h.storage.GetUserByDid(model.UserDid)
 		if err != nil {
 			return nil, fmt.Errorf("user not found: %s", model.UserDid)
 		}
 
-		err = h.DataStore.CommunityService.RemoveUserToCommunity(community, user)
+		err = h.storage.RemoveUserToCommunity(community.Zid, user.Did)
 		if err != nil {
 			return nil, err
 		}

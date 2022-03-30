@@ -1,17 +1,12 @@
 package identityhub
 
 import (
-	"database/sql"
-
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/getzion/relay/api"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/schema"
+	"github.com/getzion/relay/api/storage"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
-	"github.com/jinzhu/gorm"
+	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
 )
 
@@ -24,34 +19,18 @@ const (
 )
 
 var _ = Describe("IdentityHub Threads", func() {
-	var client *IdentityHubService
-	var ctx context.Context
-	//var mock sqlmock.Sqlmock
+	var (
+		t                GinkgoTestReporter
+		gomockController *gomock.Controller
+		client           *IdentityHubService
+		ctx              context.Context
+		st               *storage.MockStorage
+	)
 
 	BeforeEach(func() {
-		var err error
-		var db *sql.DB
-
-		db, _, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherRegexp))
-		if err != nil {
-			logrus.Panic(err)
-		}
-
-		gormDb, err := gorm.Open("mysql", db)
-		if err != nil {
-			logrus.Panic(err)
-		}
-
-		connection := &api.Connection{
-			DB: gormDb,
-		}
-
-		store, err := datastore.NewStore(connection)
-		if err != nil {
-			logrus.Panic(err)
-		}
-
-		schemaManager := schema.NewSchemaManager(store)
+		gomockController = gomock.NewController(t)
+		st = storage.NewMockStorage(gomockController)
+		schemaManager := schema.NewSchemaManager(st)
 
 		client = &IdentityHubService{
 			prefix:                   prefix,
