@@ -6,19 +6,24 @@ import (
 
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/validator"
 )
 
 type CommentHandler struct {
-	DataStore *datastore.Store
+	storage api.Storage
+}
+
+func InitCommentHandler(connection api.Storage) *CommentHandler {
+	return &CommentHandler{
+		storage: connection,
+	}
 }
 
 func (h *CommentHandler) Execute(data []byte, method string) (interface{}, error) {
 	switch method {
 	case constants.COLLECTIONS_QUERY:
 
-		return h.DataStore.CommentService.GetAll()
+		return h.storage.GetComments()
 
 	case constants.COLLECTIONS_WRITE:
 
@@ -33,7 +38,12 @@ func (h *CommentHandler) Execute(data []byte, method string) (interface{}, error
 			return nil, err
 		}
 
-		return h.DataStore.CommentService.Insert(comment)
+		err = h.storage.InsertComment(&comment)
+		if err != nil {
+			return nil, err
+		}
+
+		return comment, nil
 
 	default:
 		return nil, fmt.Errorf("unimplemented comment method: %s", method)

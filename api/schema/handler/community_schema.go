@@ -6,12 +6,17 @@ import (
 
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/validator"
 )
 
 type CommunityHandler struct {
-	DataStore *datastore.Store
+	storage api.Storage
+}
+
+func InitCommunityHandler(storage api.Storage) *CommunityHandler {
+	return &CommunityHandler{
+		storage: storage,
+	}
 }
 
 func (h *CommunityHandler) Execute(data []byte, method string) (interface{}, error) {
@@ -19,7 +24,7 @@ func (h *CommunityHandler) Execute(data []byte, method string) (interface{}, err
 
 	case constants.COLLECTIONS_QUERY:
 
-		return h.DataStore.CommunityService.GetAll()
+		return h.storage.GetCommunities()
 
 	case constants.COLLECTIONS_WRITE:
 
@@ -34,7 +39,12 @@ func (h *CommunityHandler) Execute(data []byte, method string) (interface{}, err
 			return nil, err
 		}
 
-		return h.DataStore.CommunityService.Insert(community)
+		err = h.storage.InsertCommunity(&community)
+		if err != nil {
+			return nil, err
+		}
+
+		return community, nil
 
 	default:
 		return nil, fmt.Errorf("unimplemented organization method: %s", method)

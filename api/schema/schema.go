@@ -3,8 +3,8 @@ package schema
 import (
 	"fmt"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/schema/handler"
 )
 
@@ -21,30 +21,16 @@ type SchemaHandler interface {
 // 	Execute(data []byte) (interface{}, error)
 // }
 
-func NewSchemaManager(store *datastore.Store) *SchemaManager {
+func NewSchemaManager(storage api.Storage) *SchemaManager {
 	schemaHandler := &SchemaManager{
 		handlers: map[string]SchemaHandler{
-			constants.SCHEMA_COMMUNITY: &handler.CommunityHandler{
-				DataStore: store,
-			},
-			constants.SCHEMA_CONVERSATION: &handler.ConversationHandler{
-				DataStore: store,
-			},
-			constants.SCHEMA_PAYMENT: &handler.PaymentHandler{
-				DataStore: store,
-			},
-			constants.SCHEMA_PERSON: &handler.UserHandler{
-				DataStore: store,
-			},
-			constants.SCHEMA_JOIN_COMMUNITY: &handler.CommunityJoinHandler{
-				DataStore: store,
-			},
-			constants.SCHEMA_LEAVE_COMMUNITY: &handler.CommunityLeaveHandler{
-				DataStore: store,
-			},
-			constants.SCHEMA_COMMENT: &handler.CommentHandler{
-				DataStore: store,
-			},
+			constants.SCHEMA_COMMUNITY:       handler.InitCommunityHandler(storage),
+			constants.SCHEMA_CONVERSATION:    handler.InitConversationHandler(storage),
+			constants.SCHEMA_PAYMENT:         handler.InitPaymentHandler(storage),
+			constants.SCHEMA_PERSON:          handler.InitUserHandler(storage),
+			constants.SCHEMA_JOIN_COMMUNITY:  handler.InitCommunityJoinHandler(storage),
+			constants.SCHEMA_LEAVE_COMMUNITY: handler.InitCommunityLeaveHandler(storage),
+			constants.SCHEMA_COMMENT:         handler.InitCommentHandler(storage),
 		},
 	}
 

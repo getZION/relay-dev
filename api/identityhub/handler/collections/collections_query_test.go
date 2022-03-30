@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
-	"github.com/getzion/relay/api/datastore"
 	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/getzion/relay/api/schema"
+	"github.com/getzion/relay/api/storage"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -84,8 +85,11 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 		},
 	}
 
-	store, _ := datastore.NewTestStore()
-	schemaManager := schema.NewSchemaManager(store)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -101,18 +105,16 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 
 func Test_Communities_Get(t *testing.T) {
 
-	store, mock := datastore.NewTestStore()
-	schemaManager := schema.NewSchemaManager(store)
-	mock.ExpectQuery("SELECT (.*) FROM `communities`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name", "description", "escrowAmount", "owner_alias", "owner_pubkey", "price_per_message", "price_to_join"}).
-			AddRow(1, "test", "desc", 0, "alias", "pubkey", 10, 10).
-			AddRow(2, "test2", "desc2", 0, "alias2", "pubkey2", 20, 20))
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	mock.ExpectQuery("SELECT (.*) FROM `tags`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"community_id", "tag_id"}))
+	storage := storage.NewMockStorage(ctrl)
+	storage.EXPECT().GetCommunities().Times(1).Return([]api.Community{
+		{Id: 1, Zid: "zid1", OwnerDid: "did1", OwnerUsername: "user1"},
+		{Id: 2, Zid: "zid2", OwnerDid: "did1", OwnerUsername: "user1"},
+	}, nil)
 
-	mock.ExpectQuery("SELECT (.*) FROM `users`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "did"}))
+	schemaManager := schema.NewSchemaManager(storage)
 
 	tests := []struct {
 		name                 string
@@ -146,15 +148,16 @@ func Test_Communities_Get(t *testing.T) {
 
 func Test_Conversation_Get(t *testing.T) {
 
-	store, mock := datastore.NewTestStore()
-	schemaManager := schema.NewSchemaManager(store)
-	mock.ExpectQuery("SELECT[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "community_zid", "public", "public_price", "zid"}).
-			AddRow(1, "c_zid1", false, 10, "zid1").
-			AddRow(2, "c_zid2", true, 20, "zid2"))
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	mock.ExpectQuery("SELECT (.*) FROM `comments`[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "zid"}))
+	storage := storage.NewMockStorage(ctrl)
+	storage.EXPECT().GetConversations().Times(1).Return([]api.Conversation{
+		{Id: 1, Zid: "zid1", CommunityZid: "c_zid1"},
+		{Id: 2, Zid: "zid2", CommunityZid: "c_zid1"},
+	}, nil)
+
+	schemaManager := schema.NewSchemaManager(storage)
 
 	tests := []struct {
 		name                 string
@@ -188,12 +191,15 @@ func Test_Conversation_Get(t *testing.T) {
 
 func Test_User_Get(t *testing.T) {
 
-	store, mock := datastore.NewTestStore()
-	schemaManager := schema.NewSchemaManager(store)
-	mock.ExpectQuery("SELECT[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "name"}).
-			AddRow(1, "test_user1").
-			AddRow(2, "test_user2"))
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	storage.EXPECT().GetUsers().Times(1).Return([]api.User{
+		{Id: 1, Did: "did1"},
+		{Id: 2, Did: "did2"},
+	}, nil)
+	schemaManager := schema.NewSchemaManager(storage)
 
 	tests := []struct {
 		name                 string
@@ -227,12 +233,15 @@ func Test_User_Get(t *testing.T) {
 
 func Test_Payment_Get(t *testing.T) {
 
-	store, mock := datastore.NewTestStore()
-	schemaManager := schema.NewSchemaManager(store)
-	mock.ExpectQuery("SELECT[a-zA-Z *]*").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "status"}).
-			AddRow(1, "sended").
-			AddRow(2, "sending"))
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	storage.EXPECT().GetPayments().Times(1).Return([]api.Payment{
+		{Id: 1, Zid: "zid1"},
+		{Id: 2, Zid: "zid2"},
+	}, nil)
+	schemaManager := schema.NewSchemaManager(storage)
 
 	tests := []struct {
 		name                 string
