@@ -39,9 +39,3 @@ type PaymentService interface {
 	GetPayments() ([]Payment, error)
 	InsertPayment(*Payment) error
 }
-
-// func InitDatabase(database *gorm.DB) *Connection {
-// 	return &Connection{
-// 		DB: database,
-// 	}
-// }

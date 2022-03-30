@@ -1,14 +1,18 @@
 package collections
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/getzion/relay/api/schema"
 	"github.com/getzion/relay/api/storage"
+	"github.com/getzion/relay/api/validator"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -110,8 +114,11 @@ func Test_CollectionWrite_ValidationFailed(t *testing.T) {
 		},
 	}
 
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -126,8 +133,14 @@ func Test_CollectionWrite_ValidationFailed(t *testing.T) {
 }
 
 func Test_CommunityCreate(t *testing.T) {
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	validator.InitValidator()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
+
+	storage.EXPECT().InsertCommunity(gomock.Any()).Times(1).Return(nil)
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -146,30 +159,15 @@ func Test_CommunityCreate(t *testing.T) {
 	require.Len(t, entries, 1)
 }
 
-func Test_CommunityCreateWithTags(t *testing.T) {
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
-
-	entries, err := CollectionsWrite(&handler.RequestContext{
-		SchemaManager: schemaManager,
-		Message: &hub.Message{
-			Data: `{ "Name": "test", "Description": "test", "OwnerUsername": "test_username", "OwnerDid": "test_did", "EscrowAmount": 10, "OwnerAlias": "test", "OwnerPubkey": "test", "PricePerMessage": 10, "PriceToJoin": 10, "Tags": [ "test1", "test2" ] }`,
-			Descriptor_: &hub.MessageDescriptor{
-				ObjectId:    OBJECT_ID,
-				Schema:      constants.SCHEMA_COMMUNITY,
-				DateCreated: DATE_CREATED,
-				Method:      constants.COLLECTIONS_WRITE,
-			},
-		},
-	})
-
-	require.Nil(t, err)
-	require.Len(t, entries, 1)
-}
-
 func Test_CommunityCreate_AlreadyExist(t *testing.T) {
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	validator.InitValidator()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
+
+	storage.EXPECT().InsertCommunity(gomock.Any()).Times(1).Return(errors.New("the specified community already exist: test"))
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -191,8 +189,14 @@ func Test_CommunityCreate_AlreadyExist(t *testing.T) {
 }
 
 func Test_ConversationCreate(t *testing.T) {
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	validator.InitValidator()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
+
+	storage.EXPECT().InsertConversation(gomock.Any()).Times(1).Return(nil)
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -212,8 +216,14 @@ func Test_ConversationCreate(t *testing.T) {
 }
 
 func Test_UserCreate(t *testing.T) {
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	validator.InitValidator()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
+
+	storage.EXPECT().InsertUser(gomock.Any()).Times(1).Return(nil)
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -233,8 +243,14 @@ func Test_UserCreate(t *testing.T) {
 }
 
 func Test_UserCreate_AlreadyExist(t *testing.T) {
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	validator.InitValidator()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
+
+	storage.EXPECT().InsertUser(gomock.Any()).Times(1).Return(errors.New("the specified username already exist: test_username"))
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -256,8 +272,16 @@ func Test_UserCreate_AlreadyExist(t *testing.T) {
 }
 
 func Test_JoinCommunity(t *testing.T) {
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	validator.InitValidator()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
+
+	storage.EXPECT().GetCommunityByZid("zid").Times(1).Return(&api.Community{Zid: "zid"}, nil)
+	storage.EXPECT().GetUserByDid("did").Times(1).Return(&api.User{Did: "did"}, nil)
+	storage.EXPECT().AddUserToCommunity("zid", "did").Times(1).Return(nil)
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -277,8 +301,16 @@ func Test_JoinCommunity(t *testing.T) {
 }
 
 func Test_LeaveCommunity(t *testing.T) {
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	validator.InitValidator()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
+
+	storage.EXPECT().GetCommunityByZid("zid").Times(1).Return(&api.Community{Zid: "zid"}, nil)
+	storage.EXPECT().GetUserByDid("did").Times(1).Return(&api.User{Did: "did"}, nil)
+	storage.EXPECT().RemoveUserToCommunity("zid", "did").Times(1).Return(nil)
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,

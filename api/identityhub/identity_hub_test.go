@@ -1,6 +1,8 @@
 package identityhub
 
 import (
+	"fmt"
+
 	"github.com/getzion/relay/api/schema"
 	"github.com/getzion/relay/api/storage"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
@@ -23,6 +25,16 @@ const (
 	PARENT         = "654a4593-4c01-4a6c-9cd9-6bf04bd3d441"
 	INVALID        = "<invalid>"
 )
+
+type GinkgoTestReporter struct{}
+
+func (g GinkgoTestReporter) Errorf(format string, args ...interface{}) {
+	Fail(fmt.Sprintf(format, args...))
+}
+
+func (g GinkgoTestReporter) Fatalf(format string, args ...interface{}) {
+	Fail(fmt.Sprintf(format, args...))
+}
 
 var _ = Describe("IdentityHub", func() {
 

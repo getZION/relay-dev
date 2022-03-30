@@ -1,23 +1,39 @@
 package identityhub
 
 import (
+	"errors"
+
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/schema"
 	"github.com/getzion/relay/api/storage"
+	"github.com/getzion/relay/api/validator"
 	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"golang.org/x/net/context"
 )
 
 var _ = Describe("IdentityHub Collections", func() {
-	var client *IdentityHubService
-	var ctx context.Context
+	var (
+		t                GinkgoTestReporter
+		gomockController *gomock.Controller
+		client           *IdentityHubService
+		ctx              context.Context
+		st               *storage.MockStorage
+	)
 
 	BeforeEach(func() {
-		store, _ := storage.NewStorage("cache")
-		schemaManager := schema.NewSchemaManager(store)
+		validator.InitValidator()
+		gomockController = gomock.NewController(t)
+		st = storage.NewMockStorage(gomockController)
+		schemaManager := schema.NewSchemaManager(st)
 		client = InitIdentityHubService(schemaManager)
+	})
+
+	AfterEach(func() {
+		gomockController.Finish()
 	})
 
 	Context("Message Level", func() {
@@ -113,6 +129,7 @@ var _ = Describe("IdentityHub Collections", func() {
 
 				BeforeEach(func() {
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_COMMUNITY
+					st.EXPECT().GetCommunities().Times(1).Return([]api.Community{{Id: 1, Zid: "Zid"}}, nil)
 				})
 
 				It("receives a response if Message Descriptor has valid objectID", func() {
@@ -304,6 +321,8 @@ var _ = Describe("IdentityHub Collections", func() {
 				})
 
 				It("receives a response if Message Descriptor has valid", func() {
+					st.EXPECT().InsertCommunity(gomock.Any()).Times(1).Return(nil)
+
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))
@@ -317,6 +336,8 @@ var _ = Describe("IdentityHub Collections", func() {
 				})
 
 				It("receives an error if Community already exist", func() {
+					st.EXPECT().InsertCommunity(gomock.Any()).Times(1).Return(errors.New("the specified community already exist: test"))
+
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))
@@ -342,6 +363,7 @@ var _ = Describe("IdentityHub Collections", func() {
 				})
 
 				It("receive a response if Message Descriptor has valid", func() {
+					st.EXPECT().InsertUser(gomock.Any()).Times(1).Return(nil)
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))
@@ -355,6 +377,7 @@ var _ = Describe("IdentityHub Collections", func() {
 				})
 
 				It("receive an error if User already exist", func() {
+					st.EXPECT().InsertUser(gomock.Any()).Times(1).Return(errors.New("the specified username already exist: test_username"))
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))
@@ -380,6 +403,7 @@ var _ = Describe("IdentityHub Collections", func() {
 				})
 
 				It("receive a response If Message Descriptor has valid", func() {
+					st.EXPECT().InsertConversation(gomock.Any()).Times(1).Return(nil)
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))
@@ -401,13 +425,17 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Join Community Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "community_zid": "test_zid", "user_did": "test_did" }`
+					request.Messages[0].Data = `{ "community_zid": "zid", "user_did": "did" }`
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_JOIN_COMMUNITY
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
 				})
 
 				It("receive a response if Message Descriptor has valid", func() {
+					st.EXPECT().GetCommunityByZid("zid").Times(1).Return(&api.Community{Zid: "zid"}, nil)
+					st.EXPECT().GetUserByDid("did").Times(1).Return(&api.User{Did: "did"}, nil)
+					st.EXPECT().AddUserToCommunity("zid", "did").Times(1).Return(nil)
+
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))
@@ -425,13 +453,17 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Leave Community Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "community_zid": "test_zid", "user_did": "test_did" }`
+					request.Messages[0].Data = `{ "community_zid": "zid", "user_did": "did" }`
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_LEAVE_COMMUNITY
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
 				})
 
 				It("receive a response if Message Descriptor has valid", func() {
+					st.EXPECT().GetCommunityByZid("zid").Times(1).Return(&api.Community{Zid: "zid"}, nil)
+					st.EXPECT().GetUserByDid("did").Times(1).Return(&api.User{Did: "did"}, nil)
+					st.EXPECT().RemoveUserToCommunity("zid", "did").Times(1).Return(nil)
+
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())
 					Expect(response).To(Not(BeNil()))

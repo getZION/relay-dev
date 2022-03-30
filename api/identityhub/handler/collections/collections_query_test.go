@@ -10,6 +10,7 @@ import (
 	"github.com/getzion/relay/api/schema"
 	"github.com/getzion/relay/api/storage"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -84,8 +85,11 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 		},
 	}
 
-	connection, _ := storage.NewStorage("mysql")
-	schemaManager := schema.NewSchemaManager(connection)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -101,11 +105,16 @@ func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 
 func Test_Communities_Get(t *testing.T) {
 
-	store, _ := storage.NewStorage("cache")
-	store.InsertCommunity(&api.Community{Id: 1, Zid: "zid1", OwnerDid: "did1", OwnerUsername: "user1"})
-	store.InsertCommunity(&api.Community{Id: 2, Zid: "zid2", OwnerDid: "did1", OwnerUsername: "user1"})
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-	schemaManager := schema.NewSchemaManager(store)
+	storage := storage.NewMockStorage(ctrl)
+	storage.EXPECT().GetCommunities().Times(1).Return([]api.Community{
+		{Id: 1, Zid: "zid1", OwnerDid: "did1", OwnerUsername: "user1"},
+		{Id: 2, Zid: "zid2", OwnerDid: "did1", OwnerUsername: "user1"},
+	}, nil)
+
+	schemaManager := schema.NewSchemaManager(storage)
 
 	tests := []struct {
 		name                 string
@@ -139,8 +148,16 @@ func Test_Communities_Get(t *testing.T) {
 
 func Test_Conversation_Get(t *testing.T) {
 
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	storage.EXPECT().GetConversations().Times(1).Return([]api.Conversation{
+		{Id: 1, Zid: "zid1", CommunityZid: "c_zid1"},
+		{Id: 2, Zid: "zid2", CommunityZid: "c_zid1"},
+	}, nil)
+
+	schemaManager := schema.NewSchemaManager(storage)
 
 	tests := []struct {
 		name                 string
@@ -174,8 +191,15 @@ func Test_Conversation_Get(t *testing.T) {
 
 func Test_User_Get(t *testing.T) {
 
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	storage.EXPECT().GetUsers().Times(1).Return([]api.User{
+		{Id: 1, Did: "did1"},
+		{Id: 2, Did: "did2"},
+	}, nil)
+	schemaManager := schema.NewSchemaManager(storage)
 
 	tests := []struct {
 		name                 string
@@ -209,8 +233,15 @@ func Test_User_Get(t *testing.T) {
 
 func Test_Payment_Get(t *testing.T) {
 
-	store, _ := storage.NewStorage("cache")
-	schemaManager := schema.NewSchemaManager(store)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	storage.EXPECT().GetPayments().Times(1).Return([]api.Payment{
+		{Id: 1, Zid: "zid1"},
+		{Id: 2, Zid: "zid2"},
+	}, nil)
+	schemaManager := schema.NewSchemaManager(storage)
 
 	tests := []struct {
 		name                 string
