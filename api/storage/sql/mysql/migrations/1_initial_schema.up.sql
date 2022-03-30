@@ -1,5 +1,3 @@
-CREATE DATABASE IF NOT EXISTS `relay3`;
-use relay3;
 
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
