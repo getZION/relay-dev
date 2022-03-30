@@ -1,5 +1,3 @@
-use relay3;
-
 CREATE PROCEDURE get_conversations()
 BEGIN
 
@@ -20,7 +18,7 @@ SELECT
         'comments', co.comments)
 	) as 'Result'
 FROM 
-	relay3.conversations c
+	conversations c
 LEFT JOIN (
 	SELECT 
 		conversation_zid, 
@@ -34,7 +32,7 @@ LEFT JOIN (
             'updated', co.updated,
             'deleted', co.deleted)
 		) AS comments
-	FROM relay3.comments co
+	FROM comments co
 	GROUP BY co.conversation_zid
 ) co ON co.conversation_zid = c.zid;
 

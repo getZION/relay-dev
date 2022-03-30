@@ -1,5 +1,3 @@
-use relay3;
-
 CREATE PROCEDURE get_communities()
 BEGIN
 
@@ -24,12 +22,12 @@ SELECT
         'users', u.users)
 	) as 'Result'
 FROM 
-	relay3.communities c
+	communities c
 LEFT JOIN (
 	SELECT 
 		community_zid, 
 		JSON_ARRAYAGG(ct.tag) AS tags
-	FROM relay3.community_tags ct
+	FROM community_tags ct
 	GROUP BY ct.community_zid
 ) t ON t.community_zid = c.zid
 LEFT JOIN (
@@ -40,7 +38,7 @@ LEFT JOIN (
         'joined_date', cu.joined_date,
         'left_date', cu.left_date)
 	) AS users
-    FROM relay3.community_users cu
+    FROM community_users cu
     GROUP BY cu.community_zid
 ) u ON u.community_zid = c.zid;
 

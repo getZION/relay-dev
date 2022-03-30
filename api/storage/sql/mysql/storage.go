@@ -60,7 +60,7 @@ func NewMySqlStorage() (*mysqlStorage, error) {
 		return nil, err
 	}
 
-	m, err := migrate.NewWithInstance("go-bindata", driver, "relay3", dbDriver)
+	m, err := migrate.NewWithInstance("go-bindata", driver, params.Name, dbDriver)
 	if err != nil {
 		return nil, err
 	}
