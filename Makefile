@@ -13,6 +13,9 @@ generate:
 	rm -rf gen
 	buf generate
 
+mysql-migration:
+	cd api/storage/sql/mysql/migrations && go-bindata -pkg migrations .
+
 test:
 	@-rm -r $(COVERAGE_DIR)
 	@mkdir $(COVERAGE_DIR)

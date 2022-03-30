@@ -6,10 +6,12 @@ import (
 
 	sq "github.com/Masterminds/squirrel"
 	"github.com/getzion/relay/api/storage/sql/common"
+	"github.com/getzion/relay/api/storage/sql/mysql/migrations"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
+
 	"github.com/golang-migrate/migrate/v4/database/mysql"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	bindata "github.com/golang-migrate/migrate/v4/source/go_bindata"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/sirupsen/logrus"
 )
@@ -43,12 +45,22 @@ func NewMySqlStorage() (*mysqlStorage, error) {
 		Connection: common.NewStore(db, sq.StatementBuilder.RunWith(sq.NewStmtCache(db))),
 	}
 
-	driver, err := mysql.WithInstance(db, &mysql.Config{})
+	s := bindata.Resource(migrations.AssetNames(),
+		func(name string) ([]byte, error) {
+			return migrations.Asset(name)
+		})
+
+	driver, err := bindata.WithInstance(s)
 	if err != nil {
 		return nil, err
 	}
 
-	m, err := migrate.NewWithDatabaseInstance("file://api/storage/sql/mysql/migrations", "mysql", driver)
+	dbDriver, err := mysql.WithInstance(db, &mysql.Config{})
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := migrate.NewWithInstance("go-bindata", driver, "relay3", dbDriver)
 	if err != nil {
 		return nil, err
 	}
