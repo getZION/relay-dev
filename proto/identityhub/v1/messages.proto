@@ -65,4 +65,8 @@ message AttestationProtected {
 }
 
 // todo: https://identity.foundation/identity-hub/spec/#message-descriptors
-message Authorization {}
+message Authorization {
+  AttestationProtected protected = 1;
+  string payload = 2;
+  string signature = 3;
+}

@@ -54,6 +54,25 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
+	pubKey, mErr := context.GetPublicKey()
+	if mErr != nil {
+		return nil, mErr
+	} else if strings.Trim(context.Message.Authorization.Payload, " ") == "" {
+		return nil, errors.NewMessageLevelError(400, "authorization payload cannot be empty", err)
+	} else if strings.Trim(context.Message.Authorization.Signature, " ") == "" {
+		return nil, errors.NewMessageLevelError(400, "authorization signature cannot be empty", err)
+	}
+
+	signedString, mErr := context.SignPayload()
+	if mErr != nil {
+		return nil, mErr
+	}
+
+	verified, mErr := context.VerifyRequest(signedString, pubKey)
+	if !verified {
+		return nil, mErr
+	}
+
 	schemaHandler, err := context.SchemaManager.GetSchemaHandler(context.Message.Descriptor_.Schema)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)

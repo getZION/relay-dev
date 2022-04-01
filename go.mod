@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/squirrel v1.5.2
 	github.com/aws/aws-sdk-go v1.43.12
 	github.com/bxcodec/faker/v3 v3.8.0
+	github.com/decred/base58 v1.0.4
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.1
 	github.com/gabriel-vasile/mimetype v1.4.0
 	github.com/getzion/relampago v0.2.1
