@@ -9,6 +9,7 @@ const (
 	SCHEMA_JOIN_COMMUNITY  = "https://schema.org/JoinAction"
 	SCHEMA_LEAVE_COMMUNITY = "https://schema.org/LeaveAction"
 	SCHEMA_COMMENT         = "https://schema.org/Comment"
+	SCHEMA_KICK_USER       = "https://schema.org/Organization/KickUser"
 
 	COLLECTIONS_QUERY  = "CollectionsQuery"
 	COLLECTIONS_WRITE  = "CollectionsWrite"

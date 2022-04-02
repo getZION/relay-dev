@@ -1,3 +1,5 @@
+DROP procedure IF EXISTS get_communities;
+
 CREATE PROCEDURE get_communities()
 BEGIN
 
@@ -36,7 +38,8 @@ LEFT JOIN (
 	JSON_ARRAYAGG(JSON_OBJECT(
 		'user_did', cu.user_did,
         'joined_date', cu.joined_date,
-        'left_date', cu.left_date)
+        'left_date', cu.left_date,
+        'left_reason', cu.left_reason)
 	) AS users
     FROM community_users cu
     GROUP BY cu.community_zid

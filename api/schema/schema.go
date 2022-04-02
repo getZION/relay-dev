@@ -31,6 +31,7 @@ func NewSchemaManager(storage api.Storage) *SchemaManager {
 			constants.SCHEMA_JOIN_COMMUNITY:  handler.InitCommunityJoinHandler(storage),
 			constants.SCHEMA_LEAVE_COMMUNITY: handler.InitCommunityLeaveHandler(storage),
 			constants.SCHEMA_COMMENT:         handler.InitCommentHandler(storage),
+			constants.SCHEMA_KICK_USER:       handler.InitCommunityKickUserHandler(storage),
 		},
 	}
 

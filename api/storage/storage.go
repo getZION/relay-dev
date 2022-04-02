@@ -24,6 +24,5 @@ func NewStorage(storeType string) (storage api.Storage, err error) {
 		return nil, err
 	}
 
-	logrus.Info("Migrations successful.")
 	return storage, nil
 }

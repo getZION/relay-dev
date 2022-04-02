@@ -1,5 +1,3 @@
-use relay3;
-
 CREATE PROCEDURE get_users()
 BEGIN
 
@@ -17,6 +15,6 @@ SELECT
         'Updated', u.updated)
 	) as 'Result'
 FROM 
-	relay3.users u;
+	users u;
 
 END
