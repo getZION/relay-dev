@@ -310,7 +310,7 @@ func Test_LeaveCommunity(t *testing.T) {
 
 	storage.EXPECT().GetCommunityByZid("zid").Times(1).Return(&api.Community{Zid: "zid"}, nil)
 	storage.EXPECT().GetUserByDid("did").Times(1).Return(&api.User{Did: "did"}, nil)
-	storage.EXPECT().RemoveUserToCommunity("zid", "did").Times(1).Return(nil)
+	storage.EXPECT().RemoveUserToCommunity("zid", "did", "").Times(1).Return(nil)
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
@@ -319,6 +319,35 @@ func Test_LeaveCommunity(t *testing.T) {
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_LEAVE_COMMUNITY,
+				DateCreated: DATE_CREATED,
+				Method:      constants.COLLECTIONS_WRITE,
+			},
+		},
+	})
+
+	require.Nil(t, err)
+	require.Nil(t, entries)
+}
+
+func Test_KickUserCommunity(t *testing.T) {
+	validator.InitValidator()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	storage := storage.NewMockStorage(ctrl)
+	schemaManager := schema.NewSchemaManager(storage)
+
+	storage.EXPECT().GetCommunityByZid("zid").Times(1).Return(&api.Community{Zid: "zid"}, nil)
+	storage.EXPECT().GetUserByDid("did").Times(1).Return(&api.User{Did: "did"}, nil)
+	storage.EXPECT().RemoveUserToCommunity("zid", "did", "Kicked by Owner").Times(1).Return(nil)
+
+	entries, err := CollectionsWrite(&handler.RequestContext{
+		SchemaManager: schemaManager,
+		Message: &hub.Message{
+			Data: `{ "community_zid": "zid", "user_did": "did" }`,
+			Descriptor_: &hub.MessageDescriptor{
+				ObjectId:    OBJECT_ID,
+				Schema:      constants.SCHEMA_KICK_USER,
 				DateCreated: DATE_CREATED,
 				Method:      constants.COLLECTIONS_WRITE,
 			},

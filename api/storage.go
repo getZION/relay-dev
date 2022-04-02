@@ -15,7 +15,7 @@ type CommunityService interface {
 	InsertCommunity(*Community) error
 
 	AddUserToCommunity(communityZid, userDid string) error
-	RemoveUserToCommunity(communityZid, userDid string) error
+	RemoveUserToCommunity(communityZid, userDid, leftReason string) error
 }
 
 // Service represents a service for managing environment(endpoint) data.

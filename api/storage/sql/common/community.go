@@ -153,7 +153,7 @@ func (c *Connection) AddUserToCommunity(communityZid, userDid string) error {
 	return nil
 }
 
-func (c *Connection) RemoveUserToCommunity(communityZid, userDid string) error {
+func (c *Connection) RemoveUserToCommunity(communityZid, userDid, leftReason string) error {
 
 	var exist bool
 	err := c.db.QueryRow(fmt.Sprintf(`SELECT EXISTS(SELECT id FROM relay3.community_users cu WHERE cu.community_zid = '%s' AND cu.user_did = '%s' AND cu.left_date IS NULL)`, communityZid, userDid)).Scan(&exist)
@@ -166,7 +166,19 @@ func (c *Connection) RemoveUserToCommunity(communityZid, userDid string) error {
 		return err
 	}
 
-	_, err = tx.Exec(fmt.Sprintf(`UPDATE community_users SET left_date=%d WHERE community_zid = '%s' AND user_did = '%s' AND left_date IS NULL`, time.Now().Unix(), communityZid, userDid))
+	sqlBuilder := c.builder.Update("community_users").Set("left_date", time.Now().Unix())
+
+	if leftReason != "" {
+		sqlBuilder = sqlBuilder.Set("left_reason", leftReason)
+	}
+
+	sqlBuilder = sqlBuilder.Where(sq.And{
+		sq.Eq{"community_zid": communityZid},
+		sq.Eq{"user_did": userDid},
+		sq.Eq{"left_date": nil},
+	})
+
+	_, err = sqlBuilder.RunWith(tx).Exec()
 	if err != nil {
 		tx.Rollback()
 		return err

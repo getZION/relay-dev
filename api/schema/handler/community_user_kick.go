@@ -9,17 +9,17 @@ import (
 	"github.com/getzion/relay/api/validator"
 )
 
-type CommunityLeaveHandler struct {
+type CommunityKickUserHandler struct {
 	storage api.Storage
 }
 
-func InitCommunityLeaveHandler(storage api.Storage) *CommunityLeaveHandler {
-	return &CommunityLeaveHandler{
+func InitCommunityKickUserHandler(storage api.Storage) *CommunityKickUserHandler {
+	return &CommunityKickUserHandler{
 		storage: storage,
 	}
 }
 
-func (h *CommunityLeaveHandler) Execute(data []byte, method string) (interface{}, error) {
+func (h *CommunityKickUserHandler) Execute(data []byte, method string) (interface{}, error) {
 	switch method {
 	case constants.COLLECTIONS_WRITE:
 
@@ -44,7 +44,7 @@ func (h *CommunityLeaveHandler) Execute(data []byte, method string) (interface{}
 			return nil, fmt.Errorf("user not found: %s", model.UserDid)
 		}
 
-		err = h.storage.RemoveUserToCommunity(community.Zid, user.Did, "")
+		err = h.storage.RemoveUserToCommunity(community.Zid, user.Did, "Kicked by Owner")
 		if err != nil {
 			return nil, err
 		}
@@ -52,6 +52,6 @@ func (h *CommunityLeaveHandler) Execute(data []byte, method string) (interface{}
 		return nil, nil
 
 	default:
-		return nil, fmt.Errorf("unimplemented leave community method: %s", method)
+		return nil, fmt.Errorf("unimplemented commuity kick user method: %s", method)
 	}
 }
