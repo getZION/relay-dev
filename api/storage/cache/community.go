@@ -44,7 +44,7 @@ func (c *cacheStorage) AddUserToCommunity(communityZid, userDid string) error {
 	return nil
 }
 
-func (c *cacheStorage) RemoveUserToCommunity(communityZid, userDid string) error {
+func (c *cacheStorage) RemoveUserToCommunity(communityZid, userDid, leftReason string) error {
 	// association := s.connection.DB.Model(community).Omit("users").Association("users").Delete(user)
 	// return association.Error
 	return nil

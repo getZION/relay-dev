@@ -44,6 +44,11 @@ func Test_ShouldReturnCorrectHandler(t *testing.T) {
 			schema:          constants.SCHEMA_LEAVE_COMMUNITY,
 			expectedHandler: &handler.CommunityLeaveHandler{},
 		},
+		{
+			name:            "should return community kick user schema",
+			schema:          constants.SCHEMA_KICK_USER,
+			expectedHandler: &handler.CommunityKickUserHandler{},
+		},
 	}
 
 	schemaManager := NewSchemaManager(nil)

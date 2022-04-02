@@ -462,7 +462,35 @@ var _ = Describe("IdentityHub Collections", func() {
 				It("receive a response if Message Descriptor has valid", func() {
 					st.EXPECT().GetCommunityByZid("zid").Times(1).Return(&api.Community{Zid: "zid"}, nil)
 					st.EXPECT().GetUserByDid("did").Times(1).Return(&api.User{Did: "did"}, nil)
-					st.EXPECT().RemoveUserToCommunity("zid", "did").Times(1).Return(nil)
+					st.EXPECT().RemoveUserToCommunity("zid", "did", "").Times(1).Return(nil)
+
+					response, err := client.Process(ctx, request)
+					Expect(err).To(BeNil())
+					Expect(response).To(Not(BeNil()))
+					Expect(response.RequestId).To(Equal(request.RequestId))
+					Expect(response.Status).To(Not(BeNil()))
+					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies).To(Not(BeNil()))
+					Expect(response.Replies).To(HaveLen(1))
+					Expect(response.Replies[0].Status).To(Not(BeNil()))
+					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+				})
+
+			})
+
+			Context("Kick User Community Tests", func() {
+
+				BeforeEach(func() {
+					request.Messages[0].Data = `{ "community_zid": "zid", "user_did": "did" }`
+					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_KICK_USER
+					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
+					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED
+				})
+
+				It("receive a response if Message Descriptor has valid", func() {
+					st.EXPECT().GetCommunityByZid("zid").Times(1).Return(&api.Community{Zid: "zid"}, nil)
+					st.EXPECT().GetUserByDid("did").Times(1).Return(&api.User{Did: "did"}, nil)
+					st.EXPECT().RemoveUserToCommunity("zid", "did", "Kicked by Owner").Times(1).Return(nil)
 
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())

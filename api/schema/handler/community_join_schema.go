@@ -53,6 +53,6 @@ func (h *CommunityJoinHandler) Execute(data []byte, method string) (interface{},
 		return nil, nil
 
 	default:
-		return nil, fmt.Errorf("unimplemented join conversation method: %s", method)
+		return nil, fmt.Errorf("unimplemented join community method: %s", method)
 	}
 }

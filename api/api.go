@@ -78,6 +78,7 @@ type (
 		CommunityZid string `json:"community_zid"`
 		JoinedDate   int64  `json:"joined_date"`
 		LeftDate     int64  `json:"left_date"`
+		LeftReason   string `json:"left_reason"`
 	}
 
 	Payment struct {

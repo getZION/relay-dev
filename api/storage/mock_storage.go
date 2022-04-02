@@ -58,9 +58,9 @@ func (m *MockStorage) AddUserToCommunity(arg0, arg1 string) error {
 	return ret0
 }
 
-func (m *MockStorage) RemoveUserToCommunity(arg0, arg1 string) error {
+func (m *MockStorage) RemoveUserToCommunity(arg0, arg1, arg2 string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RemoveUserToCommunity", arg0, arg1)
+	ret := m.ctrl.Call(m, "RemoveUserToCommunity", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
@@ -153,9 +153,9 @@ func (mr *mockStorageMockRecorder) AddUserToCommunity(arg0, arg1 interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUserToCommunity", reflect.TypeOf((*MockStorage)(nil).AddUserToCommunity), arg0, arg1)
 }
 
-func (mr *mockStorageMockRecorder) RemoveUserToCommunity(arg0, arg1 interface{}) *gomock.Call {
+func (mr *mockStorageMockRecorder) RemoveUserToCommunity(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveUserToCommunity", reflect.TypeOf((*MockStorage)(nil).RemoveUserToCommunity), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveUserToCommunity", reflect.TypeOf((*MockStorage)(nil).RemoveUserToCommunity), arg0, arg1, arg2)
 }
 
 func (mr *mockStorageMockRecorder) GetUsers() *gomock.Call {
