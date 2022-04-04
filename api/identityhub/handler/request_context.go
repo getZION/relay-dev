@@ -14,6 +14,8 @@ import (
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/schema"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/lestrrat-go/jwx/jwa"
+	"github.com/lestrrat-go/jwx/jws"
 	"github.com/sirupsen/logrus"
 )
 
@@ -23,20 +25,37 @@ type RequestContext struct {
 }
 
 func (c *RequestContext) VerifyRequest(signedString string, publicKey *secp256k1.PublicKey) (bool, *errors.MessageLevelError) {
+
+	//sigBytes, err := hex.DecodeString("970603d8ccd2475b1ff66cfb3ce7e622c5938348304c5a7bc2e6015fb98e3b457d4e912fcca6ca87c04390aa5e6e0e613bbbba7ffd6f15bc59f95bbd92ba50f0")
 	sigBytes, err := hex.DecodeString(c.Message.Authorization.Signature)
 	if err != nil {
 		logrus.Errorf("signature decoding failed: %v", err)
 		return false, errors.NewMessageLevelError(400, "signature decoding failed", err)
 	}
+	fmt.Printf("%v", sigBytes)
 
-	signature, err := schnorr.ParseSignature(sigBytes)
-	if err != nil {
-		logrus.Errorf("signature parse failed: %v", err)
-		return false, errors.NewMessageLevelError(400, "signature parse failed", err)
-	}
+	//dotIndex := strings.Index(signedString, ".")
+	//signatureString := signedString[dotIndex+1:]
+	//payloadString := signedString[:dotIndex]
+	verified, err := jws.Verify([]byte(signedString), jwa.ES256K, publicKey)
+	fmt.Printf("%v", verified)
+	return false, nil
 
-	verified := signature.Verify([]byte(signedString), publicKey)
-	return verified, nil
+	//payloadBytes, _ := hex.DecodeString(signatureString)
+	//signatureBytes := sigBytes[:64]
+
+	// signatureBytes := []byte(signatureString)
+	// payloadBytes := []byte(payloadString)
+	// fmt.Printf("%v", signatureBytes)
+
+	// signature, err := schnorr.ParseSignature(signatureBytes)
+	// if err != nil {
+	// 	logrus.Errorf("signature parse failed: %v", err)
+	// 	return false, errors.NewMessageLevelError(400, "signature parse failed", err)
+	// }
+
+	// verified := signature.Verify(payloadBytes, publicKey)
+	// return verified, nil
 }
 
 func (c *RequestContext) GetPublicKey() (*secp256k1.PublicKey, *errors.MessageLevelError) {
@@ -53,21 +72,17 @@ func (c *RequestContext) GetPublicKey() (*secp256k1.PublicKey, *errors.MessageLe
 		return nil, errors.NewMessageLevelError(400, "Unsupported DID method", nil)
 	}
 
-	trimmedDid := strings.TrimPrefix(c.Message.Authorization.Protected.Kid, "did:key:z")
-	didByte := base58.Decode(trimmedDid)
-	pubKeyBytes := didByte[1:34]
+	kid := strings.TrimPrefix(c.Message.Authorization.Protected.Kid, "did:key:z")
+	didBytes := base58.Decode(kid)
+	pubKeyBytes := make([]byte, 33)
+	pubKeyBytes = didBytes[2:]
+	pubKeyBytes = append([]byte{0x2}, pubKeyBytes...)
 
 	pubKey, err := schnorr.ParsePubKey(pubKeyBytes)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(400, "publicKey parse failed", err)
 	}
 
-	key, err := secp256k1.ParsePubKey(pubKeyBytes)
-	if err != nil {
-		return nil, errors.NewMessageLevelError(400, "publicKey parse failed", err)
-	}
-
-	return key, nil
 	return pubKey, nil
 }
 
@@ -89,8 +104,8 @@ func (c *RequestContext) SignPayload() (string, *errors.MessageLevelError) {
 		return "", errors.NewMessageLevelError(400, "stringifiedProtected parse failed", err)
 	}
 
-	base64Protected := base64.StdEncoding.EncodeToString([]byte(string(stringifiedProtected)))
-	signedString := fmt.Sprintf("%s.%s", base64Protected, payload)
+	base64Protected := base64.URLEncoding.EncodeToString([]byte(string(stringifiedProtected)))
+	signedString := fmt.Sprintf("%s.%s.", base64Protected, payload)
 	return signedString, nil
 }
 

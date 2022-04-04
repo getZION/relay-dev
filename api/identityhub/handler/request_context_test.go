@@ -48,6 +48,7 @@ func Test_RequetContext_GetPublicKey(t *testing.T) {
 				Protected: &v1.AttestationProtected{
 					Alg: "SS256K",
 					Kid: "did:key:z6DtUbeLv8CZ9qjieQYoRHczeqq6UfvTwMUDYqu5HaQKeAzS",
+					//Kid: "did:key:z6DtNFZhbpJtsrN4x7sKEuMBpf1X3EwDqjfM7RVGYdh3qADy",
 				},
 				Payload:   "d522c9df4cfd90e8698f7ab286255ff5b8b27251932d22fa318b3003ab07e97b",
 				Signature: "3733613332376163353138343032646138323864323461346634643738306166383138373434643162643630396331643530346137303532396538663335663032326161373338366130393531373836613265646561346638623334363637343764623436396635666264616163383965336538386231376437656666613264",
@@ -55,6 +56,8 @@ func Test_RequetContext_GetPublicKey(t *testing.T) {
 		},
 	}
 
-	context.GetPublicKey()
+	publicKey, _ := context.GetPublicKey()
+	signedString, _ := context.SignPayload()
+	context.VerifyRequest(signedString, publicKey)
 
 }
