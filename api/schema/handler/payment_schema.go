@@ -6,6 +6,7 @@ import (
 
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
+	"github.com/getzion/relay/api/validator"
 )
 
 type PaymentHandler struct {
@@ -28,6 +29,11 @@ func (h *PaymentHandler) Execute(data []byte, method string) (interface{}, error
 
 		var payment api.Payment
 		err := json.Unmarshal(data, &payment)
+		if err != nil {
+			return nil, err
+		}
+
+		err = validator.Struct(&payment)
 		if err != nil {
 			return nil, err
 		}

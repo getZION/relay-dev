@@ -24,7 +24,7 @@ type (
 	Conversation struct {
 		Id           int64     `json:"Id"`
 		Zid          string    `json:"Zid"`
-		CommunityZid string    `json:"CommunityZid" validate:"required"`
+		CommunityZid string    `json:"CommunityZid" validate:"required,uuid4"`
 		Text         string    `json:"Text" validate:"required_without=Link"`
 		Link         string    `json:"Link" validate:"required_without=Text"`
 		Img          string    `json:"Img"`
@@ -41,7 +41,7 @@ type (
 		Id              int64  `json:"Id"`
 		Zid             string `json:"Zid"`
 		UserDid         string `json:"UserDid" validate:"required"`
-		ConversationZid string `json:"Conversationzid" validate:"required"`
+		ConversationZid string `json:"Conversationzid" validate:"required,uuid4"`
 		Text            string `json:"Text" validate:"required_without=Link"`
 		Link            string `json:"Link" validate:"required_without=Text"`
 		Created         int64  `json:"Created"`
@@ -82,17 +82,17 @@ type (
 	}
 
 	Payment struct {
-		Id                  int64
-		Amount              int64
-		Memo                string
-		MessageZid          string
-		RecipientDid        string
-		RecipientNodePubkey string
-		RecipientRelayUrl   string
-		SenderDid           string
-		Status              string
-		Type                int64
-		Zid                 string
+		Id                  int64  `json:"id"`
+		Zid                 string `json:"zid"`
+		RecipientDid        string `json:"recipient_did" validate:"required"`
+		Amount              int64  `json:"amount" validate:"required"`
+		Memo                string `json:"memo"`
+		SenderDid           string `json:"sender_did" validate:"required"`
+		MessageZid          string `json:"message_zid"`
+		RecipientNodePubkey string `json:"recipient_node_pubkey"`
+		RecipientRelayUrl   string `json:"recipient_relay_url"`
+		Status              string `json:"status"`
+		Type                int64  `json:"type"`
 	}
 )
 
