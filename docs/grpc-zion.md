@@ -3,6 +3,9 @@
 
 ## Table of Contents
 
+- [proto/zion/v1/comments.proto](#proto/zion/v1/comments.proto)
+    - [Comment](#proto.zion.v1.Comment)
+  
 - [proto/zion/v1/communities.proto](#proto/zion/v1/communities.proto)
     - [Community](#proto.zion.v1.Community)
   
@@ -21,10 +24,52 @@
 - [proto/zion/v1/payments.proto](#proto/zion/v1/payments.proto)
     - [Payment](#proto.zion.v1.Payment)
   
+- [proto/zion/v1/tags.proto](#proto/zion/v1/tags.proto)
+    - [Tag](#proto.zion.v1.Tag)
+  
 - [proto/zion/v1/users.proto](#proto/zion/v1/users.proto)
     - [User](#proto.zion.v1.User)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="proto/zion/v1/comments.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## proto/zion/v1/comments.proto
+
+
+
+<a name="proto.zion.v1.Comment"></a>
+
+### Comment
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int64](#int64) |  | The community&#39;s unique ID (primary key) |
+| zid | [string](#string) |  | Comment ID unique across Zion - Required; must be uuid v4 |
+| conversation_zid | [string](#string) |  | Zion ID of the conversation this comment belongs to - Required |
+| user_did | [string](#string) |  | DID of user who sent this comment - Required |
+| text | [string](#string) |  | Main message body - Optional if link is non-null, otherwise required |
+| link | [string](#string) |  | URL link to external piece of content - Optional if text is non-null, otherwise required |
+| created | [int64](#int64) |  | Created when? - Required |
+| updated | [int64](#int64) |  | Updated when? - Optional |
+| deleted | [bool](#bool) |  | Deleted - Optional, defaults 0 |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+ 
 
 
 
@@ -50,7 +95,6 @@
 | owner_username | [string](#string) |  | Owner username - Required |
 | description | [string](#string) |  | The community&#39;s description or mission statement - Required |
 | img | [string](#string) |  | Image URL - Optional |
-| tags | [string](#string) | repeated | User-defined tags - Optional |
 | price_to_join | [int64](#int64) |  | How much it costs to join - Required |
 | price_per_message | [int64](#int64) |  | How much each message costs - Required |
 | escrow_amount | [int64](#int64) |  | Escrow amount - Required |
@@ -59,6 +103,9 @@
 | deleted | [bool](#bool) |  | Deleted - Optional, defaults 0 |
 | created | [int64](#int64) |  | Created when? - Required |
 | updated | [int64](#int64) |  | Updated when? - Optional |
+| users | [User](#proto.zion.v1.User) | repeated |  |
+| tags | [Tag](#proto.zion.v1.Tag) | repeated |  |
+| conversations | [Conversation](#proto.zion.v1.Conversation) | repeated |  |
 
 
 
@@ -92,48 +139,17 @@
 | id | [int64](#int64) |  | The community&#39;s unique ID (primary key) |
 | zid | [string](#string) |  | Conversation ID unique across Zion - Required; must be uuid v4 |
 | community_zid | [string](#string) |  | Zion ID of the community this conversation belongs to - Required; must be uuid v4 |
-| message | [Message](#proto.zion.v1.Message) |  | The Message that starts the conversation - Required |
-| public | [bool](#bool) |  | Is this conversation publicly visible? - Optional; defaults to false |
-| public_price | [int64](#int64) |  | Price in sats for non-community members to read, if public = true - Optional; defaults to 0 |
-
-
-
-
-
- 
-
- 
-
- 
-
- 
-
-
-
-<a name="proto/zion/v1/comment.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## proto/zion/v1/comment.proto
-
-
-
-<a name="proto.zion.v1.comment"></a>
-
-### Comment
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| Id | [int64](#int64) |  | Comment primary ID &amp; key - unique only to this relay |
-| Zid | [string](#string) |  | Comment id unique across Zion - Required; must be uuid v4 |
-| UserDid | [int64](#int64) |  | DID of user who sent this comment - Required |
-| conversation_zid | [int64](#int64) |  | Zion ID of conversation of this comment |
 | text | [string](#string) |  | Main message body - Optional if link is non-null, otherwise required |
 | link | [string](#string) |  | URL link to external piece of content - Optional if text is non-null, otherwise required |
+| img | [string](#string) |  | URL for associated image - Optional |
+| video | [string](#string) |  | URL for associated video - Optional |
+| public | [bool](#bool) |  | Is this conversation publicly visible? - Optional; defaults to false |
+| public_price | [int64](#int64) |  | Price in sats for non-community members to read, if public = true - Optional; defaults to 0 |
+| deleted | [bool](#bool) |  | Deleted - Optional, defaults 0 |
 | created | [int64](#int64) |  | Created when? - Required |
 | updated | [int64](#int64) |  | Updated when? - Optional |
-| deleted | [bool](#bool) |  | Deleted - Optional, defaults 0 |
+| comments | [Comment](#proto.zion.v1.Comment) | repeated |  |
+
 
 
 
@@ -157,7 +173,7 @@
 
 <a name="proto.zion.v1.Message"></a>
 
-### Message (Disable)
+### Message
 
 
 
@@ -281,6 +297,38 @@
 
 
 
+<a name="proto/zion/v1/tags.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## proto/zion/v1/tags.proto
+
+
+
+<a name="proto.zion.v1.Tag"></a>
+
+### Tag
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int64](#int64) |  | The tag&#39;s unique ID (primary key) |
+| tag | [string](#string) |  | User-defined tag |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
 <a name="proto/zion/v1/users.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -302,8 +350,10 @@
 | name | [string](#string) |  | User&#39;s display name - Optional |
 | email | [string](#string) |  | User&#39;s email address for opt-in marketing updates - Optional |
 | bio | [string](#string) |  | User&#39;s personal biography that shows on their profile - Optional |
-| picture | [string](#string) |  | URL for user&#39;s profile picture - Optional |
+| img | [string](#string) |  | URL for user&#39;s profile picture - Optional |
 | price_to_message | [int64](#int64) |  | How many sats it costs to direct-message this user - Optional - Default to 0 |
+| created | [int64](#int64) |  | Created when? - Required |
+| updated | [int64](#int64) |  | Updated when? - Optional |
 
 
 
