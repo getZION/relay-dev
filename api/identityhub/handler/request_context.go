@@ -34,10 +34,12 @@ func (c *RequestContext) VerifyRequest(signedString string, publicKey *secp256k1
 	}
 	fmt.Printf("%v", sigBytes)
 
+	// SS256K_2019     = "SchnorrSecp256k1VerificationKey2019"
+
 	//dotIndex := strings.Index(signedString, ".")
 	//signatureString := signedString[dotIndex+1:]
 	//payloadString := signedString[:dotIndex]
-	verified, err := jws.Verify([]byte(signedString), jwa.ES256K, publicKey)
+	verified, err := jws.Verify([]byte(signedString), jwa.SS256K, publicKey)
 	fmt.Printf("%v", verified)
 	return false, nil
 
