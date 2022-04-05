@@ -126,10 +126,10 @@ func (c *Connection) InsertCommunity(community *api.Community) error {
 	return nil
 }
 
-func (c *Connection) AddUserToCommunity(communityZid, userDid string) error {
+func (c *Connection) AddUserToCommunity(community *api.Community, user *api.User) error {
 
 	var exist bool
-	err := c.db.QueryRow(fmt.Sprintf(`SELECT EXISTS(SELECT id FROM relay3.community_users cu WHERE cu.community_zid = '%s' AND cu.user_did = '%s' AND cu.left_date IS NULL)`, communityZid, userDid)).Scan(&exist)
+	err := c.db.QueryRow(fmt.Sprintf(`SELECT EXISTS(SELECT id FROM relay3.community_users cu WHERE cu.community_zid = '%s' AND cu.user_did = '%s' AND cu.left_date IS NULL)`, community.Zid, user.Did)).Scan(&exist)
 	if exist {
 		return fmt.Errorf("user already member of this community")
 	}
@@ -139,7 +139,13 @@ func (c *Connection) AddUserToCommunity(communityZid, userDid string) error {
 		return err
 	}
 
-	_, err = tx.Exec(fmt.Sprintf(`INSERT INTO community_users (community_zid, user_did, joined_date) VALUES ('%s', '%s', %d)`, communityZid, userDid, time.Now().Unix()))
+	_, err = tx.Exec(fmt.Sprintf(`INSERT INTO community_users (community_zid, user_did, joined_date) VALUES ('%s', '%s', %d)`, community.Zid, user.Did, time.Now().Unix()))
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	_, err = tx.Exec(fmt.Sprintf(`UPDATE users SET amount = amount - %d WHERE did = %s`, community.PriceToJoin, user.Did))
 	if err != nil {
 		tx.Rollback()
 		return err

@@ -51,7 +51,7 @@ func (m *MockStorage) InsertCommunity(arg0 *api.Community) error {
 	return ret0
 }
 
-func (m *MockStorage) AddUserToCommunity(arg0, arg1 string) error {
+func (m *MockStorage) AddUserToCommunity(arg0 *api.Community, arg1 *api.User) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddUserToCommunity", arg0, arg1)
 	ret0, _ := ret[0].(error)

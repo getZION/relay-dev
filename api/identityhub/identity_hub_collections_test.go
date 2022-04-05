@@ -432,9 +432,11 @@ var _ = Describe("IdentityHub Collections", func() {
 				})
 
 				It("receive a response if Message Descriptor has valid", func() {
-					st.EXPECT().GetCommunityByZid("zid").Times(1).Return(&api.Community{Zid: "zid"}, nil)
-					st.EXPECT().GetUserByDid("did").Times(1).Return(&api.User{Did: "did"}, nil)
-					st.EXPECT().AddUserToCommunity("zid", "did").Times(1).Return(nil)
+					community := &api.Community{Zid: "zid"}
+					user := &api.User{Did: "did"}
+					st.EXPECT().GetCommunityByZid("zid").Times(1).Return(community, nil)
+					st.EXPECT().GetUserByDid("did").Times(1).Return(user, nil)
+					st.EXPECT().AddUserToCommunity(community, user).Times(1).Return(nil)
 
 					response, err := client.Process(ctx, request)
 					Expect(err).To(BeNil())

@@ -60,16 +60,17 @@ type (
 	}
 
 	User struct {
-		Id             int64  `json:"Id"`
-		Did            string `json:"Did" validate:"required"`
-		Username       string `json:"Username" validate:"required,username,min=6,max=16"`
-		Email          string `json:"Email" validate:"omitempty,email"`
-		Name           string `json:"Name" validate:"required"`
-		Bio            string `json:"Bio"`
-		Img            string `json:"Img"`
-		PriceToMessage int64  `json:"PriceToMessage"`
-		Created        int64  `json:"Created"`
-		Updated        int64  `json:"Updated"`
+		Id             int64   `json:"Id"`
+		Did            string  `json:"Did" validate:"required"`
+		Username       string  `json:"Username" validate:"required,username,min=6,max=16"`
+		Email          string  `json:"Email" validate:"omitempty,email"`
+		Name           string  `json:"Name" validate:"required"`
+		Amount         float64 `json:"amount"`
+		Bio            string  `json:"Bio"`
+		Img            string  `json:"Img"`
+		PriceToMessage int64   `json:"PriceToMessage"`
+		Created        int64   `json:"Created"`
+		Updated        int64   `json:"Updated"`
 	}
 
 	UserCommunity struct {

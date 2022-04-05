@@ -38,7 +38,7 @@ func (c *cacheStorage) InsertCommunity(community *api.Community) error {
 	return err
 }
 
-func (c *cacheStorage) AddUserToCommunity(communityZid, userDid string) error {
+func (c *cacheStorage) AddUserToCommunity(community *api.Community, user *api.User) error {
 	// association := s.connection.DB.Model(community).Omit("users").Association("users").Append(user)
 	// return association.Error
 	return nil

@@ -279,9 +279,11 @@ func Test_JoinCommunity(t *testing.T) {
 	storage := storage.NewMockStorage(ctrl)
 	schemaManager := schema.NewSchemaManager(storage)
 
-	storage.EXPECT().GetCommunityByZid("zid").Times(1).Return(&api.Community{Zid: "zid"}, nil)
-	storage.EXPECT().GetUserByDid("did").Times(1).Return(&api.User{Did: "did"}, nil)
-	storage.EXPECT().AddUserToCommunity("zid", "did").Times(1).Return(nil)
+	community := &api.Community{Zid: "zid"}
+	user := &api.User{Did: "did"}
+	storage.EXPECT().GetCommunityByZid("zid").Times(1).Return(community, nil)
+	storage.EXPECT().GetUserByDid("did").Times(1).Return(user, nil)
+	storage.EXPECT().AddUserToCommunity(community, user).Times(1).Return(nil)
 
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,

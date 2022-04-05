@@ -45,7 +45,13 @@ func (h *CommunityJoinHandler) Execute(data []byte, method string) (interface{},
 			return nil, fmt.Errorf("user not found: %s", model.UserDid)
 		}
 
-		err = h.storage.AddUserToCommunity(community.Zid, user.Did)
+		if community.PriceToJoin > 0 {
+			if user.Amount-float64(community.PriceToJoin) < 0 {
+				return nil, fmt.Errorf("user balance is not enought. current balance: %f", user.Amount)
+			}
+		}
+
+		err = h.storage.AddUserToCommunity(community, user)
 		if err != nil {
 			return nil, err
 		}
