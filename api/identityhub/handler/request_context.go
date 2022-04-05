@@ -3,7 +3,6 @@ package handler
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -11,6 +10,7 @@ import (
 	"github.com/decred/base58"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4"
 	"github.com/decred/dcrd/dcrec/secp256k1/v4/schnorr"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/schema"
 	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
@@ -27,20 +27,26 @@ type RequestContext struct {
 func (c *RequestContext) VerifyRequest(signedString string, publicKey *secp256k1.PublicKey) (bool, *errors.MessageLevelError) {
 
 	//sigBytes, err := hex.DecodeString("970603d8ccd2475b1ff66cfb3ce7e622c5938348304c5a7bc2e6015fb98e3b457d4e912fcca6ca87c04390aa5e6e0e613bbbba7ffd6f15bc59f95bbd92ba50f0")
-	sigBytes, err := hex.DecodeString(c.Message.Authorization.Signature)
-	if err != nil {
-		logrus.Errorf("signature decoding failed: %v", err)
-		return false, errors.NewMessageLevelError(400, "signature decoding failed", err)
-	}
-	fmt.Printf("%v", sigBytes)
+	// sigBytes, err := hex.DecodeString(c.Message.Authorization.Signature)
+	// if err != nil {
+	// 	logrus.Errorf("signature decoding failed: %v", err)
+	// 	return false, errors.NewMessageLevelError(400, "signature decoding failed", err)
+	// }
+	// fmt.Printf("%v", sigBytes)
 
 	// SS256K_2019     = "SchnorrSecp256k1VerificationKey2019"
 
 	//dotIndex := strings.Index(signedString, ".")
-	//signatureString := signedString[dotIndex+1:]
-	//payloadString := signedString[:dotIndex]
-	verified, err := jws.Verify([]byte(signedString), jwa.SS256K, publicKey)
-	fmt.Printf("%v", verified)
+	//signatureString := signedString[:dotIndex]
+	//payloadString := signedString[dotIndex+1:]
+	//payloadString = strings.TrimSuffix(payloadString, ".")
+
+	//ecdsa.Verify(publicKey.ToECDSA(), []byte(signedString), )
+
+	//verifer, _ := jws.NewVerifier(jwa.ES256K)
+	//err = verifer.Verify([]byte(payloadString), []byte(signatureString), publicKey)
+	verified, err := jws.Verify([]byte(signedString), jwa.ES256, publicKey)
+	fmt.Printf("verified: %v, error:%v", verified, err)
 	return false, nil
 
 	//payloadBytes, _ := hex.DecodeString(signatureString)
@@ -78,14 +84,15 @@ func (c *RequestContext) GetPublicKey() (*secp256k1.PublicKey, *errors.MessageLe
 	didBytes := base58.Decode(kid)
 	pubKeyBytes := make([]byte, 33)
 	pubKeyBytes = didBytes[2:]
-	pubKeyBytes = append([]byte{0x2}, pubKeyBytes...)
+	//pubKeyBytes = append([]byte{0x2}, pubKeyBytes...)
 
-	pubKey, err := schnorr.ParsePubKey(pubKeyBytes)
+	pubKey, err := crypto.UnmarshalPubkey(pubKeyBytes)
+	pubKey1, err := schnorr.ParsePubKey(pubKeyBytes)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(400, "publicKey parse failed", err)
 	}
-
-	return pubKey, nil
+	fmt.Printf("%v", pubKey)
+	return pubKey1, nil
 }
 
 func (c *RequestContext) SignPayload() (string, *errors.MessageLevelError) {
@@ -106,7 +113,7 @@ func (c *RequestContext) SignPayload() (string, *errors.MessageLevelError) {
 		return "", errors.NewMessageLevelError(400, "stringifiedProtected parse failed", err)
 	}
 
-	base64Protected := base64.URLEncoding.EncodeToString([]byte(string(stringifiedProtected)))
+	base64Protected := base64.RawURLEncoding.EncodeToString([]byte(string(stringifiedProtected)))
 	signedString := fmt.Sprintf("%s.%s.", base64Protected, payload)
 	return signedString, nil
 }

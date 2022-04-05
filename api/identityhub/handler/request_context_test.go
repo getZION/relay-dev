@@ -38,20 +38,20 @@ func Test_RequetContext_GetPublicKey(t *testing.T) {
 
 	context := RequestContext{
 		Message: &v1.Message{
-			Data: "{\"name\":\"Test Community\",\"description\":\"Test Description\",\"ownerDid\":\"did:key:z6DtUbeLv8CZ9qjieQYoRHczeqq6UfvTwMUDYqu5HaQKeAzS\",\"ownerUsername\":\"Testo Mang\",\"img\":\"https://placekitten.com/g/200/300\",\"priceToJoin\":1,\"pricePerMessage\":2,\"escrowAmount\":3,\"lastActive\":1648847624849,\"tags\":[],\"public\":true,\"zid\":\"d97d001e-abe2-483d-9591-c88e7212516b\"}",
+			Data: "{\"name\":\"Test Community\",\"description\":\"Awesome test community\",\"price_per_message\":5,\"price_to_join\":5,\"zid\":\"671f7355-201b-4b3c-80ef-32793eb3d884\"}",
 			Descriptor_: &v1.MessageDescriptor{
-				DateCreated: "1648847624849",
-				ObjectId:    "4e26b6c3-25be-4fdd-bb9a-269eaf971d00",
-				Schema:      "https://schema.org/Organization",
+				//DateCreated: "1648847624849",
+				//ObjectId:    "4e26b6c3-25be-4fdd-bb9a-269eaf971d00",
+				Schema: "https://schema.org/Organization",
 			},
 			Authorization: &v1.Authorization{
 				Protected: &v1.AttestationProtected{
 					Alg: "SS256K",
-					Kid: "did:key:z6DtUbeLv8CZ9qjieQYoRHczeqq6UfvTwMUDYqu5HaQKeAzS",
+					Kid: "did:key:zQ3shr4enfaB31BsZtNovYYtuWfArzFbUiF5nofvtJbYdU5G5",
 					//Kid: "did:key:z6DtNFZhbpJtsrN4x7sKEuMBpf1X3EwDqjfM7RVGYdh3qADy",
 				},
-				Payload:   "d522c9df4cfd90e8698f7ab286255ff5b8b27251932d22fa318b3003ab07e97b",
-				Signature: "3733613332376163353138343032646138323864323461346634643738306166383138373434643162643630396331643530346137303532396538663335663032326161373338366130393531373836613265646561346638623334363637343764623436396635666264616163383965336538386231376437656666613264",
+				Payload:   "86143185119c926d401263858683074825fd5ae9b5051152bc27d1fa9470b9ff",
+				Signature: "c4b14dcf038af59e45e9677b3ff3143ede713af23948be8fa6444974bc459b4371ce9c55aa1a03d0f8eb016f231f3fff528000b1fa8a6149e6cdefd8ab030170",
 			},
 		},
 	}
