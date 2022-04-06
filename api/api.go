@@ -25,6 +25,7 @@ type (
 		Id           int64     `json:"Id"`
 		Zid          string    `json:"Zid"`
 		CommunityZid string    `json:"CommunityZid" validate:"required,uuid4"`
+		UserDid      string    `json:"UserDid" validate:"required"`
 		Text         string    `json:"Text" validate:"required_without=Link"`
 		Link         string    `json:"Link" validate:"required_without=Text"`
 		Img          string    `json:"Img"`

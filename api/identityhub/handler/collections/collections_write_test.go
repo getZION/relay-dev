@@ -201,7 +201,7 @@ func Test_ConversationCreate(t *testing.T) {
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &hub.Message{
-			Data: `{ "CommunityZid": "test_zid", "Text": "test" }`,
+			Data: `{ "CommunityZid": "test_zid", "UserDid": "test_did", "Text": "test" }`,
 			Descriptor_: &hub.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_CONVERSATION,
