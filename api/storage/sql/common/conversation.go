@@ -41,8 +41,8 @@ func (c *Connection) InsertConversation(conversation *api.Conversation) error {
 	}
 
 	result, err := c.builder.Insert("conversations").
-		Columns("zid", "community_zid", "text", "link", "img", "video", "public", "public_price", "created", "updated").
-		Values(conversation.Zid, conversation.CommunityZid, conversation.Text, conversation.Link, conversation.Img, conversation.Video, conversation.Public, conversation.PublicPrice, conversation.Created, conversation.Updated).
+		Columns("zid", "community_zid", "user_did", "text", "link", "img", "video", "public", "public_price", "created", "updated").
+		Values(conversation.Zid, conversation.CommunityZid, conversation.UserDid, conversation.Text, conversation.Link, conversation.Img, conversation.Video, conversation.Public, conversation.PublicPrice, conversation.Created, conversation.Updated).
 		RunWith(tx).Exec()
 	if err != nil {
 		tx.Rollback()
