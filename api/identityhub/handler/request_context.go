@@ -30,6 +30,8 @@ func (c *RequestContext) VerifyRequest(signedString string, publicKey *ecdsa.Pub
 	//payloadString := signedString[dotIndex+1:]
 	//payloadString = strings.TrimSuffix(payloadString, ".")
 
+	fmt.Printf("Signed string: %s", signedString)
+
 	priv, _ := crypto.ToECDSA([]byte{126, 73, 27, 160, 104, 154, 68, 160, 31, 132, 149, 10, 124, 242, 99, 186, 1, 168, 169, 105, 253, 198, 35, 89, 109, 23, 251, 117, 82, 21, 23, 125})
 	pKey := priv.PublicKey
 	verified, err := jws.Verify([]byte(signedString), jwa.ES256K, pKey)
@@ -57,6 +59,7 @@ func (c *RequestContext) GetPublicKey() (*ecdsa.PublicKey, *errors.MessageLevelE
 	didBytes := base58.Decode(kid)
 	pubKeyBytes := make([]byte, 65)
 	pubKeyBytes = didBytes[2:]
+	fmt.Printf("Public Key Bytes: %v\n", pubKeyBytes)
 
 	pubKey, err := crypto.UnmarshalPubkey(pubKeyBytes)
 	if err != nil {
