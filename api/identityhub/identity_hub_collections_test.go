@@ -396,7 +396,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Conversation Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "CommunityZid": "test_zid", "Text": "test"  }`
+					request.Messages[0].Data = `{ "CommunityZid": "test_zid", "UserDid": "test_did", "Text": "test"  }`
 					request.Messages[0].Descriptor_.Schema = constants.SCHEMA_CONVERSATION
 					request.Messages[0].Descriptor_.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor_.DateCreated = DATE_CREATED

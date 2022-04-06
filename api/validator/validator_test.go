@@ -312,6 +312,17 @@ func Test_ShouldValidate_Conversation(t *testing.T) {
 			expectedErrorCount: 1,
 		},
 		{
+			name: "UserDid field should be required",
+			generate: func() interface{} {
+				model := api.Conversation{}
+				faker.FakeData(&model)
+				model.UserDid = ""
+				return model
+			},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
 			name: "Text or Link fields should be required",
 			generate: func() interface{} {
 				model := api.Conversation{}
