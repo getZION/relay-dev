@@ -19,6 +19,11 @@ func (c *Connection) InsertPayment(payment *api.Payment) error {
 
 	payment.Zid = uuid.NewString()
 
+	if payment.Type == "boost" {
+		if payment.RelevantType == "Conversation" {
+
+		}
+	}
 	// result := s.connection.DB.Create(&payment)
 	// if result.Error != nil {
 	// 	return nil, result.Error

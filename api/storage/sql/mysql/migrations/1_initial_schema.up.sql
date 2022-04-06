@@ -15,7 +15,7 @@ CREATE TABLE users (
   UNIQUE KEY did (did),
   UNIQUE KEY id (id),
   UNIQUE KEY username (username)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 DROP TABLE IF EXISTS communities;
 CREATE TABLE communities (
@@ -84,7 +84,7 @@ CREATE TABLE comments (
   KEY user_did (user_did),
   CONSTRAINT comments_conversation_zid_conversations_Zid_foreign FOREIGN KEY (conversation_zid) REFERENCES conversations (zid) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT comments_user_did_users_Did_foreign FOREIGN KEY (user_did) REFERENCES users (did) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 DROP TABLE IF EXISTS community_tags;
 CREATE TABLE community_tags (
@@ -93,7 +93,7 @@ CREATE TABLE community_tags (
 	  FOREIGN KEY (community_zid) REFERENCES  communities(zid),
     FOREIGN KEY (tag)           REFERENCES  tags(tag),
     UNIQUE  KEY community_zid_tag (community_zid, tag)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 DROP TABLE IF EXISTS community_users;
 CREATE TABLE community_users (

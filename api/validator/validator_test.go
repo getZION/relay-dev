@@ -6,6 +6,7 @@ import (
 	"github.com/bxcodec/faker/v3"
 	"github.com/getzion/relay/api"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 )
 
@@ -539,6 +540,109 @@ func Test_ShouldValidate_Comment(t *testing.T) {
 			expectedError:      false,
 			expectedErrorCount: 0,
 		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			err := Struct(tt.model)
+
+			if tt.expectedError {
+				require.NotNil(t, err)
+				validationError := err.(validator.ValidationErrors)
+				require.Len(t, validationError, tt.expectedErrorCount)
+			} else {
+				require.Nil(t, err)
+			}
+		})
+	}
+}
+
+func Test_ShouldValidate_Payment(t *testing.T) {
+	InitValidator()
+
+	tests := []struct {
+		name               string
+		model              api.Payment
+		expectedError      bool
+		expectedErrorCount int
+	}{
+		{
+			name: "recipient_did should be required",
+			model: api.Payment{
+				SenderDid:           "sender_did",
+				Amount:              1,
+				Type:                "boost",
+				Status:              "pending",
+				RelevantType:        "Conversation",
+				RelevantZid:         uuid.NewString(),
+				RecipientNodePubkey: "pubkey",
+				RecipientRelayUrl:   "url",
+			},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
+			name: "sender_did should be required",
+			model: api.Payment{
+				RecipientDid:        "recipient_did",
+				Amount:              1,
+				Type:                "boost",
+				Status:              "pending",
+				RelevantType:        "Conversation",
+				RelevantZid:         uuid.NewString(),
+				RecipientNodePubkey: "pubkey",
+				RecipientRelayUrl:   "url",
+			},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
+			name: "amount should be required",
+			model: api.Payment{
+				RecipientDid:        "recipient_did",
+				SenderDid:           "sender_did",
+				Type:                "boost",
+				Status:              "pending",
+				RelevantType:        "Conversation",
+				RelevantZid:         uuid.NewString(),
+				RecipientNodePubkey: "pubkey",
+				RecipientRelayUrl:   "url",
+			},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
+			name: "recipient_node_pubkey should be required",
+			model: api.Payment{
+				RecipientDid:      "recipient_did",
+				SenderDid:         "sender_did",
+				Amount:            1,
+				Type:              "boost",
+				Status:            "pending",
+				RelevantType:      "Conversation",
+				RelevantZid:       uuid.NewString(),
+				RecipientRelayUrl: "url",
+			},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		{
+			name: "recipient_relay_url should be required",
+			model: api.Payment{
+				RecipientDid:        "recipient_did",
+				SenderDid:           "sender_did",
+				Amount:              1,
+				Type:                "boost",
+				Status:              "pending",
+				RelevantType:        "Conversation",
+				RelevantZid:         uuid.NewString(),
+				RecipientNodePubkey: "pubkey",
+			},
+			expectedError:      true,
+			expectedErrorCount: 1,
+		},
+		//todo: add more validation rules
 	}
 
 	for _, tt := range tests {
