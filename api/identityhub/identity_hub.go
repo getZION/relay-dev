@@ -1,9 +1,9 @@
 package identityhub
 
 import (
-	"context"
 	"encoding/json"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
@@ -11,9 +11,9 @@ import (
 	"github.com/getzion/relay/api/identityhub/handler/permissions"
 	"github.com/getzion/relay/api/identityhub/handler/threads"
 	"github.com/getzion/relay/api/schema"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
+	"github.com/valyala/fasthttp"
 
 	"github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
@@ -23,9 +23,16 @@ type (
 	//todo: wrap request with a handler?
 	interfaceMethodHandler func(handler *handler.RequestContext) ([]string, *errors.MessageLevelError)
 
-	IdentityHubService struct {
-		hub.UnimplementedHubRequestServiceServer
+	// IdentityHubService struct {
+	// 	hub.UnimplementedHubRequestServiceServer
 
+	// 	prefix                   cid.Prefix
+	// 	validHubInterfaceMethods map[string]interfaceMethodHandler
+
+	// 	schemaManager *schema.SchemaManager
+	// }
+
+	IdentityHubServer struct {
 		prefix                   cid.Prefix
 		validHubInterfaceMethods map[string]interfaceMethodHandler
 
@@ -60,24 +67,39 @@ var (
 	}
 )
 
-func InitIdentityHubService(schemaManager *schema.SchemaManager) *IdentityHubService {
+// func InitIdentityHubService(schemaManager *schema.SchemaManager) *IdentityHubService {
 
-	identityHubService := &IdentityHubService{
+// 	identityHubService := &IdentityHubService{
+// 		prefix:                   prefix,
+// 		validHubInterfaceMethods: validHubInterfaceMethods,
+// 		schemaManager:            schemaManager,
+// 	}
+
+// 	return identityHubService
+// }
+
+func InitIdentityHubServer(schemaManager *schema.SchemaManager) *IdentityHubServer {
+	identityHubServer := &IdentityHubServer{
 		prefix:                   prefix,
 		validHubInterfaceMethods: validHubInterfaceMethods,
 		schemaManager:            schemaManager,
 	}
 
-	return identityHubService
+	return identityHubServer
 }
 
-func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Request) (*hub.Response, error) {
+//func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Request) (*hub.Response, error) {
+func (identityHub *IdentityHubServer) Process(ctx *fasthttp.RequestCtx) {
 	//grpc.SendHeader(ctx, metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-unary"))
 	//grpc.SetTrailer(ctx, metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-unary"))
 
-	response := &hub.Response{
+	if !ctx.IsPost() {
+
+	}
+
+	response := &api.Response{
 		RequestId: r.RequestId,
-		Status: &hub.Status{
+		Status: &api.Status{
 			Code: 200,
 		},
 	}
@@ -95,14 +117,14 @@ func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Reque
 	}
 
 	//todo: If the DID targeted by a request object is not found within the Hub instance, the implementation **MUST** produce a request-level status with the code 404, and **SHOULD** use Target DID not found within the Identity Hub instance as the status text
-	response.Replies = []*hub.Reply{}
+	response.Replies = []*api.Reply{}
 
 	var method interfaceMethodHandler
 	var ok bool
 	for _, message := range r.Messages {
 
-		reply := &hub.Reply{
-			Status: &hub.Status{},
+		reply := &api.Reply{
+			Status: &api.Status{},
 		}
 
 		messageByte, err := json.Marshal(message)
