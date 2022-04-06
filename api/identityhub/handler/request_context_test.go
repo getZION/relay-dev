@@ -38,20 +38,19 @@ func Test_RequetContext_GetPublicKey(t *testing.T) {
 
 	context := RequestContext{
 		Message: &v1.Message{
-			Data: "{\"name\":\"Test Community\",\"description\":\"Awesome test community\",\"price_per_message\":5,\"price_to_join\":5,\"zid\":\"671f7355-201b-4b3c-80ef-32793eb3d884\"}",
+			Data: "{\"name\":\"Test Community\",\"description\":\"Awesome test community\",\"pricePerMessage\":5,\"priceToJoin\":5,\"zid\":\"abd122ad-4a9a-417d-a96f-7096fbb331b8\"}",
 			Descriptor_: &v1.MessageDescriptor{
-				//DateCreated: "1648847624849",
-				//ObjectId:    "4e26b6c3-25be-4fdd-bb9a-269eaf971d00",
-				Schema: "https://schema.org/Organization",
+				DateCreated: "1649267340735",
+				ObjectId:    "2f4d42de-96da-453e-ba57-c35ef9a323b2",
+				Schema:      "https://schema.org/Organization",
 			},
 			Authorization: &v1.Authorization{
 				Protected: &v1.AttestationProtected{
 					Alg: "SS256K",
-					Kid: "did:key:zQ3shr4enfaB31BsZtNovYYtuWfArzFbUiF5nofvtJbYdU5G5",
-					//Kid: "did:key:z6DtNFZhbpJtsrN4x7sKEuMBpf1X3EwDqjfM7RVGYdh3qADy",
+					Kid: "did:key:z7r8orgCJdAbLdE37wXTa5gtwoDb28AmFKkPJXVgo9YgyzhT1wZs6nLwS6YGHAYucu8dAn1cophhkTqH7aS3sQtnohRCk",
 				},
-				Payload:   "86143185119c926d401263858683074825fd5ae9b5051152bc27d1fa9470b9ff",
-				Signature: "c4b14dcf038af59e45e9677b3ff3143ede713af23948be8fa6444974bc459b4371ce9c55aa1a03d0f8eb016f231f3fff528000b1fa8a6149e6cdefd8ab030170",
+				Payload:   "585d655f2f7fccb97db688105ed7355dec93a25990369fd15565779667bd9f6b",
+				Signature: "a38ab25f3c025f92507ab2ac137fb97f92e62dd0594c53330196dd05bc8f4cfa6e010bb962b99c1ce00032efcaf9b16e0e83e80b30a2d907d8f921c1c2519d3f",
 			},
 		},
 	}
@@ -59,5 +58,4 @@ func Test_RequetContext_GetPublicKey(t *testing.T) {
 	publicKey, _ := context.GetPublicKey()
 	signedString, _ := context.SignPayload()
 	context.VerifyRequest(signedString, publicKey)
-
 }
