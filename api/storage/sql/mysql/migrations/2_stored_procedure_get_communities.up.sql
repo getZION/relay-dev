@@ -6,14 +6,14 @@ SELECT
 		'id', c.id, 
         'name', c.name, 
         'zid', c.zid, 
-        'ownerdid', c.owner_did, 
-        'ownerusername', c.owner_username, 
+        'ownerDid', c.owner_did, 
+        'ownerUsername', c.owner_username, 
         'description', c.description, 
-        'EscrowAmount', c.escrow_amount, 
+        'escrowAmount', c.escrow_amount, 
         'img', c.img, 
         'lastactive', c.last_active, 
-        'pricepermessage', c.price_per_message, 
-        'pricetojoin', c.price_to_join, 
+        'pricePerMessage', c.price_per_message, 
+        'priceToJoin', c.price_to_join, 
         'public', c.public, 
         'created', c.created, 
 		'updated', c.updated, 
@@ -34,9 +34,10 @@ LEFT JOIN (
 	SELECT 
 	community_zid, 
 	JSON_ARRAYAGG(JSON_OBJECT(
-		'user_did', cu.user_did,
-        'joined_date', cu.joined_date,
-        'left_date', cu.left_date)
+		'userDid', cu.user_did,
+        'joinedDate', cu.joined_date,
+        'leftDate', cu.left_date,
+        'leftReason', cu.left_reason)
 	) AS users
     FROM community_users cu
     GROUP BY cu.community_zid

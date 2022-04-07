@@ -29,23 +29,23 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 
 	var err error
 
-	if _, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
-		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
-	} else if context.Message.Descriptor_.DateCreated == "" {
+	if _, err = uuid.Parse(context.Message.Descriptor.ObjectId); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor.ObjectId), err)
+	} else if context.Message.Descriptor.DateCreated == "" {
 		err = fmt.Errorf("dateCreated cannot be null or empty")
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
-	} else if _, err := strconv.ParseInt(context.Message.Descriptor_.DateCreated, 10, 64); err != nil {
-		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid dateCreated: %s", context.Message.Descriptor_.DateCreated), err)
-	} else if context.Message.Descriptor_.Schema != "" {
-		if _, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
-			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor_.Schema), err)
+	} else if _, err := strconv.ParseInt(context.Message.Descriptor.DateCreated, 10, 64); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid dateCreated: %s", context.Message.Descriptor.DateCreated), err)
+	} else if context.Message.Descriptor.Schema != "" {
+		if _, err = url.ParseRequestURI(context.Message.Descriptor.Schema); err != nil {
+			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor.Schema), err)
 		}
 	}
 
-	if context.Message.Descriptor_.DatePublished != "" {
-		_, err := strconv.ParseInt(context.Message.Descriptor_.DatePublished, 10, 64)
+	if context.Message.Descriptor.DatePublished != "" {
+		_, err := strconv.ParseInt(context.Message.Descriptor.DatePublished, 10, 64)
 		if err != nil {
-			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid datePublished: %s", context.Message.Descriptor_.DatePublished), err)
+			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid datePublished: %s", context.Message.Descriptor.DatePublished), err)
 		}
 	}
 
@@ -54,12 +54,12 @@ func CollectionsWrite(context *handler.RequestContext) ([]string, *errors.Messag
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	schemaHandler, err := context.SchemaManager.GetSchemaHandler(context.Message.Descriptor_.Schema)
+	schemaHandler, err := context.SchemaManager.GetSchemaHandler(context.Message.Descriptor.Schema)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	data, err := schemaHandler.Execute([]byte(context.Message.Data), context.Message.Descriptor_.Method)
+	data, err := schemaHandler.Execute([]byte(context.Message.Data), context.Message.Descriptor.Method)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}

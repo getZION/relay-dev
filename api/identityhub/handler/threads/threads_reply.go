@@ -13,14 +13,14 @@ func ThreadsReply(context *handler.RequestContext) ([]string, *errors.MessageLev
 
 	var err error
 
-	if _, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
-		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
-	} else if _, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
-		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor_.Schema), err)
-	} else if _, err = uuid.Parse(context.Message.Descriptor_.Root); err != nil {
-		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid root: %s", context.Message.Descriptor_.Root), err)
-	} else if _, err = uuid.Parse(context.Message.Descriptor_.Parent); err != nil {
-		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid parent: %s", context.Message.Descriptor_.Parent), err)
+	if _, err = uuid.Parse(context.Message.Descriptor.ObjectId); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor.ObjectId), err)
+	} else if _, err = url.ParseRequestURI(context.Message.Descriptor.Schema); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor.Schema), err)
+	} else if _, err = uuid.Parse(context.Message.Descriptor.Root); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid root: %s", context.Message.Descriptor.Root), err)
+	} else if _, err = uuid.Parse(context.Message.Descriptor.Parent); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid parent: %s", context.Message.Descriptor.Parent), err)
 	}
 
 	return nil, nil

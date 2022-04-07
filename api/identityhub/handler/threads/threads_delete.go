@@ -12,8 +12,8 @@ func ThreadsDelete(context *handler.RequestContext) ([]string, *errors.MessageLe
 
 	var err error
 
-	if _, err = uuid.Parse(context.Message.Descriptor_.Root); err != nil {
-		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid root: %s", context.Message.Descriptor_.Root), err)
+	if _, err = uuid.Parse(context.Message.Descriptor.Root); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid root: %s", context.Message.Descriptor.Root), err)
 	}
 
 	return nil, nil

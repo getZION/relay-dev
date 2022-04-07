@@ -15,11 +15,11 @@ const (
 
 type MessageLevelError struct {
 	Message string
-	Code    int64
+	Code    int
 	Error   error
 }
 
-func NewMessageLevelError(code int64, message string, err error) *MessageLevelError {
+func NewMessageLevelError(code int, message string, err error) *MessageLevelError {
 
 	if code >= 500 {
 		logrus.Errorf("%s: %v", message, err)

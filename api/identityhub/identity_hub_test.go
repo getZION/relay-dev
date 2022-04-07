@@ -1,16 +1,20 @@
 package identityhub
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
+	"io"
+	"io/ioutil"
+	"net/http/httptest"
+	"testing"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/schema"
 	"github.com/getzion/relay/api/storage"
-	. "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
-	"golang.org/x/net/context"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -26,156 +30,215 @@ const (
 	INVALID        = "<invalid>"
 )
 
-type GinkgoTestReporter struct{}
+func prepareApp(t *testing.T) *fiber.App {
+	gomockController := gomock.NewController(t)
+	st := storage.NewMockStorage(gomockController)
+	schemaManager := schema.NewSchemaManager(st)
 
-func (g GinkgoTestReporter) Errorf(format string, args ...interface{}) {
-	Fail(fmt.Sprintf(format, args...))
+	server := InitIdentityHubServer(schemaManager)
+	return server.app
 }
 
-func (g GinkgoTestReporter) Fatalf(format string, args ...interface{}) {
-	Fail(fmt.Sprintf(format, args...))
+func process(app *fiber.App, body *api.Request) (*api.Response, error) {
+
+	data, _ := json.Marshal(body)
+	reader := bytes.NewReader(data)
+
+	req := httptest.NewRequest("POST", "/process", reader)
+	req.Header.Add("Content-Type", "application/json")
+	resp, err := app.Test(req, -1)
+	if err != nil {
+		return nil, err
+	}
+
+	responseByte, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var response api.Response
+	err = json.Unmarshal(responseByte, &response)
+	if err != nil {
+		return nil, err
+	}
+
+	return &response, nil
 }
 
-var _ = Describe("IdentityHub", func() {
-	var (
-		t                GinkgoTestReporter
-		gomockController *gomock.Controller
-		client           *IdentityHubService
-		ctx              context.Context
-		st               *storage.MockStorage
-	)
+func Test_RequestLevelResponses(t *testing.T) {
+	app := prepareApp(t)
 
-	BeforeEach(func() {
-		gomockController = gomock.NewController(t)
-		st = storage.NewMockStorage(gomockController)
-		schemaManager := schema.NewSchemaManager(st)
-
-		client = &IdentityHubService{
-			prefix:                   prefix,
-			validHubInterfaceMethods: validHubInterfaceMethods,
-			schemaManager:            schemaManager,
-		}
-	})
-
-	Context("Request Level Tests", func() {
-
-		It("receives an error if Request is missing", func() {
-			request := &Request{}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Status).To(Not(BeNil()))
-			Expect(response.Status.Code).To(Equal(int64(500)))
-		})
-
-		It("receives an error if RequestID is missing", func() {
-			request := &Request{
+	tests := []struct {
+		description       string
+		body              *api.Request
+		expectedCode      int
+		expectedRequestId string
+	}{
+		{
+			description:       "receives an error if Request is missing",
+			body:              nil,
+			expectedCode:      fiber.StatusBadRequest,
+			expectedRequestId: "",
+		},
+		{
+			description: "receives an error if RequestID is missing",
+			body: &api.Request{
 				Target:   TARGET,
-				Messages: make([]*Message, 1),
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Status).To(Not(BeNil()))
-			Expect(response.Status.Code).To(Equal(int64(500)))
-		})
-
-		It("receives an error if RequestID is not len 36 (uuid v4)", func() {
-			request := &Request{
+				Messages: make([]*api.Message, 1),
+			},
+			expectedCode:      fiber.StatusBadRequest,
+			expectedRequestId: "",
+		},
+		{
+			description: "receives an error if RequestID is not len 36 (uuid v4)",
+			body: &api.Request{
 				Target:    TARGET,
 				RequestId: INVALID,
-				Messages:  make([]*Message, 1),
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Status).To(Not(BeNil()))
-			Expect(response.Status.Code).To(Equal(int64(500)))
-		})
-
-		It("receives an error if Target is missing", func() {
-			request := &Request{
+				Messages:  make([]*api.Message, 1),
+			},
+			expectedCode:      fiber.StatusBadRequest,
+			expectedRequestId: INVALID,
+		},
+		{
+			description: "receives an error if Target is missing",
+			body: &api.Request{
 				RequestId: REQUEST_ID,
-				Messages:  make([]*Message, 1),
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Status).To(Not(BeNil()))
-			Expect(response.Status.Code).To(Equal(int64(500)))
-		})
-
-		It("receives an error if Messages are missing", func() {
-			request := &Request{
+				Messages:  make([]*api.Message, 1),
+			},
+			expectedCode:      fiber.StatusBadRequest,
+			expectedRequestId: REQUEST_ID,
+		},
+		{
+			description: "receives an error if Messages are missing",
+			body: &api.Request{
 				RequestId: REQUEST_ID,
 				Target:    TARGET,
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Status).To(Not(BeNil()))
-			Expect(response.Status.Code).To(Equal(int64(500)))
-		})
-	})
+			},
+			expectedCode:      fiber.StatusBadRequest,
+			expectedRequestId: REQUEST_ID,
+		},
+	}
 
-	Context("Message Level Tests", func() {
+	for _, test := range tests {
 
-		It("receives an error if a Message is missing Descriptor", func() {
-			request := &Request{
+		var reader io.Reader
+		if test.body != nil {
+			data, _ := json.Marshal(test.body)
+			reader = bytes.NewReader(data)
+		}
+		req := httptest.NewRequest("POST", "/process", reader)
+		req.Header.Add("Content-Type", "application/json")
+		resp, err := app.Test(req, -1)
+
+		require.Nil(t, err)
+		assert.Equalf(t, test.expectedCode, resp.StatusCode, test.description)
+
+		body, err := ioutil.ReadAll(resp.Body)
+		require.Nil(t, err)
+
+		var response api.Response
+		err = json.Unmarshal(body, &response)
+		require.Nil(t, err)
+
+		require.NotNil(t, response, "response cannot be nil")
+		require.Equal(t, test.expectedRequestId, response.RequestId, "response requestId must be expected value")
+		require.NotNil(t, response.Status, "response status cannot be nil")
+		require.Equal(t, test.expectedCode, response.Status.Code, "response status must be expected value")
+	}
+}
+
+func Test_MessageLevelResponses(t *testing.T) {
+	app := prepareApp(t)
+
+	tests := []struct {
+		description  string
+		body         *api.Request
+		expectedCode int
+		expectation  func(*testing.T, *api.Response)
+	}{
+		{
+			description: "receives an error if a Message is missing Descriptor",
+			body: &api.Request{
 				RequestId: REQUEST_ID,
 				Target:    TARGET,
-				Messages: []*Message{
+				Messages: []*api.Message{
 					{},
 				},
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies).To(HaveLen(1))
-			Expect(response.Replies[0].Status).To(Not(BeNil()))
-			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-		})
-
-		It("receives an error if a Message Descriptor is missing Method", func() {
-			request := &Request{
+			},
+			expectedCode: fiber.StatusOK,
+			expectation: func(t *testing.T, r *api.Response) {
+				require.NotNil(t, r.Replies, "replies cannot be nil")
+				require.Len(t, r.Replies, 1, "replies must be contains 1 element")
+				require.NotNil(t, r.Replies[0].Status, "reply status cannot be nil")
+				require.Equal(t, fiber.StatusBadRequest, r.Replies[0].Status.Code, "reply status code must be expected value")
+			},
+		},
+		{
+			description: "receives an error if a Message Descriptor is missing Method",
+			body: &api.Request{
 				RequestId: REQUEST_ID,
 				Target:    TARGET,
-				Messages: []*Message{
+				Messages: []*api.Message{
 					{
-						Descriptor_: &MessageDescriptor{},
+						Descriptor: &api.MessageDescriptor{},
 					},
 				},
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies).To(HaveLen(1))
-			Expect(response.Replies[0].Status).To(Not(BeNil()))
-			Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
-		})
-
-		It("receives an error if a Message Descriptor method is not implemented", func() {
-			request := &Request{
+			},
+			expectedCode: fiber.StatusOK,
+			expectation: func(t *testing.T, r *api.Response) {
+				require.NotNil(t, r.Replies, "replies cannot be nil")
+				require.Len(t, r.Replies, 1, "replies must be contains 1 element")
+				require.NotNil(t, r.Replies[0].Status, "reply status cannot be nil")
+				require.Equal(t, fiber.StatusBadRequest, r.Replies[0].Status.Code, "reply status code must be expected value")
+			},
+		},
+		{
+			description: "receives an error if a Message Descriptor method is not implemented",
+			body: &api.Request{
 				RequestId: REQUEST_ID,
 				Target:    TARGET,
-				Messages: []*Message{
+				Messages: []*api.Message{
 					{
-						Descriptor_: &MessageDescriptor{
+						Descriptor: &api.MessageDescriptor{
 							Method: INVALID,
 						},
 					},
 				},
-			}
-			response, err := client.Process(ctx, request)
-			Expect(err).To(BeNil())
-			Expect(response).To(Not(BeNil()))
-			Expect(response.Replies).To(Not(BeNil()))
-			Expect(response.Replies).To(HaveLen(1))
-			Expect(response.Replies[0].Status).To(Not(BeNil()))
-			Expect(response.Replies[0].Status.Code).To(Equal(int64(501)))
-		})
+			},
+			expectedCode: fiber.StatusOK,
+			expectation: func(t *testing.T, r *api.Response) {
+				require.NotNil(t, r.Replies, "replies cannot be nil")
+				require.Len(t, r.Replies, 1, "replies must be contains 1 element")
+				require.NotNil(t, r.Replies[0].Status, "reply status cannot be nil")
+				require.Equal(t, 501, r.Replies[0].Status.Code, "reply status code must be expected value")
+			},
+		},
+	}
 
-	})
-})
+	for _, test := range tests {
+
+		var reader io.Reader
+		if test.body != nil {
+			data, _ := json.Marshal(test.body)
+			reader = bytes.NewReader(data)
+		}
+		req := httptest.NewRequest("POST", "/process", reader)
+		req.Header.Add("Content-Type", "application/json")
+		resp, err := app.Test(req, -1)
+		require.Nil(t, err)
+		require.Equal(t, fiber.StatusOK, resp.StatusCode, "response status code must be 200")
+
+		body, err := ioutil.ReadAll(resp.Body)
+		require.Nil(t, err)
+
+		var response api.Response
+		err = json.Unmarshal(body, &response)
+		require.Nil(t, err)
+
+		require.NotNil(t, response, "response cannot be nil")
+		require.NotNil(t, response.Status, "response status cannot be nil")
+		require.Equal(t, fiber.StatusOK, response.Status.Code, "response status must be 200")
+
+		test.expectation(t, &response)
+	}
+}

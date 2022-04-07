@@ -16,37 +16,37 @@ func CollectionsQuery(context *handler.RequestContext) ([]string, *errors.Messag
 
 	var err error
 
-	if _, err = uuid.Parse(context.Message.Descriptor_.ObjectId); err != nil {
-		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor_.ObjectId), err)
+	if _, err = uuid.Parse(context.Message.Descriptor.ObjectId); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid objectId: %s", context.Message.Descriptor.ObjectId), err)
 	}
 
-	if context.Message.Descriptor_.Schema != "" {
-		if _, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
-			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor_.Schema), err)
+	if context.Message.Descriptor.Schema != "" {
+		if _, err = url.ParseRequestURI(context.Message.Descriptor.Schema); err != nil {
+			return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor.Schema), err)
 		}
 	}
 
-	if context.Message.Descriptor_.DataFormat != "" {
-		if dataFormat := mimetype.Lookup(context.Message.Descriptor_.DataFormat); dataFormat == nil {
-			err = fmt.Errorf("invalid dataFormat: %s", context.Message.Descriptor_.DataFormat)
+	if context.Message.Descriptor.DataFormat != "" {
+		if dataFormat := mimetype.Lookup(context.Message.Descriptor.DataFormat); dataFormat == nil {
+			err = fmt.Errorf("invalid dataFormat: %s", context.Message.Descriptor.DataFormat)
 			return nil, errors.NewMessageLevelError(400, err.Error(), err)
 		}
 	}
 
-	if context.Message.Descriptor_.DateSort != "" && (context.Message.Descriptor_.DateSort != "createdAscending" && context.Message.Descriptor_.DateSort != "createdDescending" &&
-		context.Message.Descriptor_.DateSort != "publishedAscending" && context.Message.Descriptor_.DateSort != "publishedDescending") {
-		err = fmt.Errorf("invalid dateSort: %s", context.Message.Descriptor_.DateSort)
+	if context.Message.Descriptor.DateSort != "" && (context.Message.Descriptor.DateSort != "createdAscending" && context.Message.Descriptor.DateSort != "createdDescending" &&
+		context.Message.Descriptor.DateSort != "publishedAscending" && context.Message.Descriptor.DateSort != "publishedDescending") {
+		err = fmt.Errorf("invalid dateSort: %s", context.Message.Descriptor.DateSort)
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
 	//todo: check data & dataFormat only for application/json or do we need provide other formats?
 
-	schemaHandler, err := context.SchemaManager.GetSchemaHandler(context.Message.Descriptor_.Schema)
+	schemaHandler, err := context.SchemaManager.GetSchemaHandler(context.Message.Descriptor.Schema)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(400, err.Error(), err)
 	}
 
-	data, err := schemaHandler.Execute([]byte(context.Message.Data), context.Message.Descriptor_.Method)
+	data, err := schemaHandler.Execute([]byte(context.Message.Data), context.Message.Descriptor.Method)
 	if err != nil {
 		return nil, errors.NewMessageLevelError(500, err.Error(), err)
 	}

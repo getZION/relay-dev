@@ -46,6 +46,7 @@ CREATE TABLE conversations (
   id            bigint        NOT NULL AUTO_INCREMENT,
   zid           varchar(256)  DEFAULT NULL,
   community_zid varchar(256)  NOT NULL,
+  user_did      varchar(256)  NOT NULL,
   text          varchar(256)  DEFAULT NULL,
   link          varchar(256)  DEFAULT NULL,
   img           varchar(256)  DEFAULT NULL,
@@ -59,7 +60,8 @@ CREATE TABLE conversations (
   UNIQUE KEY id (id),
   UNIQUE KEY zid (zid),
   KEY community_zid (community_zid),
-  CONSTRAINT conversations_community_zid_communities_Zid_foreign FOREIGN KEY (community_zid) REFERENCES communities (zid) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT conversations_community_zid_communities_Zid_foreign FOREIGN KEY (community_zid) REFERENCES communities (zid) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT conversation_user_did_users_Did_foreign FOREIGN KEY (user_did) REFERENCES users (did) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 DROP TABLE IF EXISTS tags;
@@ -102,6 +104,7 @@ CREATE TABLE community_users (
   user_did        varchar(256) NOT NULL,
   joined_date     bigint       NOT NULL,
   left_date       bigint       DEFAULT NULL,
+  left_reason     varchar(64)  NULL,
   PRIMARY KEY (id),
   KEY user_did (user_did),
   KEY community_zid (community_zid),
