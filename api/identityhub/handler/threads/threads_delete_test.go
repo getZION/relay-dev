@@ -3,31 +3,31 @@ package threads
 import (
 	"testing"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_ThreadsDelete_ValidationFailed(t *testing.T) {
 	tests := []struct {
 		name                 string
-		message              *hub.Message
-		expectedStatusCode   int64
+		message              *api.Message
+		expectedStatusCode   int
 		expectedErrorMessage string
 	}{
 		{
 			name: "missing root",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{},
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{},
 			},
 			expectedStatusCode:   400,
 			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
 		},
 		{
 			name: "invalid root",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					Root: INVALID,
 				},
 			},

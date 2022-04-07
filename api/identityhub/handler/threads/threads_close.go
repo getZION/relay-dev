@@ -12,8 +12,8 @@ func ThreadsClose(context *handler.RequestContext) ([]string, *errors.MessageLev
 
 	var err error
 
-	if _, err = uuid.Parse(context.Message.Descriptor_.Root); err != nil {
-		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid root: %s", context.Message.Descriptor_.Root), err)
+	if _, err = uuid.Parse(context.Message.Descriptor.Root); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid root: %s", context.Message.Descriptor.Root), err)
 	}
 
 	return nil, nil

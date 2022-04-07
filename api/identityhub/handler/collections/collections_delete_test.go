@@ -4,34 +4,35 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/identityhub/handler"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_CollectionDelete_ValidationFailed(t *testing.T) {
 	tests := []struct {
 		name                 string
-		message              *hub.Message
-		expectedStatusCode   int64
+		message              *api.Message
+		expectedStatusCode   int
 		expectedErrorMessage string
 	}{
 		{
 			name: "missing objectId",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{},
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: "invalid objectId: ",
 		},
 		{
 			name: "invalid objectId",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: INVALID,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("invalid objectId: %s", INVALID),
 		},
 	}

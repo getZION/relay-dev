@@ -9,7 +9,7 @@ import (
 	"github.com/getzion/relay/api/identityhub/handler"
 	"github.com/getzion/relay/api/schema"
 	"github.com/getzion/relay/api/storage"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
@@ -17,70 +17,70 @@ import (
 func Test_CollectionQuery_ValidationFailed(t *testing.T) {
 	tests := []struct {
 		name                 string
-		message              *hub.Message
-		expectedStatusCode   int64
+		message              *api.Message
+		expectedStatusCode   int
 		expectedErrorMessage string
 	}{
 		{
 			name: "missing objectId",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{},
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: "invalid objectId: ",
 		},
 		{
 			name: "invalid objectId",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: INVALID,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("invalid objectId: %s", INVALID),
 		},
 		{
 			name: "invalid schema",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   INVALID,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("invalid schema: %s", INVALID),
 		},
 		{
 			name: "unknown schema",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   SCHEMA_UNKNOWN,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("unknown schema: %s", SCHEMA_UNKNOWN),
 		},
 		{
 			name: "invalid dataFormat",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId:   OBJECT_ID,
 					DataFormat: INVALID,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("invalid dataFormat: %s", INVALID),
 		},
 		{
 			name: "invalid dateSort",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					DateSort: INVALID,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("invalid dateSort: %s", INVALID),
 		},
 	}
@@ -118,14 +118,13 @@ func Test_Communities_Get(t *testing.T) {
 
 	tests := []struct {
 		name                 string
-		message              *hub.Message
-		expectedStatusCode   int64
+		message              *api.Message
 		expectedErrorMessage string
 	}{
 		{
 			name: "should return 2 community",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   constants.SCHEMA_COMMUNITY,
 					Method:   constants.COLLECTIONS_QUERY,
@@ -161,14 +160,13 @@ func Test_Conversation_Get(t *testing.T) {
 
 	tests := []struct {
 		name                 string
-		message              *hub.Message
-		expectedStatusCode   int64
+		message              *api.Message
 		expectedErrorMessage string
 	}{
 		{
 			name: "should return 2 conversation",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   constants.SCHEMA_CONVERSATION,
 					Method:   constants.COLLECTIONS_QUERY,
@@ -203,14 +201,13 @@ func Test_User_Get(t *testing.T) {
 
 	tests := []struct {
 		name                 string
-		message              *hub.Message
-		expectedStatusCode   int64
+		message              *api.Message
 		expectedErrorMessage string
 	}{
 		{
 			name: "should return 2 user",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   constants.SCHEMA_PERSON,
 					Method:   constants.COLLECTIONS_QUERY,
@@ -245,14 +242,13 @@ func Test_Payment_Get(t *testing.T) {
 
 	tests := []struct {
 		name                 string
-		message              *hub.Message
-		expectedStatusCode   int64
+		message              *api.Message
 		expectedErrorMessage string
 	}{
 		{
 			name: "should return 2 payment",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   constants.SCHEMA_PAYMENT,
 					Method:   constants.COLLECTIONS_QUERY,

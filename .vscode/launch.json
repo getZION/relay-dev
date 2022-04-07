@@ -16,6 +16,8 @@
                 "DB_NAME": "relay3",
                 "DB_USER": "root",
                 "DB_PASS": "root",
+                "HOST": "127.0.0.1",
+                "PORT": "9990"
             }
         }
     ]

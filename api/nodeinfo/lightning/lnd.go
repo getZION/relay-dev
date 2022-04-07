@@ -44,6 +44,7 @@ var params ConnectionParams
 
 func Connect() (*LndWallet, error) {
 
+	return nil, nil
 	envconfig.Process("", &params)
 	LoadLNDCredentials()
 

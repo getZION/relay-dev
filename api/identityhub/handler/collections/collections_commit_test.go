@@ -4,78 +4,79 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/identityhub/handler"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_CollectionCommit_ValidationFailed(t *testing.T) {
 	tests := []struct {
 		name                 string
-		message              *hub.Message
-		expectedStatusCode   int64
+		message              *api.Message
+		expectedStatusCode   int
 		expectedErrorMessage string
 	}{
 		{
 			name: "missing objectId",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{},
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: "invalid objectId: ",
 		},
 		{
 			name: "invalid objectId",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: INVALID,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("invalid objectId: %s", INVALID),
 		},
 		{
 			name: "invalid schema",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   INVALID,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("invalid schema: %s", INVALID),
 		},
 		{
 			name: "missing dateCreated",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("dateCreated cannot be null or empty"),
 		},
 		{
 			name: "invalid dateCreated",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId:    OBJECT_ID,
 					DateCreated: INVALID,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("invalid dateCreated: %s", INVALID),
 		},
 		{
 			name: "invalid datePublished",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId:      OBJECT_ID,
 					DateCreated:   DATE_CREATED,
 					DatePublished: INVALID,
 				},
 			},
-			expectedStatusCode:   400,
+			expectedStatusCode:   fiber.StatusBadRequest,
 			expectedErrorMessage: fmt.Sprintf("invalid datePublished: %s", INVALID),
 		},
 	}

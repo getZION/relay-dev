@@ -12,8 +12,8 @@ func PermissionsQuery(context *handler.RequestContext) ([]string, *errors.Messag
 
 	var err error
 
-	if _, err = url.ParseRequestURI(context.Message.Descriptor_.Schema); err != nil {
-		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor_.Schema), err)
+	if _, err = url.ParseRequestURI(context.Message.Descriptor.Schema); err != nil {
+		return nil, errors.NewMessageLevelError(400, fmt.Sprintf("invalid schema: %s", context.Message.Descriptor.Schema), err)
 	}
 
 	return nil, nil
