@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/getzion/relay/api/identityhub"
 	"github.com/getzion/relay/api/schema"
 	"github.com/getzion/relay/api/storage"
 	"github.com/getzion/relay/api/validator"
 	"github.com/sirupsen/logrus"
-	"github.com/valyala/fasthttp"
 )
 
 func main() {
@@ -19,7 +21,10 @@ func main() {
 	}
 
 	schemaManager := schema.NewSchemaManager(connection)
-
 	server := identityhub.InitIdentityHubServer(schemaManager)
-	logrus.Fatal(fasthttp.ListenAndServe("127.0.0.1:9990", server.Process))
+
+	host := os.Getenv("HOST")
+	port := os.Getenv("PORT")
+
+	logrus.Fatal(server.Listen(fmt.Sprintf("%s:%s", host, port)))
 }

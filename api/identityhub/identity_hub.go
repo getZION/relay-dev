@@ -11,9 +11,9 @@ import (
 	"github.com/getzion/relay/api/identityhub/handler/permissions"
 	"github.com/getzion/relay/api/identityhub/handler/threads"
 	"github.com/getzion/relay/api/schema"
+	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"github.com/valyala/fasthttp"
 
 	"github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
@@ -23,20 +23,11 @@ type (
 	//todo: wrap request with a handler?
 	interfaceMethodHandler func(handler *handler.RequestContext) ([]string, *errors.MessageLevelError)
 
-	// IdentityHubService struct {
-	// 	hub.UnimplementedHubRequestServiceServer
-
-	// 	prefix                   cid.Prefix
-	// 	validHubInterfaceMethods map[string]interfaceMethodHandler
-
-	// 	schemaManager *schema.SchemaManager
-	// }
-
 	IdentityHubServer struct {
 		prefix                   cid.Prefix
 		validHubInterfaceMethods map[string]interfaceMethodHandler
-
-		schemaManager *schema.SchemaManager
+		schemaManager            *schema.SchemaManager
+		app                      *fiber.App
 	}
 )
 
@@ -67,17 +58,6 @@ var (
 	}
 )
 
-// func InitIdentityHubService(schemaManager *schema.SchemaManager) *IdentityHubService {
-
-// 	identityHubService := &IdentityHubService{
-// 		prefix:                   prefix,
-// 		validHubInterfaceMethods: validHubInterfaceMethods,
-// 		schemaManager:            schemaManager,
-// 	}
-
-// 	return identityHubService
-// }
-
 func InitIdentityHubServer(schemaManager *schema.SchemaManager) *IdentityHubServer {
 	identityHubServer := &IdentityHubServer{
 		prefix:                   prefix,
@@ -85,43 +65,65 @@ func InitIdentityHubServer(schemaManager *schema.SchemaManager) *IdentityHubServ
 		schemaManager:            schemaManager,
 	}
 
+	app := fiber.New(fiber.Config{
+		ErrorHandler: func(c *fiber.Ctx, e error) error {
+			c.Response().Header.Set("Content-Type", "application/json")
+
+			response := api.Response{
+				RequestId: "",
+				Status: &api.Status{
+					Code:    500,
+					Message: "Something goes wrong, please try again.",
+				},
+			}
+
+			if err, ok := e.(*api.ErrorHandler); ok {
+				response.RequestId = err.RequestId
+				response.Status.Message = err.Message
+				response.Status.Code = err.StatusCode
+				if err.Err != nil {
+					logrus.Error(err.Err)
+				}
+			}
+
+			return c.Status(response.Status.Code).JSON(response)
+		},
+	})
+	app.Post("/process", identityHubServer.Process)
+	identityHubServer.app = app
+
 	return identityHubServer
 }
+func (identityHub *IdentityHubServer) Listen(addr string) error {
+	return identityHub.app.Listen(addr)
+}
 
-//func (identityHub *IdentityHubService) Process(ctx context.Context, r *hub.Request) (*hub.Response, error) {
-func (identityHub *IdentityHubServer) Process(ctx *fasthttp.RequestCtx) {
-	//grpc.SendHeader(ctx, metadata.Pairs("Pre-Response-Metadata", "Is-sent-as-headers-unary"))
-	//grpc.SetTrailer(ctx, metadata.Pairs("Post-Response-Metadata", "Is-sent-as-trailers-unary"))
+func (identityHub *IdentityHubServer) Process(ctx *fiber.Ctx) error {
 
-	if !ctx.IsPost() {
-
-	}
-
-	response := &api.Response{
-		RequestId: r.RequestId,
-		Status: &api.Status{
-			Code: 200,
-		},
-	}
-
-	if r.RequestId == "" || r.Target == "" || len(r.Messages) == 0 {
-		response.Status.Code = 500
-		response.Status.Message = errors.RequestLevelProcessingErrorMessage
-		logrus.Infof("request failed for requestId: %s, target: %s, messages: %d", r.RequestId, r.Target, len(r.Messages))
-		return response, nil
-	} else if _, err := uuid.Parse(r.RequestId); err != nil {
-		response.Status.Code = 500
-		response.Status.Message = errors.RequestLevelProcessingErrorMessage
-		logrus.Infof("requestId must be uuid: %s", r.RequestId)
-		return response, nil
+	request := api.Request{}
+	if err := ctx.BodyParser(&request); err != nil {
+		ctx.SendStatus(fiber.StatusBadRequest)
+		return &api.ErrorHandler{StatusCode: fiber.StatusBadRequest, Message: "request body must be json encoded data", Err: err}
+	} else if request.RequestId == "" || request.Target == "" || len(request.Messages) == 0 {
+		logrus.Infof("request failed for requestId: %s, target: %s, messages: %d", request.RequestId, request.Target, len(request.Messages))
+		return &api.ErrorHandler{StatusCode: fiber.StatusBadRequest, Message: errors.RequestLevelProcessingErrorMessage, RequestId: request.RequestId}
+	} else if _, err := uuid.Parse(request.RequestId); err != nil {
+		logrus.Infof("requestId must be uuid: %s", request.RequestId)
+		return &api.ErrorHandler{StatusCode: fiber.StatusBadRequest, Message: errors.RequestLevelProcessingErrorMessage, RequestId: request.RequestId, Err: err}
 	}
 
 	//todo: If the DID targeted by a request object is not found within the Hub instance, the implementation **MUST** produce a request-level status with the code 404, and **SHOULD** use Target DID not found within the Identity Hub instance as the status text
-	response.Replies = []*api.Reply{}
+	response := &api.Response{
+		RequestId: request.RequestId,
+		Status: &api.Status{
+			Code: 200,
+		},
+		Replies: []*api.Reply{},
+	}
 
 	var method interfaceMethodHandler
 	var ok bool
-	for _, message := range r.Messages {
+	for _, message := range request.Messages {
 
 		reply := &api.Reply{
 			Status: &api.Status{},
@@ -147,17 +149,17 @@ func (identityHub *IdentityHubServer) Process(ctx *fasthttp.RequestCtx) {
 
 		reply.MessageId = messageId.String()
 
-		if message.Descriptor_ == nil || message.Descriptor_.Method == "" {
+		if message.Descriptor == nil || message.Descriptor.Method == "" {
 			reply.Status.Code = 400
 			reply.Status.Message = errors.ImproperlyConstructedErrorMessage
 			response.Replies = append(response.Replies, reply)
 			logrus.Info("request message descriptor or method cannot be null or empty")
 			continue
-		} else if method, ok = identityHub.validHubInterfaceMethods[message.Descriptor_.Method]; !ok {
+		} else if method, ok = identityHub.validHubInterfaceMethods[message.Descriptor.Method]; !ok {
 			reply.Status.Code = 501
 			reply.Status.Message = errors.InterfaceNotImplementedErrorMessage
 			response.Replies = append(response.Replies, reply)
-			logrus.Infof("interface method is not implemented: %s", message.Descriptor_.Method)
+			logrus.Infof("interface method is not implemented: %s", message.Descriptor.Method)
 			continue
 		}
 
@@ -183,5 +185,6 @@ func (identityHub *IdentityHubServer) Process(ctx *fasthttp.RequestCtx) {
 		response.Replies = append(response.Replies, reply)
 	}
 
-	return response, nil
+	ctx.Response().Header.Set("Content-Type", "application/json")
+	return ctx.Status(fiber.StatusOK).JSON(response)
 }
