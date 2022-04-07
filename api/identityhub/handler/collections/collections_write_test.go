@@ -286,7 +286,7 @@ func Test_JoinCommunity(t *testing.T) {
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &api.Message{
-			Data: `{ "community_zid": "zid", "user_did": "did" }`,
+			Data: `{ "communityZid": "zid", "userDid": "did" }`,
 			Descriptor: &api.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_JOIN_COMMUNITY,
@@ -315,7 +315,7 @@ func Test_LeaveCommunity(t *testing.T) {
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &api.Message{
-			Data: `{ "community_zid": "zid", "user_did": "did" }`,
+			Data: `{ "communityZid": "zid", "userDid": "did" }`,
 			Descriptor: &api.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_LEAVE_COMMUNITY,
@@ -344,7 +344,7 @@ func Test_KickUserCommunity(t *testing.T) {
 	entries, err := CollectionsWrite(&handler.RequestContext{
 		SchemaManager: schemaManager,
 		Message: &api.Message{
-			Data: `{ "community_zid": "zid", "user_did": "did" }`,
+			Data: `{ "communityZid": "zid", "userDid": "did" }`,
 			Descriptor: &api.MessageDescriptor{
 				ObjectId:    OBJECT_ID,
 				Schema:      constants.SCHEMA_KICK_USER,

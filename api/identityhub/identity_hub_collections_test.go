@@ -424,7 +424,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Join Community Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "community_zid": "zid", "user_did": "did" }`
+					request.Messages[0].Data = `{ "communityZid": "zid", "userDid": "did" }`
 					request.Messages[0].Descriptor.Schema = constants.SCHEMA_JOIN_COMMUNITY
 					request.Messages[0].Descriptor.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor.DateCreated = DATE_CREATED
@@ -452,7 +452,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Leave Community Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "community_zid": "zid", "user_did": "did" }`
+					request.Messages[0].Data = `{ "communityZid": "zid", "userDid": "did" }`
 					request.Messages[0].Descriptor.Schema = constants.SCHEMA_LEAVE_COMMUNITY
 					request.Messages[0].Descriptor.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor.DateCreated = DATE_CREATED
@@ -480,7 +480,7 @@ var _ = Describe("IdentityHub Collections", func() {
 			Context("Kick User Community Tests", func() {
 
 				BeforeEach(func() {
-					request.Messages[0].Data = `{ "community_zid": "zid", "user_did": "did" }`
+					request.Messages[0].Data = `{ "communityZid": "zid", "userDid": "did" }`
 					request.Messages[0].Descriptor.Schema = constants.SCHEMA_KICK_USER
 					request.Messages[0].Descriptor.ObjectId = OBJECT_ID
 					request.Messages[0].Descriptor.DateCreated = DATE_CREATED
