@@ -1,0 +1,349 @@
+{
+	"info": {
+		"_postman_id": "662d31b9-d7db-4247-a2b9-5f7b6392e728",
+		"name": "Relay",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Collection Write",
+			"item": [
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var entry = jsonData.replies[0].entries[0];",
+									"var user = JSON.parse(entry);",
+									"pm.collectionVariables.set(\"userDid\", user.did);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"data\": \"{ \\\"Did\\\": \\\"did5\\\", \\\"Username\\\": \\\"test_username5\\\", \\\"Name\\\": \\\"test_name\\\" }\",\n            \"descriptor\": {\n                \"method\": \"CollectionsWrite\",\n                \"schema\": \"https://schema.org/Person\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Community",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var entry = jsonData.replies[0].entries[0];",
+									"var community = JSON.parse(entry);",
+									"pm.collectionVariables.set(\"communityZid\", community.zid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"data\": \"{ \\\"Name\\\": \\\"test3\\\", \\\"Description\\\": \\\"test2\\\", \\\"OwnerUsername\\\": \\\"test_username\\\", \\\"OwnerDid\\\": \\\"{{userDid}}\\\", \\\"EscrowAmount\\\": 10, \\\"OwnerAlias\\\": \\\"test\\\", \\\"OwnerPubkey\\\": \\\"pub_key\\\", \\\"PricePerMessage\\\": 10, \\\"PriceToJoin\\\": 10, \\\"Tags\\\": [ \\\"test1\\\", \\\"test2\\\" ] }\",\n            \"descriptor\": {\n                \"method\": \"CollectionsWrite\",\n                \"schema\": \"https://schema.org/Organization\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Conversation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"var entry = jsonData.replies[0].entries[0];",
+									"var conversation = JSON.parse(entry);",
+									"pm.collectionVariables.set(\"conversationZid\", conversation.zid);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"data\": \"{ \\\"communityZid\\\": \\\"{{communityZid}}\\\", \\\"userDid\\\": \\\"{{userDid}}\\\", \\\"Text\\\": \\\"Text\\\" }\",\n            \"descriptor\": {\n                \"method\": \"CollectionsWrite\",\n                \"schema\": \"https://schema.org/Conversation\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Comment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"data\": \"{ \\\"conversationZid\\\": \\\"6e695eac-78ce-44a5-8ea1-6d0e57e5e02f\\\", \\\"userDid\\\": \\\"did1\\\", \\\"Text\\\": \\\"Text\\\" }\",\n            \"descriptor\": {\n                \"method\": \"CollectionsWrite\",\n                \"schema\": \"https://schema.org/Comment\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Join Community",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"data\": \"{ \\\"userDid\\\": \\\"{{userDid}}\\\", \\\"communityZid\\\": \\\"{{communityZid}}\\\" }\",\n            \"descriptor\": {\n                \"method\": \"CollectionsWrite\",\n                \"schema\": \"https://schema.org/JoinAction\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Leave Community",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"data\": \"{ \\\"userDid\\\": \\\"{{userDid}}\\\", \\\"communityZid\\\": \\\"{{communityZid}}\\\" }\",\n            \"descriptor\": {\n                \"method\": \"CollectionsWrite\",\n                \"schema\": \"https://schema.org/LeaveAction\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Kick User From Community",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"data\": \"{ \\\"userDid\\\": \\\"{{userDid}}\\\", \\\"communityZid\\\": \\\"{{communityZid}}\\\" }\",\n            \"descriptor\": {\n                \"method\": \"CollectionsWrite\",\n                \"schema\": \"https://schema.org/Organization/KickUser\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Collection Query",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"descriptor\": {\n                \"method\": \"CollectionsQuery\",\n                \"schema\": \"https://schema.org/Person\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Communities",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"descriptor\": {\n                \"method\": \"CollectionsQuery\",\n                \"schema\": \"https://schema.org/Organization\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Conversations",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"descriptor\": {\n                \"method\": \"CollectionsQuery\",\n                \"schema\": \"https://schema.org/Conversation\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Comments",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"requestId\": \"3eb8ea70-7ea5-4069-a153-cfb0ea682df9\",\n    \"target\": \"test\",\n    \"messages\": [\n        {\n            \"descriptor\": {\n                \"method\": \"CollectionsQuery\",\n                \"schema\": \"https://schema.org/Comment\",\n                \"dateCreated\": \"10\",\n                \"objectId\": \"d82c0026-ed42-4b26-81f3-94805958a75c\"\n            }\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ProcessURL}}",
+							"host": [
+								"{{ProcessURL}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ProcessURL",
+			"value": "http://localhost:9990/process",
+			"type": "default"
+		},
+		{
+			"key": "userDid",
+			"value": ""
+		},
+		{
+			"key": "communityZid",
+			"value": ""
+		}
+	]
+}

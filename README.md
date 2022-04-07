@@ -8,7 +8,7 @@ The new Zion relay server for decentralized social media and messaging.
   - Connects to a funding source - initially [LND](https://github.com/lightningnetwork/lnd)
 
 ## Tech Stack
-- [Go](https://go.dev/) - v1.17
+- [Go](https://go.dev/) - v1.18
 - [LND](https://github.com/lightningnetwork/lnd) - Lightning integration
 - [Docker](https://www.docker.com/) - Containers
 - _[ION](https://identity.foundation/ion/) - DIDs anchored to Bitcoin (later - MVP uses `did:key`)_

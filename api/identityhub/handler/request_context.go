@@ -10,9 +10,9 @@ import (
 
 	"github.com/decred/base58"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/schema"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jws"
 	"github.com/sirupsen/logrus"
@@ -20,7 +20,7 @@ import (
 
 type RequestContext struct {
 	SchemaManager *schema.SchemaManager
-	Message       *hub.Message
+	Message       *api.Message
 }
 
 func (c *RequestContext) VerifyRequest(signedString string, publicKey *ecdsa.PublicKey) (bool, *errors.MessageLevelError) {
@@ -98,9 +98,9 @@ func (c *RequestContext) getMessageHash() (string, error) {
 func (c *RequestContext) serializeMessage() ([]byte, error) {
 	value := []string{
 		c.Message.Authorization.Protected.Kid,
-		c.Message.Descriptor_.DateCreated,
-		c.Message.Descriptor_.ObjectId,
-		c.Message.Descriptor_.Schema,
+		c.Message.Descriptor.DateCreated,
+		c.Message.Descriptor.ObjectId,
+		c.Message.Descriptor.Schema,
 		c.Message.Data,
 	}
 

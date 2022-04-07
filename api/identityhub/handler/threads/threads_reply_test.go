@@ -3,31 +3,31 @@ package threads
 import (
 	"testing"
 
+	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/identityhub/errors"
 	"github.com/getzion/relay/api/identityhub/handler"
-	hub "github.com/getzion/relay/gen/proto/identityhub/v1"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_ThreadsReply_ValidationFailed(t *testing.T) {
 	tests := []struct {
 		name                 string
-		message              *hub.Message
-		expectedStatusCode   int64
+		message              *api.Message
+		expectedStatusCode   int
 		expectedErrorMessage string
 	}{
 		{
 			name: "missing objectId",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{},
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{},
 			},
 			expectedStatusCode:   400,
 			expectedErrorMessage: errors.ImproperlyConstructedErrorMessage,
 		},
 		{
 			name: "invalid objectId",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: INVALID,
 				},
 			},
@@ -36,8 +36,8 @@ func Test_ThreadsReply_ValidationFailed(t *testing.T) {
 		},
 		{
 			name: "missing schema",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 				},
 			},
@@ -46,8 +46,8 @@ func Test_ThreadsReply_ValidationFailed(t *testing.T) {
 		},
 		{
 			name: "invalid schema",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   INVALID,
 				},
@@ -57,8 +57,8 @@ func Test_ThreadsReply_ValidationFailed(t *testing.T) {
 		},
 		{
 			name: "missing root",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   SCHEMA,
 				},
@@ -68,8 +68,8 @@ func Test_ThreadsReply_ValidationFailed(t *testing.T) {
 		},
 		{
 			name: "invalid root",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   SCHEMA,
 					Root:     INVALID,
@@ -80,8 +80,8 @@ func Test_ThreadsReply_ValidationFailed(t *testing.T) {
 		},
 		{
 			name: "missing parent",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   SCHEMA,
 					Root:     ROOT,
@@ -92,8 +92,8 @@ func Test_ThreadsReply_ValidationFailed(t *testing.T) {
 		},
 		{
 			name: "invalid parent",
-			message: &hub.Message{
-				Descriptor_: &hub.MessageDescriptor{
+			message: &api.Message{
+				Descriptor: &api.MessageDescriptor{
 					ObjectId: OBJECT_ID,
 					Schema:   SCHEMA,
 					Root:     ROOT,

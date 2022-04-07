@@ -3,7 +3,7 @@ package handler
 import (
 	"testing"
 
-	v1 "github.com/getzion/relay/gen/proto/identityhub/v1"
+	"github.com/getzion/relay/api"
 )
 
 func Test_RequetContext_GetPublicKey(t *testing.T) {
@@ -37,15 +37,15 @@ func Test_RequetContext_GetPublicKey(t *testing.T) {
 	// }
 
 	context := RequestContext{
-		Message: &v1.Message{
+		Message: &api.Message{
 			Data: "{\"name\":\"Test Community\",\"description\":\"Awesome test community\",\"pricePerMessage\":5,\"priceToJoin\":5,\"zid\":\"abd122ad-4a9a-417d-a96f-7096fbb331b8\"}",
-			Descriptor_: &v1.MessageDescriptor{
+			Descriptor: &api.MessageDescriptor{
 				DateCreated: "1649267340735",
 				ObjectId:    "2f4d42de-96da-453e-ba57-c35ef9a323b2",
 				Schema:      "https://schema.org/Organization",
 			},
-			Authorization: &v1.Authorization{
-				Protected: &v1.AttestationProtected{
+			Authorization: &api.Authorization{
+				Protected: &api.AuthorizationProtected{
 					Alg: "SS256K",
 					Kid: "did:key:z7r8orgCJdAbLdE37wXTa5gtwoDb28AmFKkPJXVgo9YgyzhT1wZs6nLwS6YGHAYucu8dAn1cophhkTqH7aS3sQtnohRCk",
 				},
