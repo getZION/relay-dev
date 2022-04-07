@@ -410,11 +410,11 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response).To(Not(BeNil()))
 					Expect(response.RequestId).To(Equal(request.RequestId))
 					Expect(response.Status).To(Not(BeNil()))
-					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Status.Code).To(Equal(fiber.StatusOK))
 					Expect(response.Replies).To(Not(BeNil()))
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
-					Expect(response.Replies[0].Status.Code).To(Equal(int64(400)))
+					Expect(response.Replies[0].Status.Code).To(Equal(fiber.StatusBadRequest))
 				})
 
 				It("receive a response If Message Descriptor has valid with Text", func() {
@@ -443,11 +443,11 @@ var _ = Describe("IdentityHub Collections", func() {
 					Expect(response).To(Not(BeNil()))
 					Expect(response.RequestId).To(Equal(request.RequestId))
 					Expect(response.Status).To(Not(BeNil()))
-					Expect(response.Status.Code).To(Equal(int64(200)))
+					Expect(response.Status.Code).To(Equal(fiber.StatusOK))
 					Expect(response.Replies).To(Not(BeNil()))
 					Expect(response.Replies).To(HaveLen(1))
 					Expect(response.Replies[0].Status).To(Not(BeNil()))
-					Expect(response.Replies[0].Status.Code).To(Equal(int64(200)))
+					Expect(response.Replies[0].Status.Code).To(Equal(fiber.StatusOK))
 				})
 			})
 
