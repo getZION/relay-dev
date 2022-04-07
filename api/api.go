@@ -86,15 +86,15 @@ type (
 	Payment struct {
 		Id                  int64   `json:"id"`
 		Zid                 string  `json:"zid"`
-		RecipientDid        string  `json:"recipient_did" validate:"required"`
-		SenderDid           string  `json:"sender_did" validate:"required"`
+		RecipientDid        string  `json:"recipientDid" validate:"required"`
+		SenderDid           string  `json:"senderDid" validate:"required"`
 		Amount              float64 `json:"amount" validate:"required"`
 		Type                string  `json:"type" validate:"oneof=boost p2p community_join stake"`
 		Status              string  `json:"status" validate:"oneof=pending completed failed"`
-		RelevantType        string  `json:"relevant_type" validate:"required_if=Type boost,oneof=Conversation Comment Message"`
-		RelevantZid         string  `json:"relevant_zid" validate:"required_if=Type boost,uuid4"`
-		RecipientNodePubkey string  `json:"recipient_node_pubkey" validate:"required"`
-		RecipientRelayUrl   string  `json:"recipient_relay_url" validate:"required"`
+		RelevantType        string  `json:"relevantType" validate:"required_if=Type boost,oneof=Conversation Comment Message"`
+		RelevantZid         string  `json:"relevantZid" validate:"required_if=Type boost,uuid4"`
+		RecipientNodePubkey string  `json:"recipientNodePubkey" validate:"required"`
+		RecipientRelayUrl   string  `json:"recipientRelayUrl" validate:"required"`
 		Memo                string  `json:"memo"`
 		TypeInt             int16
 		StatusInt           int16
