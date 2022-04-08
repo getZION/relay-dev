@@ -1,58 +1,54 @@
 package handler
 
 import (
+	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/getzion/relay/api"
+	"github.com/ipfs/go-cid"
+	"github.com/multiformats/go-multihash"
 )
 
 func Test_RequetContext_GetPublicKey(t *testing.T) {
 
-	// tests := []struct {
-	// 	name                 string
-	// 	context              *RequestContext
-	// 	errorExpected        bool
-	// 	expectedStatusCode   int64
-	// 	expectedErrorMessage string
-	// }{
-	// 	{
-	// 		name: "",
-	// 	},
-	// 	// should return authorization cannot be null
-	// 	// authorization protected cannot be null
-	// 	// Unsupported signing algorithm
-	// 	// Unsupported DID method
-	// 	// Unsupported DID method
-	// }
-
-	// for _, tt := range tests {
-	// 	t.Run(tt.name, func(t *testing.T) {
-	// 		publicKey, err := tt.context.GetPublicKey()
-
-	// 		if tt.errorExpected {
-	// 			require.Nil(t, publicKey)
-	// 			require.NotNil(t, err)
-	// 		}
-	// 	})
-	// }
-
 	context := RequestContext{
 		Message: &api.Message{
-			Data: "{\"name\":\"Test Community\",\"description\":\"Awesome test community\",\"pricePerMessage\":5,\"priceToJoin\":5,\"zid\":\"abd122ad-4a9a-417d-a96f-7096fbb331b8\"}",
+			Data: "eyJjb21tdW5pdHkiOnsibmFtZSI6IlRlc3QgQ29tbXVuaXR5IiwiZGVzY3JpcHRpb24iOiJBd2Vzb21lIHRlc3QgY29tbXVuaXR5IiwicHJpY2VQZXJNZXNzYWdlIjo1LCJwcmljZVRvSm9pbiI6NX19",
 			Descriptor: &api.MessageDescriptor{
-				DateCreated: "1649267340735",
-				ObjectId:    "2f4d42de-96da-453e-ba57-c35ef9a323b2",
-				Schema:      "https://schema.org/Organization",
+				Cid:         "bagaaierapb3hfsapznktlc37grbcxlrlevueikala7pspw7dum4bzvpnegda",
+				DataFormat:  "application/json",
+				DateCreated: "1649421537831",
+				Method:      "CollectionsWrite",
+				ObjectId:    "d3c82418-b797-4d4a-b3c1-d521022d794c",
 			},
-			Authorization: &api.Authorization{
-				Protected: &api.AuthorizationProtected{
-					Alg: "SS256K",
+			Attestation: &api.Attestation{
+				Payload: "bagaaierablumuihbhsskqlvtqck5sh45dogpa3qvtvdd24qmxrnitta4df4a",
+				Protected: &api.AttestationProtected{
+					Alg: "ES256K",
 					Kid: "did:key:z7r8orgCJdAbLdE37wXTa5gtwoDb28AmFKkPJXVgo9YgyzhT1wZs6nLwS6YGHAYucu8dAn1cophhkTqH7aS3sQtnohRCk",
 				},
-				Payload:   "585d655f2f7fccb97db688105ed7355dec93a25990369fd15565779667bd9f6b",
-				Signature: "a38ab25f3c025f92507ab2ac137fb97f92e62dd0594c53330196dd05bc8f4cfa6e010bb962b99c1ce00032efcaf9b16e0e83e80b30a2d907d8f921c1c2519d3f",
+				Signature: "4a110804186cf5a3fbfcb90a372b660abfe33f76e9402531df6872bf895bc3ef2d24b8ca994a54d1b117fad4f716336dec648b036d61e784eaacd29d9008ed01",
 			},
 		},
+	}
+
+	messageByte, _ := json.Marshal(context.Message)
+	prefix := cid.Prefix{
+		Version:  1,
+		Codec:    cid.Raw,
+		MhType:   multihash.SHA2_256,
+		MhLength: -1,
+	}
+
+	messageCid, _ := prefix.Sum(messageByte)
+	fmt.Printf("%v\n", messageCid.String())
+
+	cid, _ := cid.Decode(context.Message.Descriptor.Cid)
+	fmt.Printf("%v\n", cid.String())
+
+	if messageCid.Equals(cid) {
+		fmt.Printf("equal")
 	}
 
 	publicKey, _ := context.GetPublicKey()
