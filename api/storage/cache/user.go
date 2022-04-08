@@ -20,6 +20,10 @@ func (c *cacheStorage) GetUserByDid(did string) (*api.User, error) {
 	return nil, nil
 }
 
+func (c *cacheStorage) GetUserByUsername(username string) (*api.User, error) {
+	return nil, nil
+}
+
 func (c *cacheStorage) InsertUser(*api.User) error {
 	// currentTime := time.Now().Unix()
 	// user := v1.UserORM{

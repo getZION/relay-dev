@@ -81,6 +81,14 @@ func (m *MockStorage) GetUserByDid(arg0 string) (*api.User, error) {
 	return ret0, ret1
 }
 
+func (m *MockStorage) GetUserByUsername(arg0 string) (*api.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByUsername", arg0)
+	ret0, _ := ret[0].(*api.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
 func (m *MockStorage) InsertUser(arg0 *api.User) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "InsertUser", arg0)
@@ -166,6 +174,11 @@ func (mr *mockStorageMockRecorder) GetUsers() *gomock.Call {
 func (mr *mockStorageMockRecorder) GetUserByDid(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByDid", reflect.TypeOf((*MockStorage)(nil).GetUserByDid), arg0)
+}
+
+func (mr *mockStorageMockRecorder) GetUserByUsername(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUsername", reflect.TypeOf((*MockStorage)(nil).GetUserByUsername), arg0)
 }
 
 func (mr *mockStorageMockRecorder) InsertUser(arg0 interface{}) *gomock.Call {

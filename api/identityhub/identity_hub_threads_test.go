@@ -30,8 +30,7 @@ var _ = Describe("IdentityHub Threads", func() {
 		gomockController = gomock.NewController(t)
 		st = storage.NewMockStorage(gomockController)
 		schemaManager := schema.NewSchemaManager(st)
-
-		server := InitIdentityHubServer(schemaManager)
+		server := InitIdentityHubServer(schemaManager, st)
 		app = server.app
 	})
 
