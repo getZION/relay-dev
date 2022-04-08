@@ -31,8 +31,7 @@ var _ = Describe("IdentityHub Permissions", func() {
 		gomockController = gomock.NewController(t)
 		st = storage.NewMockStorage(gomockController)
 		schemaManager := schema.NewSchemaManager(st)
-
-		server := InitIdentityHubServer(schemaManager)
+		server := InitIdentityHubServer(schemaManager, st)
 		app = server.app
 	})
 

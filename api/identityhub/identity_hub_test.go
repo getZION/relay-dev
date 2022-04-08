@@ -34,8 +34,7 @@ func prepareApp(t *testing.T) *fiber.App {
 	gomockController := gomock.NewController(t)
 	st := storage.NewMockStorage(gomockController)
 	schemaManager := schema.NewSchemaManager(st)
-
-	server := InitIdentityHubServer(schemaManager)
+	server := InitIdentityHubServer(schemaManager, st)
 	return server.app
 }
 

@@ -15,13 +15,13 @@ func main() {
 
 	validator.InitValidator()
 
-	connection, err := storage.NewStorage("mysql")
+	storage, err := storage.NewStorage("mysql")
 	if err != nil {
 		logrus.Panic(err)
 	}
 
-	schemaManager := schema.NewSchemaManager(connection)
-	server := identityhub.InitIdentityHubServer(schemaManager)
+	schemaManager := schema.NewSchemaManager(storage)
+	server := identityhub.InitIdentityHubServer(schemaManager, storage)
 
 	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")

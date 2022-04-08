@@ -2,6 +2,7 @@ package identityhub
 
 import (
 	"encoding/json"
+	"strings"
 
 	"github.com/getzion/relay/api"
 	"github.com/getzion/relay/api/constants"
@@ -27,6 +28,7 @@ type (
 		prefix                   cid.Prefix
 		validHubInterfaceMethods map[string]interfaceMethodHandler
 		schemaManager            *schema.SchemaManager
+		storage                  api.Storage
 		app                      *fiber.App
 	}
 )
@@ -58,11 +60,12 @@ var (
 	}
 )
 
-func InitIdentityHubServer(schemaManager *schema.SchemaManager) *IdentityHubServer {
+func InitIdentityHubServer(schemaManager *schema.SchemaManager, storage api.Storage) *IdentityHubServer {
 	identityHubServer := &IdentityHubServer{
 		prefix:                   prefix,
 		validHubInterfaceMethods: validHubInterfaceMethods,
 		schemaManager:            schemaManager,
+		storage:                  storage,
 	}
 
 	app := fiber.New(fiber.Config{
@@ -90,12 +93,39 @@ func InitIdentityHubServer(schemaManager *schema.SchemaManager) *IdentityHubServ
 		},
 	})
 	app.Post("/process", identityHubServer.Process)
+	app.Get("/check-username/:username", identityHubServer.CheckUsername)
 	identityHubServer.app = app
 
 	return identityHubServer
 }
 func (identityHub *IdentityHubServer) Listen(addr string) error {
 	return identityHub.app.Listen(addr)
+}
+
+func (identityHub *IdentityHubServer) CheckUsername(ctx *fiber.Ctx) error {
+	ctx.Response().Header.Set("Content-Type", "application/json")
+	response := map[string]interface{}{
+		"ok":        true,
+		"available": false,
+	}
+
+	username := ctx.Params("username")
+	if strings.Trim(username, " ") == "" {
+		response["ok"] = false
+		return ctx.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	_, err := identityHub.storage.GetUserByUsername(username)
+	if err != nil {
+		if strings.Contains(err.Error(), "user not found") {
+			response["available"] = true
+			return ctx.Status(fiber.StatusOK).JSON(response)
+		}
+		response["ok"] = false
+		return ctx.Status(fiber.StatusInternalServerError).JSON(response)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
 func (identityHub *IdentityHubServer) Process(ctx *fiber.Ctx) error {
