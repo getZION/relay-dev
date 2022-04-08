@@ -46,7 +46,7 @@ func (h *CommunityJoinHandler) Execute(data []byte, method string) (interface{},
 		}
 
 		if community.PriceToJoin > 0 {
-			if user.Amount-float64(community.PriceToJoin) < 0 {
+			if user.Amount-community.PriceToJoin < 0 {
 				return nil, fmt.Errorf("user balance is not enought. current balance: %f", user.Amount)
 			}
 		}

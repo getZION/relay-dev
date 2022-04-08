@@ -11,8 +11,8 @@ type (
 		EscrowAmount    int64           `json:"escrowAmount" validate:"gte=0,lt=100000"`
 		Img             string          `json:"img,omitempty"`
 		LastActive      int64           `json:"lastActive,omitempty"`
-		PricePerMessage int64           `json:"pricePerMessage" validate:"gte=0,lt=100000"`
-		PriceToJoin     int64           `json:"priceToJoin" validate:"gte=0,lt=100000"`
+		PricePerMessage float64         `json:"pricePerMessage" validate:"gte=0,lt=100000"`
+		PriceToJoin     float64         `json:"priceToJoin" validate:"gte=0,lt=100000"`
 		Public          Bool            `json:"public,omitempty"`
 		Created         int64           `json:"created,omitempty"`
 		Updated         int64           `json:"updated,omitempty"`

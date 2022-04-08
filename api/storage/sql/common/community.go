@@ -34,7 +34,12 @@ func (c *Connection) GetCommunities() ([]api.Community, error) {
 func (c *Connection) GetCommunityByZid(zid string) (*api.Community, error) {
 
 	var community api.Community
-	err := c.builder.Select("c.id, c.zid").From("communities c").Where(sq.Eq{"zid": zid}).QueryRow().Scan(&community.Id, &community.Zid)
+	err := c.builder.
+		Select("c.id, c.zid, c.name, c.owner_did, c.owner_username, c.description, c.escrow_amount, c.img, c.last_active, c.price_per_message, c.price_to_join, c.created, c.updated").
+		From("communities c").
+		Where(sq.Eq{"zid": zid}).
+		QueryRow().
+		Scan(&community.Id, &community.Zid, &community.Name, &community.OwnerDid, &community.OwnerUsername, &community.Description, &community.EscrowAmount, &community.Img, &community.LastActive, &community.PricePerMessage, &community.PriceToJoin, &community.Created, &community.Updated)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, fmt.Errorf("community not found %s", zid)
@@ -145,10 +150,18 @@ func (c *Connection) AddUserToCommunity(community *api.Community, user *api.User
 		return err
 	}
 
-	_, err = tx.Exec(fmt.Sprintf(`UPDATE users SET amount = amount - %d WHERE did = %s`, community.PriceToJoin, user.Did))
-	if err != nil {
-		tx.Rollback()
-		return err
+	if community.PriceToJoin > 0 {
+		_, err = tx.Exec(fmt.Sprintf(`UPDATE users SET amount = amount - %f WHERE did = '%s'`, community.PriceToJoin, user.Did))
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		_, err = tx.Exec(fmt.Sprintf(`UPDATE users SET amount = amount + %f WHERE did = '%s'`, community.PriceToJoin, community.OwnerDid))
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 
 	err = tx.Commit()

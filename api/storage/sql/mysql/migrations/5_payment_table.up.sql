@@ -3,6 +3,11 @@ ALTER TABLE users
   ADD amount float NULL DEFAULT '0'
     AFTER name;
 
+ALTER TABLE users MODIFY price_to_message float NOT NULL;
+ALTER TABLE communities MODIFY price_per_message float NOT NULL;
+ALTER TABLE communities MODIFY price_to_join float NOT NULL;
+
+
 DROP TABLE IF EXISTS payments;
 CREATE TABLE payments (
   id                    bigint        NOT NULL AUTO_INCREMENT,
